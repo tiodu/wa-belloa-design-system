@@ -1,0 +1,160 @@
+/* BetEntry — maps to Figma sportsbook/betslip/selectionCard Variant-1-Mobile */
+
+.entry {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-p-16) var(--space-p-8) var(--space-p-12);
+  background: var(--surface-layer-1);
+  border-bottom: var(--border-width-thick) solid var(--border-accent);
+  border-radius: var(--radius-md);
+  width: 100%;
+  position: relative;
+  transition: opacity 0.2s ease;
+}
+
+.entry--suspended {
+  opacity: 0.7;
+}
+
+.sportIcon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--content-subtle);
+}
+
+.sportIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 2px;
+}
+
+.match {
+  font-family: var(--font-family);
+  font-size: var(--text-md-size);
+  font-weight: var(--text-md-weight-bold);
+  line-height: var(--text-md-line-height);
+  letter-spacing: var(--text-md-tracking);
+  color: var(--content-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: var(--text-sm-weight);
+  line-height: var(--text-sm-line-height);
+  letter-spacing: var(--text-sm-tracking);
+  color: var(--content-secondary);
+  white-space: pre-wrap;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.oddsRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-p-4);
+}
+
+.oddsBadge {
+  background: var(--surface-layer-2);
+  border-radius: var(--radius-sm);
+  padding: var(--space-p-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+}
+
+.oddsValue {
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: var(--text-sm-weight-bold);
+  line-height: var(--text-sm-line-height);
+  letter-spacing: var(--text-sm-tracking);
+  color: var(--content-primary);
+  white-space: nowrap;
+}
+
+.oddsValue--suspended {
+  color: var(--status-warning-foreground);
+}
+
+.bonusBadge {
+  background: var(--surface-layer-1);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-p-4);
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: var(--text-sm-weight-bold);
+  line-height: var(--text-sm-line-height);
+  letter-spacing: var(--text-sm-tracking);
+  color: var(--content-secondary);
+  min-width: 36px;
+  text-align: center;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  color: var(--content-subtle);
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.removeBtn:hover {
+  color: var(--content-primary);
+}
+
+.removeBtn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.suspendedBanner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-p-4);
+  padding: var(--space-p-4) var(--space-p-8);
+  background: var(--status-warning-background);
+  border-radius: var(--radius-sm);
+  margin-top: var(--space-p-4);
+  width: 100%;
+}
+
+.suspendedText {
+  font-family: var(--font-family);
+  font-size: var(--text-xs-size);
+  font-weight: var(--text-xs-weight);
+  line-height: var(--text-xs-line-height);
+  color: var(--status-warning-foreground);
+  letter-spacing: var(--text-xs-tracking);
+}

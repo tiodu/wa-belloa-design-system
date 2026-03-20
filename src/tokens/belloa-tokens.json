@@ -1,0 +1,95 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "WA Belloa Design System tokens — extracted from Figma file URIYKbGlC4kZTfVWXgSsDl, node 54917:16571",
+  "figma": {
+    "fileKey": "URIYKbGlC4kZTfVWXgSsDl",
+    "fileName": "WA-Belloa-Library--UI-KIT",
+    "nodeId": "54917:16571",
+    "nodeName": "sportsbook/betslip",
+    "extractedAt": "2026-03-19"
+  },
+  "surface": {
+    "page":    { "value": "#101211", "figmaVar": "surface/page",    "cssVar": "--surface-page" },
+    "layer-1": { "value": "#171918", "figmaVar": "surface/layer-1", "cssVar": "--surface-layer-1" },
+    "layer-2": { "value": "#202221", "figmaVar": "surface/layer-2", "cssVar": "--surface-layer-2" }
+  },
+  "foreground": {
+    "level1":          { "value": "#ffffff", "figmaVar": "foreground/level1",         "cssVar": "--foreground-level1" },
+    "level2":          { "value": "#b7b7b1", "figmaVar": "foreground/level2",         "cssVar": "--foreground-level2" },
+    "inverse":         { "value": "#1a1110", "figmaVar": "foreground/inverse",        "cssVar": "--foreground-inverse" },
+    "primaryLevel1":   { "value": "#ff1b00", "figmaVar": "foreground/primaryLevel1",  "cssVar": "--foreground-primary-level1" },
+    "warningLevel1":   { "value": "#ffc53d", "figmaVar": "foreground/warningLevel1",  "cssVar": "--foreground-warning-level1" }
+  },
+  "content": {
+    "primary":    { "value": "#edeef0", "figmaVar": "content/primary",    "cssVar": "--content-primary" },
+    "secondary":  { "value": "#b0b4ba", "figmaVar": "content/secondary",  "cssVar": "--content-secondary" },
+    "subtle":     { "value": "#717d79", "figmaVar": "content/subtle",     "cssVar": "--content-subtle" },
+    "accent":     { "value": "#0eb39e", "figmaVar": "content/accent",     "cssVar": "--content-accent" },
+    "on-action":  { "value": "#edeef0", "figmaVar": "content/on-action",  "cssVar": "--content-on-action" },
+    "positive":   { "value": "#0eb39e", "figmaVar": "content/positive",   "cssVar": "--content-positive" },
+    "on-promo":   { "value": "#ffffff", "figmaVar": "content/on-promo",   "cssVar": "--content-on-promo" }
+  },
+  "background": {
+    "level3":         { "value": "#43484e",              "figmaVar": "background/level3",         "cssVar": "--background-level3" },
+    "successLevel3":  { "value": "#2f7c57",              "figmaVar": "background/successLevel3",  "cssVar": "--background-success-level3" },
+    "neutralLevel4":  { "value": "rgba(240,240,243,.08)", "figmaVar": "background/neutralLevel4", "cssVar": "--background-neutral-level4" },
+    "promo":          { "value": "#4F46E5",              "figmaVar": "background/promo",          "cssVar": "--background-promo" }
+  },
+  "action": {
+    "primary":   { "value": "#145750",              "figmaVar": "action/primary",   "cssVar": "--action-primary" },
+    "secondary": { "value": "rgba(0,255,230,.12)",   "figmaVar": "action/secondary", "cssVar": "--action-secondary" },
+    "neutral":   { "value": "rgba(249,250,251,.07)", "figmaVar": "action/neutral",   "cssVar": "--action-neutral" },
+    "disabled":  { "value": "#373b39",              "figmaVar": "action/disabled",  "cssVar": "--action-disabled" },
+    "cta":       { "value": "#E07420",              "figmaVar": "action/cta",       "cssVar": "--action-cta" }
+  },
+  "border": {
+    "default":       { "value": "rgba(249,250,251,.11)", "figmaVar": "border/default",       "cssVar": "--border-default" },
+    "subtle":        { "value": "rgba(249,250,251,.07)", "figmaVar": "border/subtle",        "cssVar": "--border-subtle" },
+    "accent":        { "value": "#084843",              "figmaVar": "border/accent",        "cssVar": "--border-accent" },
+    "successLevel1": { "value": "#3dd68c",              "figmaVar": "border/successLevel1", "cssVar": "--border-success-level1" },
+    "active":        { "value": "#ffffff",              "figmaVar": "border/active",        "cssVar": "--border-active" },
+    "destructive":   { "value": "#ff1b00",              "figmaVar": "border/destructive",   "cssVar": "--border-destructive" },
+    "width":         { "value": "1px",                 "figmaVar": "Border/border-0,5",    "cssVar": "--border-width" },
+    "widthThick":    { "value": "1.5px",               "figmaVar": "Border/border-1,5",    "cssVar": "--border-width-thick" }
+  },
+  "status": {
+    "warningForeground": { "value": "#f5e147", "figmaVar": "status/warning-foreground", "cssVar": "--status-warning-foreground" },
+    "warningBackground": { "value": "rgba(255,170,0,.12)", "figmaVar": "status/warning-background", "cssVar": "--status-warning-background" },
+    "warning900":        { "value": "#fabc2c", "figmaVar": "semantic-colors/warning/900", "cssVar": "--status-warning-900" }
+  },
+  "typography": {
+    "fontFamily": { "value": "Inter", "figmaVar": "Font Family/Font" },
+    "scale": {
+      "xs":          { "size": 10, "lineHeight": 12, "weight": 400, "tracking": 0.4,  "figmaVar": "Label XS" },
+      "sm":          { "size": 12, "lineHeight": 16, "weight": 400, "tracking": 0.5,  "figmaVar": "Label Small" },
+      "md":          { "size": 14, "lineHeight": 16, "weight": 400, "tracking": 0.5,  "figmaVar": "Label Medium" },
+      "titleSm":     { "size": 14, "lineHeight": 20, "weight": 500, "tracking": 0.1,  "figmaVar": "Title Small" },
+      "titleMd":     { "size": 18, "lineHeight": 24, "weight": 500, "tracking": 0,    "figmaVar": "Title Medium" },
+      "headlineMd":  { "size": 28, "lineHeight": 36, "weight": 500, "tracking": 0,    "figmaVar": "Headline Medium" },
+      "headlineLg":  { "size": 32, "lineHeight": 40, "weight": 500, "tracking": 0,    "figmaVar": "Headline Large" }
+    }
+  },
+  "spacing": {
+    "1": { "value": "4px",  "figmaVar": "Spacing/1" },
+    "2": { "value": "8px",  "figmaVar": "Spacing/2" },
+    "3": { "value": "12px", "figmaVar": "Spacing/3" },
+    "4": { "value": "16px", "figmaVar": "Spacing/4" },
+    "5": { "value": "24px", "figmaVar": "Spacing/5" },
+    "6": { "value": "32px", "figmaVar": "Spacing/6" }
+  },
+  "radius": {
+    "none": { "value": "0px",    "figmaVar": "Radius/rounded_none" },
+    "xm":   { "value": "2px",   "figmaVar": "Radius/rounded_xm" },
+    "sm":   { "value": "4px",   "figmaVar": "Radius/rounded_sm" },
+    "m":    { "value": "6px",   "figmaVar": "Radius/rounded_m" },
+    "md":   { "value": "8px",   "figmaVar": "Radius/rounded_md" },
+    "lg":   { "value": "12px",  "figmaVar": "Radius/rounded_lg" },
+    "xl":   { "value": "16px",  "figmaVar": "Radius/rounded_xl" },
+    "full": { "value": "1000px","figmaVar": "Radius/rounded_full" }
+  },
+  "buttonHeight": {
+    "sm": { "value": "24px", "figmaVar": "Tokens/Space/button-height-1" },
+    "md": { "value": "32px", "figmaVar": "Tokens/Space/button-height-2" },
+    "lg": { "value": "40px", "figmaVar": "Tokens/Space/button-height-3" }
+  }
+}

@@ -1,0 +1,220 @@
+/*
+ * WA Belloa Design System — Token File
+ * Source: Figma file URIYKbGlC4kZTfVWXgSsDl (WA-Belloa-Library--UI-KIT)
+ * Node: sportsbook/betslip (54917:16571)
+ * Generated: 2026-03-19
+ *
+ * Token naming convention: Figma path segments joined with "-"
+ * e.g. "surface/layer-1" → --surface-layer-1
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+:root {
+  /* ============================================================
+     SURFACES
+     Dark layered background system — page → layer-1 → layer-2
+     ============================================================ */
+  --surface-page:    #101211;
+  --surface-layer-1: #171918;
+  --surface-layer-2: #202221;
+
+  /* ============================================================
+     FOREGROUND
+     Text on surface. level1 = brightest (primary text)
+     ============================================================ */
+  --foreground-level1:         #ffffff;
+  --foreground-level2:         #b7b7b1;
+  --foreground-inverse:        #1a1110;
+  --foreground-primary-level1: #ff1b00;      /* accent-red CTA */
+  --foreground-warning-level1: #ffc53d;
+
+  /* ============================================================
+     CONTENT
+     Semantic text colours. Use over any surface.
+     ============================================================ */
+  --content-primary:   #edeef0;              /* main label text */
+  --content-secondary: #b0b4ba;              /* supporting text */
+  --content-subtle:    #717d79;              /* disabled / hint */
+  --content-accent:    #0eb39e;              /* teal highlight */
+  --content-on-action: #edeef0;             /* text on CTA buttons */
+
+  /* ============================================================
+     BACKGROUND
+     Contextual fill for states (not surfaces)
+     ============================================================ */
+  --background-level3:         #43484e;
+  --background-success-level3: #2f7c57;
+  --background-neutral-level4: rgba(240, 240, 243, 0.08);
+
+  /* ============================================================
+     ACTIONS
+     Interactive element fills
+     ============================================================ */
+  --action-primary:  #145750;                /* primary CTA fill (teal-dark) */
+  --action-secondary: rgba(0, 255, 230, 0.12);
+  --action-neutral:  rgba(249, 250, 251, 0.07);
+  --action-disabled: #373b39;
+  --action-cta:      #E07420;              /* default CTA — orange */
+
+  /* ============================================================
+     CONTENT — POSITIVE (green "to return" amounts)
+     ============================================================ */
+  --content-positive: #0eb39e;             /* positive return amounts; same hue as content-accent */
+  --content-on-promo: #ffffff;             /* text/icon on promo badge */
+
+  /* ============================================================
+     BACKGROUND — PROMO
+     ============================================================ */
+  --background-promo: #4F46E5;             /* promo badge fill (e.g. 2UP) */
+
+  /* ============================================================
+     BORDERS
+     ============================================================ */
+  --border-default:       rgba(249, 250, 251, 0.11);
+  --border-subtle:        rgba(249, 250, 251, 0.07);
+  --border-accent:        #084843;
+  --border-success-level1: #3dd68c;
+  --border-active:        #ffffff;         /* active / selected stroke (tab, chip, input) */
+  --border-destructive:   #ff1b00;         /* destructive action stroke (remove hover) */
+  --border-width:         1px;
+  --border-width-thick:   1.5px;
+
+  /* ============================================================
+     STATUS
+     ============================================================ */
+  --status-warning-foreground: #f5e147;
+  --status-warning-background: rgba(255, 170, 0, 0.12);
+  --status-warning-900:        #fabc2c;
+
+  /* ============================================================
+     OVERLAYS
+     ============================================================ */
+  --overlay-black-2: rgba(0, 0, 0, 0.10);
+  --overlay-neutral-3: rgba(221, 234, 248, 0.08);
+  --overlay-neutral-5: rgba(0, 0, 49, 0.12);
+  --overlay-neutral-6: rgba(0, 0, 47, 0.15);
+  --overlay-white-40: rgba(255, 255, 255, 0.40); /* spinner / loading track on dark buttons */
+
+  /* ============================================================
+     TYPOGRAPHY
+     Source: Typography and Label tokens from Figma
+     ============================================================ */
+  --font-family: 'Inter', sans-serif;
+
+  /* Label XS */
+  --text-xs-size:        10px;
+  --text-xs-line-height: 12px;
+  --text-xs-weight:      400;
+  --text-xs-tracking:    0.4px;
+
+  /* Label Small (12px) — metadata, odds badge */
+  --text-sm-size:        12px;
+  --text-sm-line-height: 16px;
+  --text-sm-weight:      400;
+  --text-sm-weight-bold: 700;
+  --text-sm-tracking:    0.5px;
+
+  /* Label Medium (14px) — body, market name, selections */
+  --text-md-size:        14px;
+  --text-md-line-height: 16px;
+  --text-md-weight:      400;
+  --text-md-weight-bold: 700;
+  --text-md-tracking:    0.5px;
+
+  /* Title Small (14px Medium) — section labels */
+  --text-title-sm-size:        14px;
+  --text-title-sm-line-height: 20px;
+  --text-title-sm-weight:      500;
+  --text-title-sm-tracking:    0.1px;
+
+  /* Title Medium (18px) */
+  --text-title-md-size:        18px;
+  --text-title-md-line-height: 24px;
+  --text-title-md-weight:      500;
+  --text-title-md-tracking:    0px;
+
+  /* Headline Medium (28px) — potential winnings amount */
+  --text-headline-md-size:        28px;
+  --text-headline-md-line-height: 36px;
+  --text-headline-md-weight:      500;
+  --text-headline-md-tracking:    0px;
+
+  /* Headline Large (32px) */
+  --text-headline-lg-size:        32px;
+  --text-headline-lg-line-height: 40px;
+  --text-headline-lg-weight:      500;
+  --text-headline-lg-tracking:    0px;
+
+  /* ============================================================
+     SPACING
+     Two scales: semantic (1-6) + padding aliases (p_*)
+     ============================================================ */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --space-p-2:  2px;
+  --space-p-4:  4px;
+  --space-p-6:  6px;
+  --space-p-8:  8px;
+  --space-p-12: 12px;
+  --space-p-16: 16px;
+  --space-p-20: 20px;
+  --space-p-24: 24px;
+  --space-p-28: 28px;
+  --space-p-32: 32px;
+
+  /* ============================================================
+     RADIUS
+     ============================================================ */
+  --radius-none: 0px;
+  --radius-xm:   2px;
+  --radius-sm:   4px;
+  --radius-m:    6px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-full: 1000px;
+
+  /* ============================================================
+     SHADOWS
+     shadow-1: inner (inputs, checkboxes)
+     shadow-3: outer drop (cards, overlays)
+     ============================================================ */
+  --shadow-inner:
+    inset 0 0 0 1px var(--overlay-neutral-5),
+    inset 0 1.5px 2px rgba(0, 0, 85, 0.02),
+    inset 0 1.5px 2px var(--overlay-black-2);
+
+  --shadow-card:
+    0 0 0 1px var(--overlay-neutral-3),
+    0 2px 3px -2px var(--overlay-neutral-3),
+    0 3px 12px -4px var(--overlay-black-2),
+    0 4px 16px -8px var(--overlay-black-2);
+
+  /* ============================================================
+     BUTTON HEIGHTS
+     ============================================================ */
+  --btn-height-sm: 24px;
+  --btn-height-md: 32px;
+  --btn-height-lg: 40px;
+}
+
+/* Base reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--surface-page);
+  color: var(--content-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
