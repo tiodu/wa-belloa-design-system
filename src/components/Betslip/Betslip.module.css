@@ -3,7 +3,7 @@
 .betslip {
   display: flex;
   flex-direction: column;
-  width: 360px;
+  width: 100%;
   background: var(--surface-layer-1);
   border-radius: var(--radius-xl);
   overflow: hidden;

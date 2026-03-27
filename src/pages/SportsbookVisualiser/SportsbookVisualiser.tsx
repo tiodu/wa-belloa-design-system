@@ -3,8 +3,10 @@ import { VersionSelector } from '../../components/Controls/VersionSelector'
 import type { ControlItem } from '../../components/Controls/VersionSelector'
 import { Betslip } from '../../components/Betslip'
 import { BetslipV2 } from '../../components/BetslipV2'
+import { BetslipTR } from '../../components/BetslipTR'
 import type { BetEntry, Bonus } from '../../components/Betslip/types'
 import type { BetEntryV2 } from '../../components/BetslipV2/types'
+import type { BetEntryTR } from '../../components/BetslipTR'
 import styles from './SportsbookVisualiser.module.css'
 
 /* ---- Sample data ---- */
@@ -21,6 +23,11 @@ const V1_BONUSES: Bonus[] = [
 const V2_BETS: BetEntryV2[] = [
   { id: '1', match: 'FC Midtjylland vs Nottingham Forest', league: 'UEFA Champions League', market: 'Full Time', selection: 'FC Midtjylland', odds: 2.95, fractionalOdds: '39/20' },
   { id: '2', match: 'Liverpool vs Real Madrid', league: 'UEFA Champions League', market: 'Full Time', selection: 'Liverpool', odds: 1.95, badges: ['2UP'] },
+]
+
+const TR_BETS: BetEntryTR[] = [
+  { id: '1', match: 'Galatasaray - Fenerbahçe', league: 'Süper Lig', market: 'Maç Sonucu', selection: 'Galatasaray', odds: 2.15 },
+  { id: '2', match: 'Beşiktaş - Trabzonspor', league: 'Süper Lig', market: 'Maç Sonucu', selection: 'Beşiktaş', odds: 1.85 },
 ]
 
 /* ---- Static mock content ---- */
@@ -235,7 +242,7 @@ function LatestWins() {
 
 /* ---- Main Visualiser ---- */
 
-type BetslipVersion = 'v1' | 'v2'
+type BetslipVersion = 'v1' | 'v2' | 'tr'
 
 const CONTROLS: ControlItem[] = [
   {
@@ -244,8 +251,9 @@ const CONTROLS: ControlItem[] = [
     options: [
       { value: 'v1', label: 'Betslip V1' },
       { value: 'v2', label: 'Betslip V2' },
+      { value: 'tr', label: 'Betslip TR 🇹🇷' },
     ],
-    value: 'v1',
+    value: 'tr',
   },
 ]
 
@@ -253,6 +261,7 @@ export function SportsbookVisualiser() {
   const [controls, setControls] = useState<ControlItem[]>(CONTROLS)
   const [v1Bets, setV1Bets] = useState<BetEntry[]>(V1_BETS)
   const [v2Bets, setV2Bets] = useState<BetEntryV2[]>(V2_BETS)
+  const [trBets, setTrBets] = useState<BetEntryTR[]>(TR_BETS)
 
   const activeBetslip = (controls.find((c) => c.id === 'betslip')?.value ?? 'v1') as BetslipVersion
 
@@ -291,6 +300,14 @@ export function SportsbookVisualiser() {
                   onPlaceBet={async () => {}}
                   onRemoveBet={(id) => setV2Bets((prev) => prev.filter((b) => b.id !== id))}
                   onClearAll={() => setV2Bets([])}
+                />
+              )}
+              {activeBetslip === 'tr' && (
+                <BetslipTR
+                  bets={trBets}
+                  onPlaceBet={async () => {}}
+                  onRemoveBet={(id) => setTrBets((prev) => prev.filter((b) => b.id !== id))}
+                  onClearAll={() => setTrBets([])}
                 />
               )}
             </div>

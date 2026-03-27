@@ -1,0 +1,126 @@
+.card {
+  background: var(--surface-layer-2);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-p-12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-p-6);
+  transition: border-color 0.15s ease;
+}
+
+.card--suspended {
+  border-color: var(--status-warning-900);
+  background: var(--status-warning-background);
+}
+
+/* Top row: league tag + remove button */
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 16px;
+}
+
+.league {
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line-height);
+  font-weight: var(--text-xs-weight);
+  letter-spacing: var(--text-xs-tracking);
+  color: var(--content-subtle);
+  text-transform: uppercase;
+}
+
+.removeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: none;
+  color: var(--content-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 0;
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.removeBtn:hover {
+  color: var(--foreground-primary-level1);
+}
+
+/* Match name */
+.match {
+  font-size: var(--text-title-sm-size);
+  line-height: var(--text-title-sm-line-height);
+  font-weight: var(--text-title-sm-weight);
+  letter-spacing: var(--text-title-sm-tracking);
+  color: var(--content-primary);
+}
+
+/* Market row */
+.marketRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-p-8);
+}
+
+.marketInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-p-2);
+}
+
+.market {
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line-height);
+  font-weight: var(--text-xs-weight);
+  letter-spacing: var(--text-xs-tracking);
+  color: var(--content-subtle);
+}
+
+.selection {
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line-height);
+  font-weight: var(--text-md-weight-bold);
+  letter-spacing: var(--text-md-tracking);
+  color: var(--content-primary);
+}
+
+/* Odds pill */
+.odds {
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line-height);
+  font-weight: var(--text-md-weight-bold);
+  letter-spacing: var(--text-md-tracking);
+  color: var(--content-accent);
+  background: var(--action-secondary);
+  border: var(--border-width) solid var(--border-accent);
+  border-radius: var(--radius-m);
+  padding: var(--space-p-4) var(--space-p-8);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.odds--suspended {
+  color: var(--status-warning-900);
+  background: var(--status-warning-background);
+  border-color: transparent;
+}
+
+/* Suspended warning */
+.suspendedRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-p-4);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line-height);
+  font-weight: var(--text-sm-weight-bold);
+  letter-spacing: var(--text-xs-tracking);
+  color: var(--status-warning-900);
+  margin-top: var(--space-p-2);
+}

@@ -3,7 +3,7 @@
 .shell {
   display: flex;
   flex-direction: column;
-  width: 375px;
+  width: 100%;
   max-width: 100%;
   min-height: 400px;
   background: var(--surface-page);

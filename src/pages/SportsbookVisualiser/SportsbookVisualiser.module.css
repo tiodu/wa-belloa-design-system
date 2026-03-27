@@ -476,7 +476,7 @@
    ================================================================ */
 
 .rightSidebar {
-  width: 248px;
+  width: 380px;
   flex-shrink: 0;
   background: var(--surface-layer-1);
   border-left: 1px solid var(--border-subtle);
