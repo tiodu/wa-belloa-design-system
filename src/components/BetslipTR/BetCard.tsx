@@ -29,7 +29,7 @@ export function BetCard({ bet, onRemove }: Props) {
         <button
           className={styles.removeBtn}
           onClick={() => onRemove(bet.id)}
-          aria-label={`${bet.match} bahsini kaldır`}
+          aria-label={`Remove ${bet.match}`}
           type="button"
         >
           <IconClose />
@@ -54,7 +54,7 @@ export function BetCard({ bet, onRemove }: Props) {
       {bet.suspended && (
         <div className={styles.suspendedRow} role="alert">
           <IconSuspended />
-          <span>Bu bahis askıya alındı</span>
+          <span>This bet has been suspended</span>
         </div>
       )}
     </div>

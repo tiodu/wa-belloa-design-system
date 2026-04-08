@@ -8,6 +8,138 @@
   font-family: var(--font-family);
 }
 
+/* ================================================================
+   MINI STRIP PREVIEW SECTION
+   ================================================================ */
+
+.miniStripSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-p-16);
+  padding: var(--space-p-24);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-layer-1);
+}
+
+.miniStripHint {
+  font-size: var(--text-sm-size);
+  color: var(--content-subtle);
+  margin: 0;
+}
+
+/* Phone frame — simulates a 390px mobile viewport */
+.phoneFrame {
+  position: relative;
+  width: 390px;
+  height: 700px;
+  background: var(--surface-page);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Simulated bottom nav bar inside the frame */
+.phoneBottomNav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 58px;
+  background: var(--surface-layer-1);
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Row: phone frame + controls side by side */
+.floatDemoRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-p-24);
+  flex-wrap: wrap;
+}
+
+/* Controls below the phone frame */
+.miniStripControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-p-16);
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-p-6);
+}
+
+.controlLabel {
+  font-size: var(--text-xs-size);
+  font-weight: 700;
+  color: var(--content-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.chipRow {
+  display: flex;
+  gap: var(--space-p-6);
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 6px 12px;
+  background: var(--action-neutral);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--content-secondary);
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  background: var(--action-secondary);
+  color: var(--content-primary);
+}
+
+.chipActive {
+  background: var(--action-secondary);
+  border-color: var(--border-active);
+  color: var(--content-accent);
+}
+
+/* ================================================================
+   BETSLIP COMPARISON ROW
+   ================================================================ */
+
+.betslipComparison {
+  display: flex;
+  gap: var(--space-p-24);
+  padding: var(--space-p-24);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-page);
+  overflow-x: auto;
+}
+
+.betslipColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-p-12);
+  flex: 1;
+  min-width: 340px;
+  max-width: 420px;
+}
+
+.betslipLabel {
+  font-size: var(--text-xs-size);
+  font-weight: var(--text-sm-weight-bold);
+  color: var(--content-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
 .sportsbook {
   flex: 1;
   display: flex;

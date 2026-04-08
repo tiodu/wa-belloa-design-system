@@ -91,20 +91,20 @@ export function BetslipTR({
   const canPlace = stakeNum > 0 && activeBets.length > 0 && status === 'idle'
 
   const ctaLabel = status === 'loading'
-    ? 'İşleniyor…'
+    ? 'Processing…'
     : status === 'success'
-    ? 'Bahis Alındı!'
+    ? 'Bet Placed!'
     : stakeNum > 0
-    ? `Bahis Yap  ₺${stakeNum.toFixed(2)}`
-    : 'Bahis Yap'
+    ? `Place Bet  ₺${stakeNum.toFixed(2)}`
+    : 'Place Bet'
 
   /* ---- Accumulator label ---- */
   const accaLabel = (() => {
     const n = activeBets.length
-    if (n === 2) return 'İkili'
-    if (n === 3) return 'Üçlü'
-    if (n >= 4) return `${n}'lı Kombine`
-    return 'Kombine'
+    if (n === 2) return 'Double'
+    if (n === 3) return 'Treble'
+    if (n >= 4) return `${n}-fold Acca`
+    return 'Accumulator'
   })()
 
   /* ---- Empty state ---- */
@@ -112,12 +112,12 @@ export function BetslipTR({
     return (
       <div className={styles.shell}>
         <div className={styles.header}>
-          <span className={styles.headerTitle}>Bahis Kuponu</span>
+          <span className={styles.headerTitle}>Betslip</span>
         </div>
         <div className={styles.empty}>
           <span className={styles.emptyIcon}><IconTicket /></span>
-          <p className={styles.emptyText}>Kuponunuz boş</p>
-          <p className={styles.emptyHint}>Bahis eklemek için maçlardan seçim yapın</p>
+          <p className={styles.emptyText}>Your betslip is empty</p>
+          <p className={styles.emptyHint}>Select outcomes from the matches to add bets</p>
         </div>
       </div>
     )
@@ -127,12 +127,12 @@ export function BetslipTR({
     <div className={styles.shell}>
       {/* Header */}
       <div className={styles.header}>
-        <span className={styles.headerTitle}>Bahis Kuponu</span>
+        <span className={styles.headerTitle}>Betslip</span>
         <span className={styles.betCount}>{bets.length}</span>
         <button
           className={styles.clearBtn}
           onClick={onClearAll}
-          aria-label="Tüm bahisleri kaldır"
+          aria-label="Remove all bets"
           type="button"
         >
           <IconTrash />
@@ -141,7 +141,7 @@ export function BetslipTR({
 
       {/* Mode tabs — only show if >1 bet */}
       {bets.length > 1 && (
-        <div className={styles.tabs} role="tablist" aria-label="Bahis türü">
+        <div className={styles.tabs} role="tablist" aria-label="Bet type">
           <button
             className={`${styles.tab} ${mode === 'single' ? styles['tab--active'] : ''}`}
             onClick={() => setMode('single')}
@@ -149,7 +149,7 @@ export function BetslipTR({
             aria-selected={mode === 'single'}
             type="button"
           >
-            Tekli
+            Single
           </button>
           <button
             className={`${styles.tab} ${mode === 'kombine' ? styles['tab--active'] : ''}`}
@@ -158,7 +158,7 @@ export function BetslipTR({
             aria-selected={mode === 'kombine'}
             type="button"
           >
-            Kombine
+            Accumulator
           </button>
         </div>
       )}
@@ -185,14 +185,14 @@ export function BetslipTR({
       {/* Suspended notice */}
       {hasSuspended && (
         <div className={styles.suspendedNotice} role="alert">
-          Askıya alınan seçimler bahse dahil edilmeyecek
+          Suspended selections will not be included in the bet
         </div>
       )}
 
       {/* Footer: stake + CTA */}
       <div className={styles.footer}>
         {/* Quick chips */}
-        <div className={styles.quickChips} role="group" aria-label="Hızlı bahis tutarları">
+        <div className={styles.quickChips} role="group" aria-label="Quick stake amounts">
           {QUICK_STAKES.map((amount) => (
             <button
               key={amount}
@@ -200,7 +200,7 @@ export function BetslipTR({
               onClick={() => handleChipClick(amount)}
               type="button"
               aria-pressed={activeChip === amount}
-              aria-label={`₺${amount} bahis`}
+              aria-label={`₺${amount} stake`}
             >
               ₺{amount}
             </button>
@@ -209,7 +209,7 @@ export function BetslipTR({
 
         {/* Stake input */}
         <div className={styles.stakeRow}>
-          <label className={styles.stakeLabel} htmlFor="tr-stake">Bahis Tutarı</label>
+          <label className={styles.stakeLabel} htmlFor="tr-stake">Stake Amount</label>
           <div className={styles.stakeInputWrap}>
             <span className={styles.currencySymbol}>₺</span>
             <input
@@ -222,14 +222,14 @@ export function BetslipTR({
               placeholder="0"
               value={stake}
               onChange={(e) => handleStakeChange(e.target.value)}
-              aria-label="Bahis tutarı"
+              aria-label="Stake amount"
             />
           </div>
         </div>
 
         {/* Potential return */}
         <div className={styles.returnRow}>
-          <span className={styles.returnLabel}>Potansiyel Kazanç</span>
+          <span className={styles.returnLabel}>Potential Return</span>
           <span className={`${styles.returnValue} ${potentialReturn !== null ? styles['returnValue--active'] : ''}`}>
             {potentialReturn !== null ? `₺${potentialReturn.toFixed(2)}` : '—'}
           </span>

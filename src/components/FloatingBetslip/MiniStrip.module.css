@@ -1,0 +1,199 @@
+/* FloatingBetslip — MiniStrip
+ * Fixed floating strip anchored above the bottom nav (58px).
+ * Mobile-only: designed for 390px viewport.
+ * Theme: Belloa Default (dark teal).
+ */
+
+/* ============================================================
+   STRIP SHELL
+   ============================================================ */
+
+.strip {
+  /* Positioning */
+  position: fixed;
+  bottom: 58px;
+  left: 12px;
+  right: 12px;
+  z-index: 200;
+
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 60px;
+  padding: 0 12px;
+
+  /* Appearance */
+  background: var(--surface-layer-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 -4px 24px rgba(0, 0, 0, 0.45),
+    0 -1px 6px rgba(0, 0, 0, 0.25);
+
+  /* Reset <button> */
+  appearance: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 100ms ease;
+  will-change: transform;
+
+  /* Entrance */
+  animation: stripEntrance 220ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.strip:active {
+  background: var(--action-neutral);
+}
+
+@keyframes stripEntrance {
+  from {
+    transform: translateY(20px) scale(0.97);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   LEFT SIDE — badge · label · odds
+   ============================================================ */
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Selection count badge */
+.badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+
+  background: var(--action-secondary);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-sm);
+
+  font-family: var(--font-family);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--content-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Selection name / "N-Fold Accumulator" */
+.label {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--content-secondary);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* Combined odds */
+.odds {
+  flex-shrink: 0;
+  font-family: var(--font-family);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--content-accent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.3px;
+}
+
+/* Odds flash — triggered by re-keying the element when odds change */
+.oddsUp {
+  animation: oddsFlashUp 600ms ease both;
+}
+
+.oddsDown {
+  animation: oddsFlashDown 600ms ease both;
+}
+
+@keyframes oddsFlashUp {
+  0%   { color: var(--content-accent); }
+  20%  { color: #3dd68c; }
+  100% { color: var(--content-accent); }
+}
+
+@keyframes oddsFlashDown {
+  0%   { color: var(--content-accent); }
+  20%  { color: var(--foreground-primary-level1); }
+  100% { color: var(--content-accent); }
+}
+
+/* Suspended pulse dot */
+.suspendedDot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--foreground-warning-level1);
+  animation: suspendedPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes suspendedPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ============================================================
+   RIGHT SIDE — stake display · divider · open button
+   ============================================================ */
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Current stake or em-dash placeholder */
+.stakeDisplay {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--content-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-subtle);
+  flex-shrink: 0;
+}
+
+/* Circular up-arrow button */
+.openBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+
+  background: var(--action-primary);
+  color: var(--content-on-action);
+  flex-shrink: 0;
+}

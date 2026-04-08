@@ -1,12 +1,12 @@
-import { useState, useCallback } from 'react'
-import { VersionSelector } from '../../components/Controls/VersionSelector'
-import type { ControlItem } from '../../components/Controls/VersionSelector'
+import { useState } from 'react'
 import { Betslip } from '../../components/Betslip'
 import { BetslipV2 } from '../../components/BetslipV2'
 import { BetslipTR } from '../../components/BetslipTR'
+import { FloatingBetslip } from '../../components/FloatingBetslip'
 import type { BetEntry, Bonus } from '../../components/Betslip/types'
 import type { BetEntryV2 } from '../../components/BetslipV2/types'
 import type { BetEntryTR } from '../../components/BetslipTR'
+import type { BetEntry as FloatBetEntry } from '../../components/FloatingBetslip'
 import styles from './SportsbookVisualiser.module.css'
 
 /* ---- Sample data ---- */
@@ -28,6 +28,42 @@ const V2_BETS: BetEntryV2[] = [
 const TR_BETS: BetEntryTR[] = [
   { id: '1', match: 'Galatasaray - Fenerbahçe', league: 'Süper Lig', market: 'Maç Sonucu', selection: 'Galatasaray', odds: 2.15 },
   { id: '2', match: 'Beşiktaş - Trabzonspor', league: 'Süper Lig', market: 'Maç Sonucu', selection: 'Beşiktaş', odds: 1.85 },
+]
+
+const FLOAT_BETS: FloatBetEntry[] = [
+  {
+    id: 'f1',
+    match: 'Galatasaray - Fenerbahçe',
+    league: 'Süper Lig',
+    market: 'Maç Sonucu',
+    selection: 'Galatasaray',
+    odds: 2.15,
+    isLive: true,
+    score: '1-0',
+    minute: 67,
+    sparkline: [0.6, 0.55, 0.7, 0.65, 0.8, 0.9],
+  },
+  {
+    id: 'f2',
+    match: 'Beşiktaş - Trabzonspor',
+    league: 'Süper Lig',
+    market: 'Üst/Alt 2.5',
+    selection: 'Üst',
+    odds: 1.85,
+    isLive: true,
+    score: '0-0',
+    minute: 34,
+    sparkline: [0.9, 0.85, 0.75, 0.7, 0.6, 0.5],
+  },
+  {
+    id: 'f3',
+    match: 'Kasımpaşa - Başakşehir',
+    league: 'Süper Lig',
+    market: 'Maç Sonucu',
+    selection: 'Kasımpaşa',
+    odds: 3.40,
+    sparkline: [0.4, 0.5, 0.45, 0.55, 0.6, 0.65],
+  },
 ]
 
 /* ---- Static mock content ---- */
@@ -242,37 +278,14 @@ function LatestWins() {
 
 /* ---- Main Visualiser ---- */
 
-type BetslipVersion = 'v1' | 'v2' | 'tr'
-
-const CONTROLS: ControlItem[] = [
-  {
-    id: 'betslip',
-    label: 'Betslip',
-    options: [
-      { value: 'v1', label: 'Betslip V1' },
-      { value: 'v2', label: 'Betslip V2' },
-      { value: 'tr', label: 'Betslip TR 🇹🇷' },
-    ],
-    value: 'tr',
-  },
-]
-
 export function SportsbookVisualiser() {
-  const [controls, setControls] = useState<ControlItem[]>(CONTROLS)
   const [v1Bets, setV1Bets] = useState<BetEntry[]>(V1_BETS)
   const [v2Bets, setV2Bets] = useState<BetEntryV2[]>(V2_BETS)
   const [trBets, setTrBets] = useState<BetEntryTR[]>(TR_BETS)
-
-  const activeBetslip = (controls.find((c) => c.id === 'betslip')?.value ?? 'v1') as BetslipVersion
-
-  const handleControlChange = useCallback((id: string, value: string) => {
-    setControls((prev) => prev.map((c) => c.id === id ? { ...c, value } : c))
-  }, [])
+  const [floatBets, setFloatBets] = useState<FloatBetEntry[]>(FLOAT_BETS)
 
   return (
     <div className={styles.page}>
-      <VersionSelector controls={controls} onChange={handleControlChange} />
-
       <div className={styles.sportsbook}>
         <TopNav />
 
@@ -283,38 +296,143 @@ export function SportsbookVisualiser() {
 
           {/* Right sidebar */}
           <aside className={styles.rightSidebar}>
-            {/* Betslip slot */}
-            <div className={styles.betslipSlot}>
-              {activeBetslip === 'v1' && (
-                <Betslip
-                  bets={v1Bets}
-                  bonuses={V1_BONUSES}
-                  onPlaceBet={async () => {}}
-                  onRemoveBet={(id) => setV1Bets((prev) => prev.filter((b) => b.id !== id))}
-                  onClearAll={() => setV1Bets([])}
-                />
-              )}
-              {activeBetslip === 'v2' && (
-                <BetslipV2
-                  bets={v2Bets}
-                  onPlaceBet={async () => {}}
-                  onRemoveBet={(id) => setV2Bets((prev) => prev.filter((b) => b.id !== id))}
-                  onClearAll={() => setV2Bets([])}
-                />
-              )}
-              {activeBetslip === 'tr' && (
-                <BetslipTR
-                  bets={trBets}
-                  onPlaceBet={async () => {}}
-                  onRemoveBet={(id) => setTrBets((prev) => prev.filter((b) => b.id !== id))}
-                  onClearAll={() => setTrBets([])}
-                />
-              )}
-            </div>
-
             <LatestResults />
             <LatestWins />
           </aside>
+        </div>
+      </div>
+
+      {/* FloatingBetslip — full drawer */}
+      <div className={styles.miniStripSection}>
+        <span className={styles.betslipLabel}>FloatingBetslip — Full Drawer 🇹🇷</span>
+        <p className={styles.miniStripHint}>
+          Tap the mini strip to open the drawer · tap stake field to enter amount · Place Bet to confirm
+        </p>
+
+        <div className={styles.floatDemoRow}>
+          {/* Phone frame */}
+          <div className={styles.phoneFrame}>
+            <div className={styles.phoneBottomNav} />
+            <FloatingBetslip
+              bets={floatBets}
+              contained
+              onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
+              onClearAll={() => setFloatBets([])}
+            />
+          </div>
+
+          {/* Controls */}
+          <div className={styles.miniStripControls}>
+            <div className={styles.controlGroup}>
+              <span className={styles.controlLabel}>Selections</span>
+              <div className={styles.chipRow}>
+                {[1, 2, 3].map((n) => (
+                  <button
+                    key={n}
+                    className={`${styles.chip} ${floatBets.length === n ? styles.chipActive : ''}`}
+                    onClick={() => setFloatBets(FLOAT_BETS.slice(0, n))}
+                    type="button"
+                  >
+                    {n} sel.
+                  </button>
+                ))}
+                <button
+                  className={`${styles.chip} ${floatBets.length === 0 ? styles.chipActive : ''}`}
+                  onClick={() => setFloatBets([])}
+                  type="button"
+                >
+                  Empty
+                </button>
+                <button
+                  className={styles.chip}
+                  onClick={() => setFloatBets(FLOAT_BETS)}
+                  type="button"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <div className={styles.controlGroup}>
+              <span className={styles.controlLabel}>Odds direction (sel. 1)</span>
+              <div className={styles.chipRow}>
+                {(['none', 'up', 'down'] as const).map((dir) => (
+                  <button
+                    key={dir}
+                    className={styles.chip}
+                    onClick={() =>
+                      setFloatBets((prev) =>
+                        prev.map((b, i) =>
+                          i === 0 ? { ...b, oddsDirection: dir === 'none' ? undefined : dir } : b
+                        )
+                      )
+                    }
+                    type="button"
+                  >
+                    {dir === 'none' ? '— none' : dir === 'up' ? '▲ up' : '▼ down'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.controlGroup}>
+              <span className={styles.controlLabel}>Suspended</span>
+              <div className={styles.chipRow}>
+                <button
+                  className={styles.chip}
+                  onClick={() =>
+                    setFloatBets((prev) =>
+                      prev.map((b, i) => (i === 1 ? { ...b, suspended: !b.suspended } : b))
+                    )
+                  }
+                  type="button"
+                >
+                  Toggle sel. 2
+                </button>
+                <button
+                  className={styles.chip}
+                  onClick={() =>
+                    setFloatBets((prev) => prev.map((b) => ({ ...b, suspended: true })))
+                  }
+                  type="button"
+                >
+                  Suspend all
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Betslip comparison row */}
+      <div className={styles.betslipComparison}>
+        <div className={styles.betslipColumn}>
+          <span className={styles.betslipLabel}>Betslip V1</span>
+          <Betslip
+            bets={v1Bets}
+            bonuses={V1_BONUSES}
+            onPlaceBet={async () => {}}
+            onRemoveBet={(id) => setV1Bets((prev) => prev.filter((b) => b.id !== id))}
+            onClearAll={() => setV1Bets([])}
+          />
+        </div>
+        <div className={styles.betslipColumn}>
+          <span className={styles.betslipLabel}>Betslip V2</span>
+          <BetslipV2
+            bets={v2Bets}
+            onPlaceBet={async () => {}}
+            onRemoveBet={(id) => setV2Bets((prev) => prev.filter((b) => b.id !== id))}
+            onClearAll={() => setV2Bets([])}
+          />
+        </div>
+        <div className={styles.betslipColumn}>
+          <span className={styles.betslipLabel}>Betslip TR 🇹🇷</span>
+          <BetslipTR
+            bets={trBets}
+            onPlaceBet={async () => {}}
+            onRemoveBet={(id) => setTrBets((prev) => prev.filter((b) => b.id !== id))}
+            onClearAll={() => setTrBets([])}
+          />
         </div>
       </div>
     </div>
