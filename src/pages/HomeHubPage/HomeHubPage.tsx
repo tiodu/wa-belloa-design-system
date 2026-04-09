@@ -1,0 +1,31 @@
+import { Link } from 'react-router-dom'
+import styles from './HomeHubPage.module.css'
+
+export function HomeHubPage() {
+  return (
+    <main className={styles.page}>
+      <section className={styles.hero}>
+        <h1 className={styles.title}>WA Belloa Design System</h1>
+        <p className={styles.subtitle}>Choose a workspace to continue.</p>
+      </section>
+
+      <section className={styles.grid}>
+        <Link className={styles.card} to="/betslip">
+          <span className={styles.cardTag}>Official</span>
+          <h2 className={styles.cardTitle}>Belloa Betslip</h2>
+          <p className={styles.cardDescription}>
+            Floating betslip controls, current mobile and desktop previews, and documentation matrix.
+          </p>
+        </Link>
+
+        <Link className={styles.card} to="/sportsbook">
+          <span className={styles.cardTag}>Playground</span>
+          <h2 className={styles.cardTitle}>Sportsbook Playground</h2>
+          <p className={styles.cardDescription}>
+            Full desktop sportsbook layout and the three legacy betslip implementations.
+          </p>
+        </Link>
+      </section>
+    </main>
+  )
+}

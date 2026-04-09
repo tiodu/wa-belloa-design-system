@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { MiniStrip } from './MiniStrip'
 import type { BetEntry } from './types'
-import { combinedOdds, getAccaLabel } from './types'
+import { combinedOdds } from './types'
 import styles from './FloatingBetslip.module.css'
 
 /* ─── LiveBadge ─── */
@@ -13,30 +13,6 @@ function LiveBadge({ score, minute }: { score?: string; minute?: number }) {
       {score && <span className={styles.liveScore}>{score}</span>}
       {minute !== undefined && <span className={styles.liveMinute}>· {minute}'</span>}
     </span>
-  )
-}
-
-/* ─── Sparkline ─── */
-
-function Sparkline({ values, direction }: { values: number[]; direction?: 'up' | 'down' }) {
-  const max = Math.max(...values, 0.01)
-  return (
-    <div className={styles.sparkline} aria-hidden="true">
-      {values.map((v, i) => {
-        const isLast = i === values.length - 1
-        const height = Math.max(20, (v / max) * 100)
-        const bg = isLast
-          ? direction === 'up'
-            ? 'var(--status-success-fg)'
-            : direction === 'down'
-            ? 'var(--status-critical-fg)'
-            : 'var(--content-subtle)'
-          : 'var(--border-default)'
-        return (
-          <div key={i} className={styles.sparkBar} style={{ height: `${height}%`, background: bg }} />
-        )
-      })}
-    </div>
   )
 }
 
@@ -87,9 +63,6 @@ function SelectionRow({ bet, onRemove }: { bet: BetEntry; onRemove: (id: string)
               )}
             </div>
           )}
-          {bet.sparkline && (
-            <Sparkline values={bet.sparkline} direction={bet.oddsDirection} />
-          )}
         </div>
       </div>
     </div>
@@ -131,6 +104,10 @@ export type FloatingBetslipProps = {
    * Defaults to false (position:fixed, covers the full viewport).
    */
   contained?: boolean
+  /** Visual theme variant for the mini strip + drawer. */
+  variant?: 'default' | 'figma'
+  /** External signal to open the drawer (increments/triggers). */
+  openSignal?: number
 }
 
 export function FloatingBetslip({
@@ -140,17 +117,33 @@ export function FloatingBetslip({
   onPlaceBet,
   currency = '₺',
   contained = false,
+  variant = 'default',
+  openSignal,
 }: FloatingBetslipProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [numpadOpen, setNumpadOpen] = useState(false)
   const [stakeStr, setStakeStr] = useState('')
+  const [singleStakeById, setSingleStakeById] = useState<Record<string, string>>({})
+  const [activeStakeTarget, setActiveStakeTarget] = useState<'multiple' | string>('multiple')
+  const [betMode, setBetMode] = useState<'single' | 'multiple'>('single')
   const [confirming, setConfirming] = useState(false)
   const [confirmRef, setConfirmRef] = useState('')
   const confirmTimer = useRef<ReturnType<typeof setTimeout>>()
+  const stakeSectionRef = useRef<HTMLDivElement>(null)
 
-  const stake = parseFloat(stakeStr) || 0
+  const multipleStake = parseFloat(stakeStr) || 0
+  const singleStakeTotal = bets.reduce((sum, b) => sum + (parseFloat(singleStakeById[b.id] ?? '') || 0), 0)
+  const singlePotentialWin = bets.reduce(
+    (sum, b) => sum + ((parseFloat(singleStakeById[b.id] ?? '') || 0) * b.odds),
+    0
+  )
+  const activeStakeStr = activeStakeTarget === 'multiple' ? stakeStr : (singleStakeById[activeStakeTarget] ?? '')
+  const stake = betMode === 'multiple' ? multipleStake : singleStakeTotal
   const combined = combinedOdds(bets)
-  const potentialWin = stake > 0 ? (stake * combined).toFixed(2) : null
+  const potentialWin =
+    stake > 0
+      ? (betMode === 'multiple' ? stake * combined : singlePotentialWin).toFixed(2)
+      : null
   const hasSuspended = bets.some((b) => b.suspended)
 
   useEffect(() => () => clearTimeout(confirmTimer.current), [])
@@ -161,8 +154,35 @@ export function FloatingBetslip({
       setIsOpen(false)
       setNumpadOpen(false)
       setStakeStr('')
+      setSingleStakeById({})
+      setBetMode('single')
+      setActiveStakeTarget('multiple')
     }
   }, [bets.length])
+
+  useEffect(() => {
+    if (bets.length <= 1) {
+      setBetMode('single')
+      return
+    }
+    // Default to multiples when two or more selections are present.
+    setBetMode('multiple')
+    setActiveStakeTarget('multiple')
+    setNumpadOpen(false)
+  }, [bets.length])
+
+  useEffect(() => {
+    if (openSignal === undefined) return
+    setIsOpen(true)
+  }, [openSignal])
+
+  useEffect(() => {
+    if (!numpadOpen) return
+    // Ensure Done + Place Bet remain visible inside constrained previews.
+    requestAnimationFrame(() => {
+      stakeSectionRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' })
+    })
+  }, [numpadOpen])
 
   function handleClose() {
     setIsOpen(false)
@@ -170,23 +190,37 @@ export function FloatingBetslip({
   }
 
   function handleNumpadKey(k: string) {
+    const currentStakeStr = activeStakeStr
+    const setCurrentStakeStr = (next: string | ((prev: string) => string)) => {
+      if (activeStakeTarget === 'multiple') {
+        setStakeStr(next)
+        return
+      }
+      setSingleStakeById((prev) => {
+        const curr = prev[activeStakeTarget] ?? ''
+        const resolved = typeof next === 'function' ? next(curr) : next
+        return { ...prev, [activeStakeTarget]: resolved }
+      })
+    }
+
     if (k === '⌫') {
-      setStakeStr((s) => s.slice(0, -1))
+      setCurrentStakeStr((s) => s.slice(0, -1))
       return
     }
     if (k === '.') {
-      if (!stakeStr.includes('.')) setStakeStr((s) => s + '.')
+      if (!currentStakeStr.includes('.')) setCurrentStakeStr((s) => s + '.')
       return
     }
     // Guard: max 2 decimal places, max 8 chars total
-    const parts = stakeStr.split('.')
+    const parts = currentStakeStr.split('.')
     if (parts[1]?.length >= 2) return
-    if (stakeStr.length >= 8) return
-    setStakeStr((s) => s + k)
+    if (currentStakeStr.length >= 8) return
+    setCurrentStakeStr((s) => s + k)
   }
 
   function handleChip(amount: number) {
     setStakeStr(amount.toString())
+    setActiveStakeTarget('multiple')
     // Chips only set the stake — numpad opens only via the stake input field
   }
 
@@ -195,18 +229,20 @@ export function FloatingBetslip({
       bets.filter((b) => b.suspended).forEach((b) => onRemoveBet(b.id))
       return
     }
-    if (stake <= 0) return
+    const placedStake = betMode === 'multiple' ? multipleStake : singleStakeTotal
+    if (placedStake <= 0) return
 
     const ref = `BLX-${Math.floor(100000 + Math.random() * 900000)}`
     setConfirmRef(ref)
     setConfirming(true)
-    onPlaceBet?.(stake)
+    onPlaceBet?.(placedStake)
 
     confirmTimer.current = setTimeout(() => {
       setConfirming(false)
       setIsOpen(false)
       setNumpadOpen(false)
       setStakeStr('')
+      setSingleStakeById({})
       onClearAll()
     }, 2800)
   }
@@ -214,12 +250,13 @@ export function FloatingBetslip({
   if (bets.length === 0) return null
 
   const posClass = contained ? styles.posAbsolute : styles.posFixed
-  const ctaDisabled = !hasSuspended && stake <= 0
+  const themeClass = variant === 'figma' ? styles.figmaTheme : ''
+  const ctaDisabled = !hasSuspended && (betMode === 'multiple' ? multipleStake <= 0 : singleStakeTotal <= 0)
 
   const ctaLabel = hasSuspended
     ? '⏸ Remove suspended selections'
     : stake > 0
-    ? `Place Bet — ${currency}${stake.toFixed(2)}`
+    ? `Place Bet — ${currency}${(betMode === 'multiple' ? multipleStake : singleStakeTotal).toFixed(2)}`
     : 'Place Bet'
 
   return (
@@ -230,6 +267,7 @@ export function FloatingBetslip({
           bets={bets}
           stake={stake > 0 ? stake : undefined}
           currency={currency}
+          variant={variant}
           onOpen={() => setIsOpen(true)}
           style={
             contained
@@ -241,12 +279,21 @@ export function FloatingBetslip({
 
       {/* Scrim */}
       {isOpen && (
-        <div className={`${styles.overlay} ${posClass}`} onClick={handleClose} />
+        <div
+          className={`${styles.overlay} ${posClass}`}
+          onClick={(e) => {
+            e.stopPropagation()
+            handleClose()
+          }}
+        />
       )}
 
       {/* Drawer */}
       {isOpen && (
-        <div className={`${styles.drawer} ${posClass}`}>
+        <div
+          className={`${styles.drawer} ${posClass} ${themeClass}`}
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Drag handle / collapse tap target */}
           <button
             className={styles.handleWrap}
@@ -272,46 +319,94 @@ export function FloatingBetslip({
 
           {/* Scrollable content — everything below the header */}
           <div className={styles.scrollContent}>
-            {/* Acca label — odds already shown in header */}
-            {bets.length > 1 && (
-              <div className={styles.accaTag}>
-                <span className={styles.accaLabel}>{getAccaLabel(bets.length)} Accumulator</span>
+            {bets.length >= 2 && (
+              <div className={styles.modeTabs}>
+                <button
+                  type="button"
+                  className={`${styles.modeTab} ${betMode === 'single' ? styles.modeTabActive : ''}`}
+                  onClick={() => {
+                    setBetMode('single')
+                    setNumpadOpen(false)
+                  }}
+                >
+                  Single
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.modeTab} ${betMode === 'multiple' ? styles.modeTabActive : ''}`}
+                  onClick={() => {
+                    if (bets.length <= 1) return
+                    setBetMode('multiple')
+                    setNumpadOpen(false)
+                    setActiveStakeTarget('multiple')
+                  }}
+                  disabled={bets.length <= 1}
+                >
+                  Multiple
+                </button>
               </div>
             )}
 
             {/* Selection rows */}
             {bets.map((bet) => (
-              <SelectionRow key={bet.id} bet={bet} onRemove={onRemoveBet} />
+              <div key={bet.id} className={styles.selectionBlock}>
+                <SelectionRow bet={bet} onRemove={onRemoveBet} />
+                {betMode === 'single' && (
+                  <div
+                    className={`${styles.singleStakeRow} ${bets.length === 1 ? styles.singleStakeRowFull : ''}`}
+                  >
+                    <button
+                      className={`${styles.singleStakeField} ${bets.length === 1 ? styles.singleStakeFieldFull : ''}`}
+                      onClick={() => {
+                        setActiveStakeTarget(bet.id)
+                        setNumpadOpen(true)
+                      }}
+                      type="button"
+                    >
+                      <span className={styles.singleStakeValue}>
+                        {singleStakeById[bet.id] ? `${currency}${singleStakeById[bet.id]}` : 'Stake'}
+                      </span>
+                    </button>
+                  </div>
+                )}
+              </div>
             ))}
 
             {/* Stake section */}
-            <div className={styles.stakeSection}>
+            <div className={styles.stakeSection} ref={stakeSectionRef}>
               {/* Quick-stake chips */}
-              <div className={styles.chips}>
-                {([25, 50, 100, 200] as const).map((amount) => (
-                  <button
-                    key={amount}
-                    className={`${styles.chip}${stake === amount ? ` ${styles.chipActive}` : ''}`}
-                    onClick={() => handleChip(amount)}
-                    type="button"
-                  >
-                    {currency}{amount}
-                  </button>
-                ))}
-              </div>
+              {!numpadOpen && betMode === 'multiple' && (
+                <div className={styles.chips}>
+                  {([25, 50, 100, 200] as const).map((amount) => (
+                    <button
+                      key={amount}
+                      className={`${styles.chip}${stake === amount ? ` ${styles.chipActive}` : ''}`}
+                      onClick={() => handleChip(amount)}
+                      type="button"
+                    >
+                      {currency}{amount}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {/* Stake display / numpad trigger */}
-              <button
-                className={styles.stakeField}
-                onClick={() => setNumpadOpen(true)}
-                type="button"
-                aria-label="Enter stake amount"
-              >
-                <span className={styles.stakeLabel}>Stake</span>
-                <span className={styles.stakeValue}>
-                  {stakeStr ? `${currency}${stakeStr}` : `${currency}—`}
-                </span>
-              </button>
+              {betMode === 'multiple' && (
+                <button
+                  className={`${styles.stakeField}${stakeStr ? '' : ` ${styles.stakeFieldEmpty}`}`}
+                  onClick={() => {
+                    setActiveStakeTarget('multiple')
+                    setNumpadOpen(true)
+                  }}
+                  type="button"
+                  aria-label="Enter stake amount"
+                >
+                  {stakeStr && <span className={styles.stakeLabel}>Stake</span>}
+                  <span className={styles.stakeValue}>
+                    {stakeStr ? `${currency}${stakeStr}` : 'Stake'}
+                  </span>
+                </button>
+              )}
 
               {/* Numpad — shown only when stake field is tapped */}
               {numpadOpen && (
@@ -322,11 +417,17 @@ export function FloatingBetslip({
               {!numpadOpen && (
                 <div className={styles.summary}>
                   <div className={styles.summaryRow}>
-                    <span className={styles.summaryLabel}>Total Odds</span>
-                    <span className={styles.summaryValue}>{combined.toFixed(2)}</span>
+                    <span className={styles.summaryLabel}>
+                      {betMode === 'multiple' ? 'Total Odds' : 'Total Stake'}
+                    </span>
+                    <span className={styles.summaryValue}>
+                      {betMode === 'multiple' ? combined.toFixed(2) : `${currency}${singleStakeTotal.toFixed(2)}`}
+                    </span>
                   </div>
                   <div className={styles.summaryRow}>
-                    <span className={styles.summaryLabel}>Potential Win</span>
+                    <span className={styles.summaryLabel}>
+                      {betMode === 'multiple' ? 'Potential Win' : 'Total Return'}
+                    </span>
                     <span className={styles.summaryWin}>
                       {potentialWin ? `${currency}${potentialWin}` : '—'}
                     </span>

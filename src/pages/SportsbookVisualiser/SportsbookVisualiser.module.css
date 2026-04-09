@@ -39,15 +39,539 @@
   flex-shrink: 0;
 }
 
+.phoneFrameBgLive {
+  background:
+    radial-gradient(70% 30% at 50% -10%, rgba(25, 194, 167, 0.12), transparent 70%),
+    linear-gradient(180deg, #0a1011 0%, #090e0f 100%);
+}
+
+.phoneDemoCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-p-8);
+}
+
+.phoneVariantLabel {
+  font-size: var(--text-xs-size);
+  color: var(--content-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.phoneFrameFigma {
+  background:
+    radial-gradient(80% 45% at 55% -5%, rgba(17, 183, 154, 0.12), transparent 70%),
+    linear-gradient(180deg, #0b1012 0%, #0b0f10 36%, #0a0d0e 100%);
+}
+
+.figmaTopBar {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1;
+}
+
+.figmaSearch {
+  height: 28px;
+  border-radius: 14px;
+  border: 1px solid rgba(249, 250, 251, 0.08);
+  background: rgba(14, 19, 20, 0.9);
+  color: #6d7b78;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.figmaTopActions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.figmaActionPill {
+  border: 1px solid rgba(249, 250, 251, 0.08);
+  background: rgba(20, 27, 29, 0.9);
+  color: #8f9a97;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+}
+
+.figmaHeroCard {
+  position: absolute;
+  top: 80px;
+  left: 12px;
+  right: 12px;
+  height: 76px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 186, 165, 0.25);
+  background: linear-gradient(120deg, rgba(20, 43, 55, 0.95), rgba(16, 28, 34, 0.95));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 12px;
+  z-index: 1;
+}
+
+.figmaHeroLeague {
+  font-size: 10px;
+  font-weight: 600;
+  color: #89a39d;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.figmaHeroMatch {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e4ece9;
+}
+
+.mobileViewport {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.mobileBook {
+  width: 360px;
+  height: 100%;
+  padding: 0 0 68px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobileBook::-webkit-scrollbar {
+  width: 4px;
+}
+
+.mobileBook::-webkit-scrollbar-thumb {
+  background: rgba(249, 250, 251, 0.16);
+  border-radius: 999px;
+}
+
+.mobileHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 49px;
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: #161b1c;
+}
+
+.mobileHeaderBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #b8c4c0;
+}
+
+.mobileIconGhost {
+  width: 34px;
+  height: 30px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: #b8c4c0;
+  font-size: 14px;
+}
+
+.mobileLogo {
+  width: 74px;
+  height: 28px;
+  border-radius: 8px;
+  background: #f8faf8;
+  color: #111;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.mobileHeaderActions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.mobilePillGhost,
+.mobilePillPrimary {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(249, 250, 251, 0.08);
+  font-size: 12px;
+}
+
+.mobilePillGhost {
+  background: rgba(20, 26, 28, 0.9);
+  color: #c4d0cd;
+}
+
+.mobilePillPrimary {
+  background: #145750;
+  border-color: #084843;
+  color: #dcf3ee;
+}
+
+.mobileHeroWrap {
+  padding: 10px 16px 0;
+}
+
+.mobileHero {
+  border-radius: 10px;
+  border: 1px solid rgba(15, 186, 165, 0.22);
+  background:
+    radial-gradient(90% 120% at 50% 20%, rgba(17, 71, 109, 0.35), rgba(19, 30, 56, 0.15)),
+    linear-gradient(130deg, #07203d 0%, #132345 56%, #111a32 100%);
+  min-height: 145px;
+  padding: 13px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.mobileHeroLeague {
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #94a8b7;
+}
+
+.mobileHeroTitle {
+  font-size: 30px;
+  font-weight: 700;
+  color: #eff8f5;
+  line-height: 1;
+  white-space: nowrap;
+  transform: scale(0.52);
+}
+
+.mobileHeroKickoff {
+  color: #00d8b6;
+  font-size: 9px;
+  font-weight: 600;
+  margin-top: -3px;
+}
+
+.mobileHeroOdds {
+  display: grid;
+  grid-template-columns: repeat(3, 48px);
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.mobileHeroOddBtn {
+  height: 31px;
+  border-radius: 10px;
+  background: rgba(28, 34, 47, 0.92);
+  color: #16d8bd;
+  border: 1px solid rgba(249, 250, 251, 0.07);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobileDots {
+  height: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.mobileDotActive {
+  width: 20px;
+  height: 6px;
+  border-radius: 999px;
+  background: #0dd9b8;
+}
+
+.mobileDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(249, 250, 251, 0.2);
+}
+
+.mobileSectionTitle {
+  color: #eef4f2;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 2px 16px 0;
+}
+
+.mobilePopularRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 0 16px 2px;
+}
+
+.mobileTag {
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(249, 250, 251, 0.08);
+  background: rgba(25, 30, 32, 0.95);
+  color: #d4dfdc;
+  font-size: 16px;
+  transform: scale(0.5);
+  transform-origin: left center;
+}
+
+.mobileLiveHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 2px;
+  padding: 0 16px;
+}
+
+.mobileLiveHeaderTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobileLiveHeaderBottom {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mobileLiveBadge {
+  font-size: 9px;
+  line-height: 1;
+  color: #fff;
+  background: linear-gradient(90deg, #ff2f8b, #ff2f5f);
+  border-radius: 999px;
+  padding: 3px 6px;
+  font-weight: 700;
+}
+
+.mobileCountBadge {
+  min-width: 27px;
+  height: 15px;
+  border-radius: 999px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #aab6b2;
+  background: rgba(249, 250, 251, 0.1);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.mobileSectionTitleInline {
+  color: #e7efec;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.mobileSmallBadge {
+  width: 32px;
+  height: 28px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(249, 250, 251, 0.08);
+  color: #7f8e8a;
+  border: 1px solid rgba(249, 250, 251, 0.05);
+  font-size: 12px;
+}
+
+.mobileSmallBadgeActive {
+  background: rgba(0, 255, 230, 0.12);
+  color: #0bd8b6;
+}
+
+.mobileSettings {
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid rgba(249, 250, 251, 0.08);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #90a09a;
+}
+
+.mobileOddsHeader {
+  height: 43px;
+  display: grid;
+  grid-template-columns: 1fr repeat(3, 53px);
+  align-items: center;
+  color: #12ccb1;
+  border-top: 1px solid rgba(249, 250, 251, 0.06);
+  border-bottom: 1px solid rgba(249, 250, 251, 0.06);
+  font-size: 12px;
+  padding: 0 16px;
+  column-gap: 2px;
+}
+
+.mobileOddsHeader span {
+  text-align: center;
+}
+
+.mobileOddsSpacer {
+  text-align: left !important;
+  color: #d0d9d6;
+}
+
+.mobileMarketLabel {
+  position: absolute;
+  right: 68px;
+  top: 2px;
+  color: #6d7a77;
+  font-size: 8px;
+}
+
+.mobileMatches {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 16px;
+}
+
+.mobileMatchRow {
+  border-bottom: 1px solid rgba(249, 250, 251, 0.05);
+  padding: 8px 0 8px;
+}
+
+.mobileLeague {
+  color: #647472;
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+
+.mobileMatchMain {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mobileTeams {
+  color: #ecf4f1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mobileTeamLine {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mobileTeamCheck {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(249, 250, 251, 0.14);
+  background: rgba(28, 34, 36, 0.9);
+}
+
+.mobileTeamScore {
+  margin-left: auto;
+  color: #d8e2df;
+}
+
+.mobileOddsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 53px);
+  justify-content: end;
+  gap: 2px;
+}
+
+.mobileOddBtn {
+  height: 44px;
+  border: 1px solid rgba(249, 250, 251, 0.06);
+  border-radius: 4px;
+  background: rgba(35, 40, 43, 0.9);
+  color: #0bd8b6;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mobileOddBtnActive {
+  background: #145750;
+  color: #e9fff9;
+  border-bottom-width: 1.5px;
+  border-color: #207e73;
+}
+
+.mobileMatchFooter {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobileMinute {
+  color: #ff2f75;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.mobileRowIcons {
+  color: #717d79;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.mobileShowMore {
+  margin: 10px 16px 0;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid rgba(249, 250, 251, 0.07);
+  background: rgba(25, 30, 31, 0.96);
+  color: #d4dfdc;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Simulated bottom nav bar inside the frame */
 .phoneBottomNav {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 58px;
-  background: var(--surface-layer-1);
-  border-top: 1px solid var(--border-subtle);
+  height: 69px;
+  background: #151918;
+  border-top: 1px solid rgba(249, 250, 251, 0.07);
 }
 
 /* Row: phone frame + controls side by side */
@@ -56,6 +580,31 @@
   align-items: flex-start;
   gap: var(--space-p-24);
   flex-wrap: wrap;
+}
+
+.desktopDemoCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-p-8);
+  min-width: 640px;
+  flex: 1;
+}
+
+.desktopPreviewShell {
+  position: relative;
+  min-height: 700px;
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--surface-page);
+}
+
+.desktopPreviewBetslip {
+  position: absolute;
+  right: var(--space-p-16);
+  bottom: var(--space-p-16);
+  width: 390px;
 }
 
 /* Controls below the phone frame */
@@ -108,6 +657,238 @@
   background: var(--action-secondary);
   border-color: var(--border-active);
   color: var(--content-accent);
+}
+
+/* ================================================================
+   BET ENTRY COVERAGE LAB
+   ================================================================ */
+
+.betEntryLabSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-p-16);
+  padding: var(--space-p-24);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-page);
+}
+
+.betEntryLabIntro {
+  margin: 0;
+  color: var(--content-secondary);
+  font-size: var(--text-sm-size);
+}
+
+.betEntryDocsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-p-16);
+}
+
+.betEntryDocCard {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-layer-1);
+  padding: var(--space-p-16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-p-10);
+}
+
+.betEntryDocTitle {
+  margin: 0;
+  font-size: var(--text-md-size);
+  color: var(--content-primary);
+}
+
+.betEntryRuleList {
+  margin: 0;
+  padding-left: var(--space-p-16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-p-6);
+  color: var(--content-secondary);
+  font-size: var(--text-sm-size);
+}
+
+.betEntryTable {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.betEntryTableHeader,
+.betEntryTableRow {
+  display: grid;
+  grid-template-columns: 1.2fr 1.4fr 1.2fr 1.2fr;
+  gap: var(--space-p-8);
+  padding: var(--space-p-8) var(--space-p-10);
+}
+
+.betEntryTableHeader {
+  background: var(--surface-layer-2);
+  color: var(--content-primary);
+  font-size: var(--text-xs-size);
+  font-weight: 700;
+}
+
+.betEntryTableRow {
+  border-top: 1px solid var(--border-subtle);
+  color: var(--content-secondary);
+  font-size: var(--text-xs-size);
+  line-height: 1.35;
+}
+
+.betEntryVariantGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  row-gap: 23px;
+  column-gap: 0;
+  justify-content: start;
+}
+
+.betEntryVariantCard {
+  width: fit-content;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-layer-1);
+  padding: var(--space-p-12);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.betEntryVariantHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-p-8);
+}
+
+.betEntryVariantTitle {
+  font-size: var(--text-sm-size);
+  font-weight: 700;
+  color: var(--content-primary);
+}
+
+.betEntryStatePill {
+  height: 20px;
+  padding: 0 var(--space-p-8);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs-size);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+}
+
+.betEntryStateLive {
+  background: var(--status-info-background);
+  color: var(--status-info-foreground);
+}
+
+.betEntryStatePrematch {
+  background: var(--surface-layer-2);
+  color: var(--content-secondary);
+}
+
+.betEntryStateSuspended {
+  background: var(--status-warning-background);
+  color: var(--status-warning-foreground);
+}
+
+.betEntryMock {
+  width: 353px;
+  min-width: 353px;
+  min-height: 80px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--surface-layer-1);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+.betEntryMockTop {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+
+.betEntryMockTopLine {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.betEntryMockTopPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--content-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.betEntryMockMeta {
+  color: var(--content-primary);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.betEntryMockRemove {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--action-neutral);
+  color: var(--content-subtle);
+  font-size: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.betEntryMockTopSecondary {
+  color: var(--content-secondary);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.betEntryMockMid {
+  display: flex;
+  align-items: center;
+  gap: var(--space-p-6);
+}
+
+.betEntryMockOdds {
+  color: var(--content-accent);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.betEntryMockSelection {
+  color: var(--content-primary);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.betEntryMockMarket {
+  color: var(--content-subtle);
+  font-size: 11px;
 }
 
 /* ================================================================

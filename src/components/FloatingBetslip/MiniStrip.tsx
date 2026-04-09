@@ -1,6 +1,6 @@
 import type React from 'react'
 import type { BetEntry } from './types'
-import { combinedOdds, getAccaLabel } from './types'
+import { combinedOdds } from './types'
 import styles from './MiniStrip.module.css'
 
 export type MiniStripProps = {
@@ -16,6 +16,8 @@ export type MiniStripProps = {
   className?: string
   /** Inline style overrides on the root element. */
   style?: React.CSSProperties
+  /** Visual theme variant for the strip. */
+  variant?: 'default' | 'figma'
 }
 
 const IconChevronUp = () => (
@@ -30,7 +32,15 @@ const IconChevronUp = () => (
   </svg>
 )
 
-export function MiniStrip({ bets, stake, currency = '₺', onOpen, className, style }: MiniStripProps) {
+export function MiniStrip({
+  bets,
+  stake,
+  currency = '₺',
+  onOpen,
+  className,
+  style,
+  variant = 'default',
+}: MiniStripProps) {
   if (bets.length === 0) return null
 
   const combined = combinedOdds(bets)
@@ -39,10 +49,7 @@ export function MiniStrip({ bets, stake, currency = '₺', onOpen, className, st
   // First bet with a direction signal drives the flash colour
   const oddsDirection = bets.find(b => b.oddsDirection)?.oddsDirection
 
-  const label =
-    bets.length === 1
-      ? bets[0].selection
-      : `${getAccaLabel(bets.length)} Accumulator`
+  const label = bets.map((bet) => bet.selection).join(', ')
 
   const stakeLabel =
     stake && stake > 0 ? `${currency}${stake.toFixed(2)}` : `${currency}—`
@@ -59,23 +66,29 @@ export function MiniStrip({ bets, stake, currency = '₺', onOpen, className, st
 
   return (
     <button
-      className={`${styles.strip}${className ? ` ${className}` : ''}`}
+      className={[
+        styles.strip,
+        variant === 'figma' ? styles.stripFigma : '',
+        className ?? '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={style}
       onClick={onOpen}
       type="button"
-      aria-label={`Bahis kuponu — ${bets.length} seçim, oran ${combined.toFixed(2)}`}
+      aria-label={`Bahis kuponu — ${bets.length} seçim, oran ${combined.toFixed(2)}, seçimler ${label}`}
     >
-      {/* Left: badge · label · odds */}
+      {/* Left: badge · odds · label */}
       <div className={styles.left}>
         <span className={styles.badge} aria-hidden="true">
           {bets.length}
         </span>
 
-        <span className={styles.label}>{label}</span>
-
         <span key={oddsKey} className={oddsClass}>
           {combined.toFixed(2)}
         </span>
+
+        <span className={styles.label}>{label}</span>
 
         {hasSuspended && (
           <span

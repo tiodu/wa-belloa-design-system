@@ -197,3 +197,55 @@
   color: var(--content-on-action);
   flex-shrink: 0;
 }
+
+/* ============================================================
+   FIGMA VARIANT
+   ============================================================ */
+
+.stripFigma {
+  background: rgba(15, 20, 22, 0.98);
+  border: 1px solid rgba(249, 250, 251, 0.08);
+  border-radius: 12px;
+  height: 56px;
+  padding: 0 10px;
+  gap: 10px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.42);
+}
+
+.stripFigma .badge {
+  background: rgba(18, 37, 34, 0.9);
+  border-color: rgba(15, 186, 165, 0.4);
+  color: #2dd6c3;
+}
+
+.stripFigma .label {
+  color: #b8c5c1;
+  font-family: Inter, var(--font-family), sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.stripFigma .odds {
+  color: #1ed9be;
+  font-family: Inter, var(--font-family), sans-serif;
+  font-size: 15px;
+  letter-spacing: -0.2px;
+}
+
+.stripFigma .stakeDisplay {
+  color: #8a9a96;
+  font-family: Inter, var(--font-family), sans-serif;
+  font-size: 12px;
+}
+
+.stripFigma .divider {
+  background: rgba(249, 250, 251, 0.12);
+}
+
+.stripFigma .openBtn {
+  width: 28px;
+  height: 28px;
+  background: rgba(18, 33, 34, 1);
+  border: 1px solid rgba(249, 250, 251, 0.1);
+  color: #9ec7c0;
+}

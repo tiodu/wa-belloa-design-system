@@ -1,0 +1,1 @@
+export { BelloaBetslipPage } from './BelloaBetslipPage'

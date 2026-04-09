@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Betslip } from '../../components/Betslip'
 import { BetslipV2 } from '../../components/BetslipV2'
 import { BetslipTR } from '../../components/BetslipTR'
@@ -30,39 +30,63 @@ const TR_BETS: BetEntryTR[] = [
   { id: '2', match: 'Beşiktaş - Trabzonspor', league: 'Süper Lig', market: 'Maç Sonucu', selection: 'Beşiktaş', odds: 1.85 },
 ]
 
-const FLOAT_BETS: FloatBetEntry[] = [
+const FLOAT_BETS_LIVE: FloatBetEntry[] = [
   {
     id: 'f1',
-    match: 'Galatasaray - Fenerbahçe',
-    league: 'Süper Lig',
-    market: 'Maç Sonucu',
-    selection: 'Galatasaray',
+    match: 'Arsenal - Manchester City',
+    league: 'Premier League',
+    market: 'Match Result',
+    selection: 'Arsenal',
     odds: 2.15,
     isLive: true,
     score: '1-0',
     minute: 67,
-    sparkline: [0.6, 0.55, 0.7, 0.65, 0.8, 0.9],
   },
   {
     id: 'f2',
-    match: 'Beşiktaş - Trabzonspor',
-    league: 'Süper Lig',
-    market: 'Üst/Alt 2.5',
-    selection: 'Üst',
+    match: 'Liverpool - Chelsea',
+    league: 'Premier League',
+    market: 'Over/Under 2.5',
+    selection: 'Over',
     odds: 1.85,
     isLive: true,
     score: '0-0',
     minute: 34,
-    sparkline: [0.9, 0.85, 0.75, 0.7, 0.6, 0.5],
   },
   {
     id: 'f3',
-    match: 'Kasımpaşa - Başakşehir',
-    league: 'Süper Lig',
-    market: 'Maç Sonucu',
-    selection: 'Kasımpaşa',
+    match: 'Tottenham - Manchester United',
+    league: 'Premier League',
+    market: 'Match Result',
+    selection: 'Tottenham',
     odds: 3.40,
-    sparkline: [0.4, 0.5, 0.45, 0.55, 0.6, 0.65],
+  },
+]
+
+const FLOAT_BETS_PREMATCH: FloatBetEntry[] = [
+  {
+    id: 'f1',
+    match: 'Inter - Juventus',
+    league: 'Serie A',
+    market: 'Match Result',
+    selection: 'Inter',
+    odds: 2.2,
+  },
+  {
+    id: 'f2',
+    match: 'Barcelona - Real Madrid',
+    league: 'La Liga',
+    market: 'Over/Under 2.5',
+    selection: 'Over',
+    odds: 1.92,
+  },
+  {
+    id: 'f3',
+    match: 'Bayern - Dortmund',
+    league: 'Bundesliga',
+    market: 'Both Teams To Score',
+    selection: 'Yes',
+    odds: 1.78,
   },
 ]
 
@@ -93,6 +117,238 @@ const RESULTS = [
   { league: 'Serie A – 14 Usa', date: '28/10 23:00', home: 'Juventus', away: 'Real Madrid', s1: 2, s2: 3 },
   { league: 'Serie A – A', date: '26/10 20:45', home: 'Juventus', away: 'AC Milan', s1: 1, s2: 1 },
   { league: 'England – Premier League', date: '27/10 19:30', home: 'Manchester City', away: 'Liverpool', s1: 3, s2: 2 },
+]
+
+type MobileOddKey = 'home' | 'draw' | 'away'
+
+type MobileMatch = {
+  id: string
+  league: string
+  home: string
+  away: string
+  minute?: string
+  odds: Record<MobileOddKey, { label: string; decimal: number }>
+}
+
+const MOBILE_POPULAR = ['World Cup 2026', 'Superlig', 'La Liga', 'Football', 'Baseball', 'Tennis']
+
+const MOBILE_MATCHES_LIVE: MobileMatch[] = [
+  {
+    id: 'm1',
+    league: 'Premier League',
+    home: 'Arsenal',
+    away: 'Manchester City',
+    minute: "74'",
+    odds: {
+      home: { label: '8/5', decimal: 2.6 },
+      draw: { label: '12/4', decimal: 4.0 },
+      away: { label: '15/7', decimal: 3.14 },
+    },
+  },
+  {
+    id: 'm2',
+    league: 'Premier League',
+    home: 'Liverpool',
+    away: 'Chelsea',
+    minute: "61'",
+    odds: {
+      home: { label: '8/5', decimal: 2.6 },
+      draw: { label: '12/4', decimal: 4.0 },
+      away: { label: '15/7', decimal: 3.14 },
+    },
+  },
+  {
+    id: 'm3',
+    league: 'Premier League',
+    home: 'Tottenham',
+    away: 'Manchester United',
+    minute: "52'",
+    odds: {
+      home: { label: '8/5', decimal: 2.6 },
+      draw: { label: '12/4', decimal: 4.0 },
+      away: { label: '15/7', decimal: 3.14 },
+    },
+  },
+]
+
+const MOBILE_MATCHES_PREMATCH: MobileMatch[] = [
+  {
+    id: 'm1',
+    league: 'Serie A',
+    home: 'Inter',
+    away: 'Juventus',
+    odds: {
+      home: { label: '6/5', decimal: 2.2 },
+      draw: { label: '11/5', decimal: 3.2 },
+      away: { label: '12/5', decimal: 3.4 },
+    },
+  },
+  {
+    id: 'm2',
+    league: 'La Liga',
+    home: 'Barcelona',
+    away: 'Real Madrid',
+    odds: {
+      home: { label: '7/5', decimal: 2.4 },
+      draw: { label: '12/5', decimal: 3.4 },
+      away: { label: '8/5', decimal: 2.6 },
+    },
+  },
+  {
+    id: 'm3',
+    league: 'Bundesliga',
+    home: 'Bayern',
+    away: 'Dortmund',
+    odds: {
+      home: { label: '11/10', decimal: 2.1 },
+      draw: { label: '5/2', decimal: 3.5 },
+      away: { label: '12/5', decimal: 3.4 },
+    },
+  },
+]
+
+type EntryMode = 'live' | 'prematch'
+
+const FLOAT_BETS_BY_MODE: Record<EntryMode, FloatBetEntry[]> = {
+  live: FLOAT_BETS_LIVE,
+  prematch: FLOAT_BETS_PREMATCH,
+}
+
+const MOBILE_MATCHES_BY_MODE: Record<EntryMode, MobileMatch[]> = {
+  live: MOBILE_MATCHES_LIVE,
+  prematch: MOBILE_MATCHES_PREMATCH,
+}
+
+type EntryCoverageRow = {
+  scenario: string
+  topZone: string
+  selectionZone: string
+  marketZone: string
+}
+
+type EntryVariantMock = {
+  id: string
+  title: string
+  state: 'Live' | 'Pre-match' | 'Suspended'
+  topMeta?: string
+  topPrimary: string
+  topSecondary?: string
+  odds: string
+  selection: string
+  market: string
+}
+
+const ENTRY_COVERAGE_ROWS: EntryCoverageRow[] = [
+  {
+    scenario: 'Football live 1x2',
+    topZone: "Score + clock (1-0 · 67') with match line",
+    selectionZone: 'Decimal odds + team selection',
+    marketZone: 'Match Result · Full Time',
+  },
+  {
+    scenario: 'Football pre-match totals',
+    topZone: 'Match line only',
+    selectionZone: 'Odds + Over/Under line',
+    marketZone: 'Total Goals · Full Time',
+  },
+  {
+    scenario: 'Player card market',
+    topZone: 'Match line + optional live status',
+    selectionZone: 'Odds + player name',
+    marketZone: 'Player to Be Carded',
+  },
+  {
+    scenario: 'Tennis live detailed',
+    topZone: 'Line 1 players, line 2 set/game context',
+    selectionZone: 'Odds + player/set selection',
+    marketZone: 'Set Winner or Game Handicap',
+  },
+  {
+    scenario: 'Basketball live',
+    topZone: 'Qx + game clock + score',
+    selectionZone: 'Odds + side/total pick',
+    marketZone: 'Moneyline or Total Points',
+  },
+  {
+    scenario: 'Esports map market',
+    topZone: 'Teams + map/round state',
+    selectionZone: 'Odds + team/map outcome',
+    marketZone: 'Map Winner · Map 2',
+  },
+  {
+    scenario: 'Suspended selection',
+    topZone: 'Context unchanged',
+    selectionZone: 'Suspended label replaces odds',
+    marketZone: 'Keep market label visible',
+  },
+  {
+    scenario: 'Long names stress test',
+    topZone: 'Ellipsis on line 1, preserve key live metadata',
+    selectionZone: 'Odds never truncate, selection may ellipsize',
+    marketZone: 'Wrap to max 2 lines',
+  },
+]
+
+const ENTRY_VARIANTS: EntryVariantMock[] = [
+  {
+    id: 'v1',
+    title: 'Football Live — Team Pick',
+    state: 'Live',
+    topMeta: "1-0 · 67'",
+    topPrimary: 'Arsenal - Manchester City',
+    odds: '2.15',
+    selection: 'Arsenal',
+    market: 'Match Result',
+  },
+  {
+    id: 'v2',
+    title: 'Football Pre-match — Totals',
+    state: 'Pre-match',
+    topPrimary: 'Barcelona - Real Madrid',
+    odds: '1.92',
+    selection: 'Over 2.5',
+    market: 'Total Goals',
+  },
+  {
+    id: 'v3',
+    title: 'Tennis Live — Detailed Context',
+    state: 'Live',
+    topPrimary: 'Nadal vs Alcaraz',
+    topSecondary: '2nd Set · 0-1 · 2-2 AD:40',
+    odds: '1.78',
+    selection: 'Alcaraz to win Set 2',
+    market: 'Set Winner',
+  },
+  {
+    id: 'v4',
+    title: 'Player Card Market',
+    state: 'Live',
+    topMeta: "0-0 · 34'",
+    topPrimary: 'Liverpool - Chelsea',
+    odds: '3.40',
+    selection: 'Declan Rice',
+    market: 'Player to Be Carded',
+  },
+  {
+    id: 'v5',
+    title: 'Basketball Live',
+    state: 'Live',
+    topPrimary: 'Lakers - Celtics',
+    topSecondary: 'Q3 · 04:21 · 74-71',
+    odds: '1.84',
+    selection: 'Over 164.5',
+    market: 'Total Points',
+  },
+  {
+    id: 'v6',
+    title: 'Suspended Example',
+    state: 'Suspended',
+    topMeta: "2-1 · 88'",
+    topPrimary: 'Tottenham - Manchester United',
+    odds: '⏸',
+    selection: 'Suspended',
+    market: 'Match Result',
+  },
 ]
 
 /* ---- Nav ---- */
@@ -276,136 +532,454 @@ function LatestWins() {
   )
 }
 
+function buildFloatBet(match: MobileMatch, oddKey: MobileOddKey): FloatBetEntry {
+  const selection = oddKey === 'home' ? match.home : oddKey === 'draw' ? 'Draw' : match.away
+  return {
+    id: `${match.id}-${oddKey}`,
+    match: `${match.home} - ${match.away}`,
+    league: match.league,
+    market: 'Full Time Result',
+    selection,
+    odds: match.odds[oddKey].decimal,
+    isLive: true,
+    minute: Number((match.minute ?? '').replace("'", '')) || 43,
+  }
+}
+
+function MobileSportsbookMock({
+  floatBets,
+  matches,
+  entryMode,
+  onToggleOdd,
+}: {
+  floatBets: FloatBetEntry[]
+  matches: MobileMatch[]
+  entryMode: EntryMode
+  onToggleOdd: (match: MobileMatch, odd: MobileOddKey) => void
+}) {
+  const activeByMatch = useMemo(() => {
+    const map: Record<string, MobileOddKey | undefined> = {}
+    for (const bet of floatBets) {
+      const [matchId, oddKey] = bet.id.split('-') as [string, MobileOddKey]
+      if (matchId && oddKey) map[matchId] = oddKey
+    }
+    return map
+  }, [floatBets])
+
+  return (
+    <div className={styles.mobileViewport}>
+      <div className={styles.mobileBook}>
+        <div className={styles.mobileHeader}>
+          <button className={styles.mobileHeaderBtn} type="button">⌕</button>
+          <div className={styles.mobileLogo}>110x28</div>
+          <button className={styles.mobileIconGhost} type="button">🎁</button>
+          <div className={styles.mobileHeaderActions}>
+            <button className={styles.mobilePillGhost} type="button">Log in</button>
+            <button className={styles.mobilePillPrimary} type="button">Register</button>
+          </div>
+        </div>
+
+        <div className={styles.mobileHeroWrap}>
+          <div className={styles.mobileHero}>
+            <div className={styles.mobileHeroLeague}>Champions League</div>
+            <div className={styles.mobileHeroTitle}>Galatasaray - Fenerbahce</div>
+            <div className={styles.mobileHeroKickoff}>Today 19:00</div>
+            <div className={styles.mobileHeroOdds}>
+              <span className={styles.mobileHeroOddBtn}>8/5</span>
+              <span className={styles.mobileHeroOddBtn}>11/5</span>
+              <span className={styles.mobileHeroOddBtn}>13/8</span>
+            </div>
+          </div>
+          <div className={styles.mobileDots}>
+            <span className={styles.mobileDotActive} />
+            <span className={styles.mobileDot} />
+            <span className={styles.mobileDot} />
+          </div>
+        </div>
+
+        <div className={styles.mobileSectionTitle}>Popular</div>
+        <div className={styles.mobilePopularRow}>
+          {MOBILE_POPULAR.map((name) => (
+            <span key={name} className={styles.mobileTag}>{name}</span>
+          ))}
+        </div>
+
+        <div className={styles.mobileLiveHeader}>
+          <div className={styles.mobileLiveHeaderTop}>
+            <span className={styles.mobileLiveBadge}>LIVE</span>
+            <span className={styles.mobileSectionTitleInline}>
+              {entryMode === 'live' ? 'Live matches' : 'Pre-match matches'}
+            </span>
+            <span className={styles.mobileCountBadge}>48</span>
+          </div>
+          <div className={styles.mobileLiveHeaderBottom}>
+            <span className={`${styles.mobileSmallBadge} ${styles.mobileSmallBadgeActive}`}>⚽</span>
+            <span className={styles.mobileSmallBadge}>●</span>
+            <span className={styles.mobileSmallBadge}>●</span>
+            <span className={styles.mobileSmallBadge}>●</span>
+            <span className={styles.mobileSettings}>⚙</span>
+          </div>
+        </div>
+
+        <div className={styles.mobileOddsHeader}>
+          <span className={styles.mobileOddsSpacer}>Matches</span>
+          <span className={styles.mobileMarketLabel}>FULL TIME RESULT</span>
+          <span>1</span>
+          <span>X</span>
+          <span>2</span>
+        </div>
+
+        <div className={styles.mobileMatches}>
+          {matches.map((match) => {
+            const active = activeByMatch[match.id]
+            return (
+              <div key={match.id} className={styles.mobileMatchRow}>
+                <div className={styles.mobileLeague}>{match.league}</div>
+                <div className={styles.mobileMatchMain}>
+                  <div className={styles.mobileTeams}>
+                    <div className={styles.mobileTeamLine}>
+                      <span className={styles.mobileTeamCheck} />
+                      <span>{match.home}</span>
+                      <span className={styles.mobileTeamScore}>0</span>
+                    </div>
+                    <div className={styles.mobileTeamLine}>
+                      <span className={styles.mobileTeamCheck} />
+                      <span>{match.away}</span>
+                      <span className={styles.mobileTeamScore}>0</span>
+                    </div>
+                  </div>
+                  <div className={styles.mobileOddsRow}>
+                    {(['home', 'draw', 'away'] as const).map((oddKey) => (
+                      <button
+                        key={oddKey}
+                        type="button"
+                        className={`${styles.mobileOddBtn} ${active === oddKey ? styles.mobileOddBtnActive : ''}`}
+                        onClick={() => onToggleOdd(match, oddKey)}
+                      >
+                        {match.odds[oddKey].label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className={styles.mobileMatchFooter}>
+                  <div className={styles.mobileMinute}>{match.minute}</div>
+                  <div className={styles.mobileRowIcons}>◫ ◯</div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        <div className={styles.mobileShowMore}>Show More</div>
+      </div>
+    </div>
+  )
+}
+
 /* ---- Main Visualiser ---- */
 
-export function SportsbookVisualiser() {
+type SportsbookVisualiserMode = 'official' | 'playground'
+
+type SportsbookVisualiserProps = {
+  mode?: SportsbookVisualiserMode
+}
+
+export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiserProps) {
   const [v1Bets, setV1Bets] = useState<BetEntry[]>(V1_BETS)
   const [v2Bets, setV2Bets] = useState<BetEntryV2[]>(V2_BETS)
   const [trBets, setTrBets] = useState<BetEntryTR[]>(TR_BETS)
-  const [floatBets, setFloatBets] = useState<FloatBetEntry[]>(FLOAT_BETS)
+  const [entryMode, setEntryMode] = useState<EntryMode>('live')
+  const [floatBets, setFloatBets] = useState<FloatBetEntry[]>(FLOAT_BETS_BY_MODE.live)
+  const [openDefaultSignal, setOpenDefaultSignal] = useState(0)
+  const sourceFloatBets = FLOAT_BETS_BY_MODE[entryMode]
+  const currentMobileMatches = MOBILE_MATCHES_BY_MODE[entryMode]
+
+  function toggleFromOdds(match: MobileMatch, odd: MobileOddKey) {
+    const nextId = `${match.id}-${odd}`
+    setFloatBets((prev) => {
+      const withoutMatch = prev.filter((b) => !b.id.startsWith(`${match.id}-`))
+      const alreadyActive = prev.some((b) => b.id === nextId)
+      if (alreadyActive) return withoutMatch
+      return [...withoutMatch, buildFloatBet(match, odd)]
+    })
+  }
+
+  const isOfficial = mode === 'official'
+  const isPlayground = mode === 'playground'
 
   return (
     <div className={styles.page}>
-      <div className={styles.sportsbook}>
-        <TopNav />
+      {isPlayground && (
+        <div className={styles.sportsbook}>
+          <TopNav />
 
-        <div className={styles.layout}>
-          <LeftSidebar />
+          <div className={styles.layout}>
+            <LeftSidebar />
 
-          <CenterContent />
+            <CenterContent />
 
-          {/* Right sidebar */}
-          <aside className={styles.rightSidebar}>
-            <LatestResults />
-            <LatestWins />
-          </aside>
+            {/* Right sidebar */}
+            <aside className={styles.rightSidebar}>
+              <LatestResults />
+              <LatestWins />
+            </aside>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* FloatingBetslip — full drawer */}
-      <div className={styles.miniStripSection}>
-        <span className={styles.betslipLabel}>FloatingBetslip — Full Drawer 🇹🇷</span>
+      {isOfficial && <div className={styles.miniStripSection}>
+        <span className={styles.betslipLabel}>Belloa Betslip</span>
         <p className={styles.miniStripHint}>
           Tap the mini strip to open the drawer · tap stake field to enter amount · Place Bet to confirm
         </p>
 
-        <div className={styles.floatDemoRow}>
-          {/* Phone frame */}
-          <div className={styles.phoneFrame}>
-            <div className={styles.phoneBottomNav} />
-            <FloatingBetslip
-              bets={floatBets}
-              contained
-              onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
-              onClearAll={() => setFloatBets([])}
-            />
+        {/* Controls */}
+        <div className={styles.miniStripControls}>
+          <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>Entries</span>
+            <div className={styles.chipRow}>
+              <button
+                className={`${styles.chip} ${entryMode === 'live' ? styles.chipActive : ''}`}
+                onClick={() => {
+                  setEntryMode('live')
+                  setFloatBets(FLOAT_BETS_BY_MODE.live)
+                }}
+                type="button"
+              >
+                Live matches
+              </button>
+              <button
+                className={`${styles.chip} ${entryMode === 'prematch' ? styles.chipActive : ''}`}
+                onClick={() => {
+                  setEntryMode('prematch')
+                  setFloatBets(FLOAT_BETS_BY_MODE.prematch)
+                }}
+                type="button"
+              >
+                Pre-match matches
+              </button>
+            </div>
           </div>
 
-          {/* Controls */}
-          <div className={styles.miniStripControls}>
-            <div className={styles.controlGroup}>
-              <span className={styles.controlLabel}>Selections</span>
-              <div className={styles.chipRow}>
-                {[1, 2, 3].map((n) => (
-                  <button
-                    key={n}
-                    className={`${styles.chip} ${floatBets.length === n ? styles.chipActive : ''}`}
-                    onClick={() => setFloatBets(FLOAT_BETS.slice(0, n))}
-                    type="button"
-                  >
-                    {n} sel.
-                  </button>
-                ))}
+          <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>Selections</span>
+            <div className={styles.chipRow}>
+              {[1, 2, 3].map((n) => (
                 <button
-                  className={`${styles.chip} ${floatBets.length === 0 ? styles.chipActive : ''}`}
-                  onClick={() => setFloatBets([])}
+                  key={n}
+                  className={`${styles.chip} ${floatBets.length === n ? styles.chipActive : ''}`}
+                  onClick={() => setFloatBets(sourceFloatBets.slice(0, n))}
                   type="button"
                 >
-                  Empty
+                  {n} sel.
                 </button>
-                <button
-                  className={styles.chip}
-                  onClick={() => setFloatBets(FLOAT_BETS)}
-                  type="button"
-                >
-                  Reset
-                </button>
-              </div>
+              ))}
+              <button
+                className={`${styles.chip} ${floatBets.length === 0 ? styles.chipActive : ''}`}
+                onClick={() => setFloatBets([])}
+                type="button"
+              >
+                Empty
+              </button>
+              <button
+                className={styles.chip}
+                onClick={() => setFloatBets(sourceFloatBets)}
+                type="button"
+              >
+                Reset
+              </button>
             </div>
+          </div>
 
-            <div className={styles.controlGroup}>
-              <span className={styles.controlLabel}>Odds direction (sel. 1)</span>
-              <div className={styles.chipRow}>
-                {(['none', 'up', 'down'] as const).map((dir) => (
-                  <button
-                    key={dir}
-                    className={styles.chip}
-                    onClick={() =>
-                      setFloatBets((prev) =>
-                        prev.map((b, i) =>
-                          i === 0 ? { ...b, oddsDirection: dir === 'none' ? undefined : dir } : b
-                        )
-                      )
-                    }
-                    type="button"
-                  >
-                    {dir === 'none' ? '— none' : dir === 'up' ? '▲ up' : '▼ down'}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className={styles.controlGroup}>
-              <span className={styles.controlLabel}>Suspended</span>
-              <div className={styles.chipRow}>
+          <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>Odds direction (sel. 1)</span>
+            <div className={styles.chipRow}>
+              {(['none', 'up', 'down'] as const).map((dir) => (
                 <button
+                  key={dir}
                   className={styles.chip}
                   onClick={() =>
                     setFloatBets((prev) =>
-                      prev.map((b, i) => (i === 1 ? { ...b, suspended: !b.suspended } : b))
+                      prev.map((b, i) =>
+                        i === 0 ? { ...b, oddsDirection: dir === 'none' ? undefined : dir } : b
+                      )
                     )
                   }
                   type="button"
                 >
-                  Toggle sel. 2
+                  {dir === 'none' ? '— none' : dir === 'up' ? '▲ up' : '▼ down'}
                 </button>
-                <button
-                  className={styles.chip}
-                  onClick={() =>
-                    setFloatBets((prev) => prev.map((b) => ({ ...b, suspended: true })))
-                  }
-                  type="button"
-                >
-                  Suspend all
-                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>Suspended</span>
+            <div className={styles.chipRow}>
+              <button
+                className={styles.chip}
+                onClick={() =>
+                  setFloatBets((prev) =>
+                    prev.map((b, i) => (i === 1 ? { ...b, suspended: !b.suspended } : b))
+                  )
+                }
+                type="button"
+              >
+                Toggle sel. 2
+              </button>
+              <button
+                className={styles.chip}
+                onClick={() =>
+                  setFloatBets((prev) => prev.map((b) => ({ ...b, suspended: true })))
+                }
+                type="button"
+              >
+                Suspend all
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.floatDemoRow}>
+          <div className={styles.phoneDemoCol}>
+            <span className={styles.phoneVariantLabel}>Mobile preview · Current</span>
+            <div
+              className={`${styles.phoneFrame} ${styles.phoneFrameBgLive}`}
+              onClick={() => setOpenDefaultSignal((s) => s + 1)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') setOpenDefaultSignal((s) => s + 1)
+              }}
+            >
+              <MobileSportsbookMock
+                floatBets={floatBets}
+                matches={currentMobileMatches}
+                entryMode={entryMode}
+                onToggleOdd={toggleFromOdds}
+              />
+              <div className={styles.phoneBottomNav} />
+              <FloatingBetslip
+                bets={floatBets}
+                contained
+                variant="default"
+                openSignal={openDefaultSignal}
+                onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
+                onClearAll={() => setFloatBets([])}
+              />
+            </div>
+          </div>
+
+          <div className={styles.desktopDemoCol}>
+            <span className={styles.phoneVariantLabel}>Desktop preview · Current</span>
+            <div className={styles.desktopPreviewShell}>
+              <TopNav />
+              <div className={styles.layout}>
+                <LeftSidebar />
+                <CenterContent />
+                <aside className={styles.rightSidebar}>
+                  <LatestResults />
+                  <LatestWins />
+                </aside>
+              </div>
+              <div className={styles.desktopPreviewBetslip}>
+                <FloatingBetslip
+                  bets={floatBets}
+                  contained
+                  variant="default"
+                  onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
+                  onClearAll={() => setFloatBets([])}
+                />
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </div>}
 
-      {/* Betslip comparison row */}
-      <div className={styles.betslipComparison}>
+      {isOfficial && <section className={styles.betEntryLabSection}>
+        <span className={styles.betslipLabel}>BetEntry Coverage Matrix</span>
+        <p className={styles.betEntryLabIntro}>
+          Documentation + mocks for a future-proof entry model. Each variant follows three content zones:
+          event context, selection+odds, and market descriptor.
+        </p>
+
+        <div className={styles.betEntryDocsGrid}>
+          <article className={styles.betEntryDocCard}>
+            <h3 className={styles.betEntryDocTitle}>Structure Rules</h3>
+            <ul className={styles.betEntryRuleList}>
+              <li>Top zone: match/participants plus live metadata when available.</li>
+              <li>Selection zone: odds plus selected outcome (team, player, line, or combo).</li>
+              <li>Market zone: canonical market label with optional scope (full time, set, map).</li>
+              <li>Fallbacks: preserve odds visibility, then selection, then market wrapping.</li>
+            </ul>
+          </article>
+
+          <article className={styles.betEntryDocCard}>
+            <h3 className={styles.betEntryDocTitle}>Coverage Matrix</h3>
+            <div className={styles.betEntryTable}>
+              <div className={styles.betEntryTableHeader}>
+                <span>Scenario</span>
+                <span>Top Zone</span>
+                <span>Selection Zone</span>
+                <span>Market Zone</span>
+              </div>
+              {ENTRY_COVERAGE_ROWS.map((row) => (
+                <div key={row.scenario} className={styles.betEntryTableRow}>
+                  <span>{row.scenario}</span>
+                  <span>{row.topZone}</span>
+                  <span>{row.selectionZone}</span>
+                  <span>{row.marketZone}</span>
+                </div>
+              ))}
+            </div>
+          </article>
+        </div>
+
+        <div className={styles.betEntryVariantGrid}>
+          {ENTRY_VARIANTS.map((variant) => (
+            <article key={variant.id} className={styles.betEntryVariantCard}>
+              <div className={styles.betEntryVariantHead}>
+                <span className={styles.betEntryVariantTitle}>{variant.title}</span>
+                <span
+                  className={[
+                    styles.betEntryStatePill,
+                    variant.state === 'Live'
+                      ? styles.betEntryStateLive
+                      : variant.state === 'Pre-match'
+                      ? styles.betEntryStatePrematch
+                      : styles.betEntryStateSuspended,
+                  ].join(' ')}
+                >
+                  {variant.state}
+                </span>
+              </div>
+              <div className={styles.betEntryMock}>
+                <div className={styles.betEntryMockTop}>
+                  <div className={styles.betEntryMockTopLine}>
+                    <span className={styles.betEntryMockTopPrimary}>
+                      {variant.topMeta && (
+                        <span className={styles.betEntryMockMeta}>{variant.topMeta}</span>
+                      )}
+                      <span>{variant.topPrimary}</span>
+                    </span>
+                    <span className={styles.betEntryMockRemove}>✕</span>
+                  </div>
+                  {variant.topSecondary && (
+                    <span className={styles.betEntryMockTopSecondary}>{variant.topSecondary}</span>
+                  )}
+                </div>
+                <div className={styles.betEntryMockMid}>
+                  <span className={styles.betEntryMockOdds}>{variant.odds}</span>
+                  <span className={styles.betEntryMockSelection}>{variant.selection}</span>
+                </div>
+                <div className={styles.betEntryMockMarket}>{variant.market}</div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>}
+
+      {isPlayground && <div className={styles.betslipComparison}>
         <div className={styles.betslipColumn}>
           <span className={styles.betslipLabel}>Betslip V1</span>
           <Betslip
@@ -434,7 +1008,7 @@ export function SportsbookVisualiser() {
             onClearAll={() => setTrBets([])}
           />
         </div>
-      </div>
+      </div>}
     </div>
   )
 }
