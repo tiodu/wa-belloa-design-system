@@ -172,13 +172,7 @@
 
 /* ─── Selection row ─── */
 .selRow {
-  padding: 10px 12px;
-  background: var(--surface-layer-1);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  display: block;
 }
 
 .selectionBlock {
@@ -233,8 +227,7 @@
 }
 
 .selRowSuspended {
-  border-color: var(--status-warning-fg);
-  background: var(--status-warning-bg);
+  opacity: 1;
 }
 
 .selTop {
@@ -247,9 +240,23 @@
 .selMatchInfo {
   display: flex;
   align-items: center;
-  gap: 5px;
   flex: 1;
   min-width: 0;
+}
+
+.selTopPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.selMeta {
+  color: var(--content-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 .selMatch {
@@ -282,19 +289,10 @@
   color: var(--content-primary);
 }
 
-.selBottom {
+.selMid {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.selMeta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-  min-width: 0;
+  align-items: center;
+  gap: var(--space-p-6);
 }
 
 .selMarket {
@@ -311,10 +309,6 @@
 }
 
 .selOddsArea {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
   flex-shrink: 0;
 }
 
@@ -348,33 +342,6 @@
 
 .deltaUp   { font-size: 9px; color: var(--status-success-fg); }
 .deltaDown { font-size: 9px; color: var(--status-critical-fg); }
-
-/* ─── Live badge ─── */
-.liveBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  background: linear-gradient(90deg, var(--live-gd-start), var(--live-gd-end));
-  border-radius: var(--radius-sm);
-  padding: 2px 5px;
-  flex-shrink: 0;
-}
-
-.liveDot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: white;
-  animation: pulseDot 1.5s ease-in-out infinite;
-}
-
-@keyframes pulseDot {
-  0%, 100% { opacity: 0.9; }
-  50%       { opacity: 0.3; }
-}
-
-.liveScore  { font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: #fff; }
-.liveMinute { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.75); }
 
 /* ─── Suspended inline ─── */
 .suspendedInline {
@@ -740,16 +707,14 @@
 }
 
 .figmaTheme .selRow {
-  padding: 9px 10px;
-  background: rgba(18, 24, 26, 0.95);
-  border-color: rgba(249, 250, 251, 0.07);
-  border-radius: 10px;
-  gap: 5px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
 }
 
 .figmaTheme .selRowSuspended {
-  background: rgba(69, 58, 28, 0.35);
-  border-color: rgba(246, 193, 76, 0.7);
+  opacity: 1;
 }
 
 .figmaTheme .selMatch,

@@ -2,69 +2,29 @@ import { useState, useRef, useEffect } from 'react'
 import { MiniStrip } from './MiniStrip'
 import type { BetEntry } from './types'
 import { combinedOdds } from './types'
+import { BetEntryCard } from '../BetEntryCard'
 import styles from './FloatingBetslip.module.css'
-
-/* ─── LiveBadge ─── */
-
-function LiveBadge({ score, minute }: { score?: string; minute?: number }) {
-  return (
-    <span className={styles.liveBadge}>
-      <span className={styles.liveDot} />
-      {score && <span className={styles.liveScore}>{score}</span>}
-      {minute !== undefined && <span className={styles.liveMinute}>· {minute}'</span>}
-    </span>
-  )
-}
 
 /* ─── SelectionRow ─── */
 
 function SelectionRow({ bet, onRemove }: { bet: BetEntry; onRemove: (id: string) => void }) {
-  const oddsClass =
-    bet.oddsDirection === 'up'
-      ? `${styles.oddsValue} ${styles.oddsUp}`
-      : bet.oddsDirection === 'down'
-      ? `${styles.oddsValue} ${styles.oddsDown}`
-      : styles.oddsValue
+  const topMeta = bet.isLive && bet.score
+    ? `${bet.score}${bet.minute !== undefined ? ` · ${bet.minute}'` : ''}`
+    : undefined
 
   return (
     <div className={`${styles.selRow}${bet.suspended ? ` ${styles.selRowSuspended}` : ''}`}>
-      <div className={styles.selTop}>
-        <div className={styles.selMatchInfo}>
-          {bet.isLive && <LiveBadge score={bet.score} minute={bet.minute} />}
-          <span className={styles.selMatch}>{bet.match}</span>
-        </div>
-        <button
-          className={styles.removeBtn}
-          onClick={() => onRemove(bet.id)}
-          aria-label={`Remove ${bet.selection}`}
-          type="button"
-        >
-          ✕
-        </button>
-      </div>
-
-      <div className={styles.selBottom}>
-        <div className={styles.selMeta}>
-          <span className={styles.selMarket}>{bet.market}</span>
-          <span className={styles.selSelection}>{bet.selection}</span>
-        </div>
-        <div className={styles.selOddsArea}>
-          {bet.suspended ? (
-            <span className={styles.suspendedInline}>⏸ Suspended</span>
-          ) : (
-            <div className={styles.oddsRow}>
-              <span key={`${bet.odds}-${bet.oddsDirection ?? 'none'}`} className={oddsClass}>
-                {bet.odds.toFixed(2)}
-              </span>
-              {bet.oddsDirection && (
-                <span className={bet.oddsDirection === 'up' ? styles.deltaUp : styles.deltaDown}>
-                  {bet.oddsDirection === 'up' ? '▲' : '▼'}
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
+      <BetEntryCard
+        topMeta={topMeta}
+        topPrimary={bet.match}
+        odds={bet.odds.toFixed(2)}
+        oddsDirection={bet.oddsDirection}
+        selection={bet.selection}
+        market={bet.market}
+        suspendedLabel={bet.suspended ? '⏸ Suspended' : undefined}
+        onRemove={() => onRemove(bet.id)}
+        removeAriaLabel={`Remove ${bet.selection}`}
+      />
     </div>
   )
 }
@@ -309,7 +269,7 @@ export function FloatingBetslip({
             <div className={styles.headerLeft}>
               <span className={styles.headerTitle}>Betslip ({bets.length})</span>
               {bets.length > 1 && (
-                <span className={styles.headerMultiplier}>{combined.toFixed(2)}×</span>
+                <span className={styles.headerMultiplier}>{combined.toFixed(2)}</span>
               )}
             </div>
             <button className={styles.clearAll} onClick={onClearAll} type="button">

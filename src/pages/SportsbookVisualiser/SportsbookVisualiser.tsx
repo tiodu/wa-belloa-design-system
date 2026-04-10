@@ -3,6 +3,7 @@ import { Betslip } from '../../components/Betslip'
 import { BetslipV2 } from '../../components/BetslipV2'
 import { BetslipTR } from '../../components/BetslipTR'
 import { FloatingBetslip } from '../../components/FloatingBetslip'
+import { BetEntryCard } from '../../components/BetEntryCard'
 import type { BetEntry, Bonus } from '../../components/Betslip/types'
 import type { BetEntryV2 } from '../../components/BetslipV2/types'
 import type { BetEntryTR } from '../../components/BetslipTR'
@@ -953,27 +954,15 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                   {variant.state}
                 </span>
               </div>
-              <div className={styles.betEntryMock}>
-                <div className={styles.betEntryMockTop}>
-                  <div className={styles.betEntryMockTopLine}>
-                    <span className={styles.betEntryMockTopPrimary}>
-                      {variant.topMeta && (
-                        <span className={styles.betEntryMockMeta}>{variant.topMeta}</span>
-                      )}
-                      <span>{variant.topPrimary}</span>
-                    </span>
-                    <span className={styles.betEntryMockRemove}>✕</span>
-                  </div>
-                  {variant.topSecondary && (
-                    <span className={styles.betEntryMockTopSecondary}>{variant.topSecondary}</span>
-                  )}
-                </div>
-                <div className={styles.betEntryMockMid}>
-                  <span className={styles.betEntryMockOdds}>{variant.odds}</span>
-                  <span className={styles.betEntryMockSelection}>{variant.selection}</span>
-                </div>
-                <div className={styles.betEntryMockMarket}>{variant.market}</div>
-              </div>
+              <BetEntryCard
+                topMeta={variant.topMeta}
+                topPrimary={variant.topPrimary}
+                topSecondary={variant.topSecondary}
+                odds={variant.odds}
+                selection={variant.selection}
+                market={variant.market}
+                suspendedLabel={variant.state === 'Suspended' ? '⏸ Suspended' : undefined}
+              />
             </article>
           ))}
         </div>
