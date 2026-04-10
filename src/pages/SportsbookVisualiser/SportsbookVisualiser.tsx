@@ -705,6 +705,17 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
     })
   }
 
+  function buildSelectionCount(targetCount: number) {
+    if (targetCount <= sourceFloatBets.length) {
+      return sourceFloatBets.slice(0, targetCount)
+    }
+
+    return Array.from({ length: targetCount }, (_, i) => {
+      const base = sourceFloatBets[i % sourceFloatBets.length]
+      return { ...base, id: `${base.id}-x${i + 1}` }
+    })
+  }
+
   const isOfficial = mode === 'official'
   const isPlayground = mode === 'playground'
 
@@ -721,6 +732,14 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
 
             {/* Right sidebar */}
             <aside className={styles.rightSidebar}>
+              <div className={styles.betslipSlot}>
+                <FloatingBetslip
+                  bets={floatBets}
+                  layout="desktop"
+                  onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
+                  onClearAll={() => setFloatBets([])}
+                />
+              </div>
               <LatestResults />
               <LatestWins />
             </aside>
@@ -775,6 +794,13 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                   {n} sel.
                 </button>
               ))}
+              <button
+                className={`${styles.chip} ${floatBets.length === 6 ? styles.chipActive : ''}`}
+                onClick={() => setFloatBets(buildSelectionCount(6))}
+                type="button"
+              >
+                6 selections
+              </button>
               <button
                 className={`${styles.chip} ${floatBets.length === 0 ? styles.chipActive : ''}`}
                 onClick={() => setFloatBets([])}
@@ -879,18 +905,17 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                 <LeftSidebar />
                 <CenterContent />
                 <aside className={styles.rightSidebar}>
+                  <div className={styles.betslipSlot}>
+                    <FloatingBetslip
+                      bets={floatBets}
+                      layout="desktop"
+                      onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
+                      onClearAll={() => setFloatBets([])}
+                    />
+                  </div>
                   <LatestResults />
                   <LatestWins />
                 </aside>
-              </div>
-              <div className={styles.desktopPreviewBetslip}>
-                <FloatingBetslip
-                  bets={floatBets}
-                  contained
-                  variant="default"
-                  onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
-                  onClearAll={() => setFloatBets([])}
-                />
               </div>
             </div>
           </div>

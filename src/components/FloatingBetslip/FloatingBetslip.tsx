@@ -68,6 +68,8 @@ export type FloatingBetslipProps = {
   variant?: 'default' | 'figma'
   /** External signal to open the drawer (increments/triggers). */
   openSignal?: number
+  /** Layout mode: floating mobile drawer or docked desktop panel. */
+  layout?: 'floating' | 'desktop'
 }
 
 export function FloatingBetslip({
@@ -79,6 +81,7 @@ export function FloatingBetslip({
   contained = false,
   variant = 'default',
   openSignal,
+  layout = 'floating',
 }: FloatingBetslipProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [numpadOpen, setNumpadOpen] = useState(false)
@@ -105,6 +108,7 @@ export function FloatingBetslip({
       ? (betMode === 'multiple' ? stake * combined : singlePotentialWin).toFixed(2)
       : null
   const hasSuspended = bets.some((b) => b.suspended)
+  const isDesktop = layout === 'desktop'
 
   useEffect(() => () => clearTimeout(confirmTimer.current), [])
 
@@ -207,7 +211,7 @@ export function FloatingBetslip({
     }, 2800)
   }
 
-  if (bets.length === 0) return null
+  if (bets.length === 0 && !isDesktop) return null
 
   const posClass = contained ? styles.posAbsolute : styles.posFixed
   const themeClass = variant === 'figma' ? styles.figmaTheme : ''
@@ -222,7 +226,7 @@ export function FloatingBetslip({
   return (
     <>
       {/* Mini strip — hidden while drawer is open */}
-      {!isOpen && (
+      {!isDesktop && !isOpen && (
         <MiniStrip
           bets={bets}
           stake={stake > 0 ? stake : undefined}
@@ -238,7 +242,7 @@ export function FloatingBetslip({
       )}
 
       {/* Scrim */}
-      {isOpen && (
+      {!isDesktop && isOpen && (
         <div
           className={`${styles.overlay} ${posClass}`}
           onClick={(e) => {
@@ -249,37 +253,78 @@ export function FloatingBetslip({
       )}
 
       {/* Drawer */}
-      {isOpen && (
+      {(isDesktop || isOpen) && (
         <div
-          className={`${styles.drawer} ${posClass} ${themeClass}`}
+          className={[
+            styles.drawer,
+            isDesktop ? styles.desktopDrawer : posClass,
+            themeClass,
+          ]
+            .filter(Boolean)
+            .join(' ')}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Drag handle / collapse tap target */}
-          <button
-            className={styles.handleWrap}
-            onClick={handleClose}
-            type="button"
-            aria-label="Close"
-          >
-            <div className={styles.handle} />
-          </button>
+          {!isDesktop && (
+            <button
+              className={styles.handleWrap}
+              onClick={handleClose}
+              type="button"
+              aria-label="Close"
+            >
+              <div className={styles.handle} />
+            </button>
+          )}
 
           {/* Header — locked, never scrolls */}
           <div className={styles.header}>
             <div className={styles.headerLeft}>
-              <span className={styles.headerTitle}>Betslip ({bets.length})</span>
-              {bets.length > 1 && (
-                <span className={styles.headerMultiplier}>{combined.toFixed(2)}</span>
-              )}
+              {bets.length > 0 && <span className={styles.headerCount}>{bets.length}</span>}
+              <span className={styles.headerTitle}>{isDesktop ? 'Bet Slip' : 'Betslip'}</span>
+              {bets.length > 0 && <span className={styles.headerMultiplier}>{combined.toFixed(2)}</span>}
             </div>
-            <button className={styles.clearAll} onClick={onClearAll} type="button">
-              Clear all
-            </button>
+            {bets.length > 0 && (
+              <button className={styles.clearAll} onClick={onClearAll} type="button">
+                Clear all
+              </button>
+            )}
           </div>
 
           {/* Scrollable content — everything below the header */}
           <div className={styles.scrollContent}>
-            {bets.length >= 2 && (
+            {isDesktop && bets.length === 0 ? (
+              <>
+                <div className={styles.desktopTabs}>
+                  <button type="button" className={`${styles.desktopTab} ${styles.desktopTabActive}`}>Single</button>
+                  <button type="button" className={styles.desktopTab}>Acca</button>
+                  <button type="button" className={styles.desktopTab}>Multiples</button>
+                </div>
+
+                <div className={styles.desktopEmptyState}>
+                  <svg width="72" height="72" viewBox="0 0 72 72" fill="none" aria-hidden="true">
+                    <path d="M22 12h28a4 4 0 0 1 4 4v36l-6-4-6 4-6-4-6 4-6-4V16a4 4 0 0 1 4-4Z" stroke="currentColor" strokeWidth="2.5" />
+                    <path d="M29 27h14M29 35h14M29 43h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                  </svg>
+                  <p className={styles.desktopEmptyTitle}>Your bet slip is empty</p>
+                </div>
+
+                <div className={styles.desktopFooter}>
+                  <div className={styles.desktopFooterRow}>
+                    <span>Single</span>
+                    <span>To return</span>
+                  </div>
+                  <div className={styles.desktopFooterRow}>
+                    <span>—</span>
+                    <span className={styles.desktopReturnDash}>—</span>
+                  </div>
+                </div>
+
+                <button className={`${styles.cta} ${styles.ctaDisabled}`} disabled type="button">
+                  Place bet
+                </button>
+              </>
+            ) : (
+              <>
               <div className={styles.modeTabs}>
                 <button
                   type="button"
@@ -305,7 +350,6 @@ export function FloatingBetslip({
                   Multiple
                 </button>
               </div>
-            )}
 
             {/* Selection rows */}
             {bets.map((bet) => (
@@ -336,22 +380,38 @@ export function FloatingBetslip({
             <div className={styles.stakeSection} ref={stakeSectionRef}>
               {/* Quick-stake chips */}
               {!numpadOpen && betMode === 'multiple' && (
-                <div className={styles.chips}>
-                  {([25, 50, 100, 200] as const).map((amount) => (
-                    <button
-                      key={amount}
-                      className={`${styles.chip}${stake === amount ? ` ${styles.chipActive}` : ''}`}
-                      onClick={() => handleChip(amount)}
-                      type="button"
-                    >
-                      {currency}{amount}
-                    </button>
-                  ))}
+                <div className={styles.stakeInputRow}>
+                  <div className={styles.chips}>
+                    {([25, 50, 100] as const).map((amount) => (
+                      <button
+                        key={amount}
+                        className={`${styles.chip}${stake === amount ? ` ${styles.chipActive}` : ''}`}
+                        onClick={() => handleChip(amount)}
+                        type="button"
+                      >
+                        {currency}{amount}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    className={`${styles.stakeField}${stakeStr ? '' : ` ${styles.stakeFieldEmpty}`}`}
+                    onClick={() => {
+                      setActiveStakeTarget('multiple')
+                      setNumpadOpen(true)
+                    }}
+                    type="button"
+                    aria-label="Enter stake amount"
+                  >
+                    {stakeStr && <span className={styles.stakeLabel}>Stake</span>}
+                    <span className={styles.stakeValue}>
+                      {stakeStr ? `${currency}${stakeStr}` : 'Stake'}
+                    </span>
+                  </button>
                 </div>
               )}
 
-              {/* Stake display / numpad trigger */}
-              {betMode === 'multiple' && (
+              {/* Stake display / numpad trigger (visible while numpad is open) */}
+              {betMode === 'multiple' && numpadOpen && (
                 <button
                   className={`${styles.stakeField}${stakeStr ? '' : ` ${styles.stakeFieldEmpty}`}`}
                   onClick={() => {
@@ -410,6 +470,8 @@ export function FloatingBetslip({
                 {ctaLabel}
               </button>
             </div>
+              </>
+            )}
           </div>
 
           {/* Confirmation card — slides over the drawer after placement */}
