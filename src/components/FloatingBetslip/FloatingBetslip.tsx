@@ -33,7 +33,7 @@ function SelectionRow({ bet, onRemove }: { bet: BetEntry; onRemove: (id: string)
 
 const NUMPAD_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', '⌫'] as const
 
-function Numpad({ onKey, onDone }: { onKey: (k: string) => void; onDone: () => void }) {
+function Numpad({ onKey }: { onKey: (k: string) => void }) {
   return (
     <div className={styles.numpad}>
       <div className={styles.numpadGrid}>
@@ -43,9 +43,6 @@ function Numpad({ onKey, onDone }: { onKey: (k: string) => void; onDone: () => v
           </button>
         ))}
       </div>
-      <button className={styles.numpadDone} onClick={onDone} type="button">
-        ✓ Done
-      </button>
     </div>
   )
 }
@@ -108,6 +105,9 @@ export function FloatingBetslip({
       ? (betMode === 'multiple' ? stake * combined : singlePotentialWin).toFixed(2)
       : null
   const hasSuspended = bets.some((b) => b.suspended)
+  const showFooterStakeControls = betMode === 'multiple' || bets.length === 1
+  const footerStakeTarget =
+    betMode === 'multiple' ? 'multiple' : (bets[0]?.id ?? 'multiple')
   const isDesktop = layout === 'desktop'
 
   useEffect(() => () => clearTimeout(confirmTimer.current), [])
@@ -127,6 +127,7 @@ export function FloatingBetslip({
   useEffect(() => {
     if (bets.length <= 1) {
       setBetMode('single')
+      if (bets[0]) setActiveStakeTarget(bets[0].id)
       return
     }
     // Default to multiples when two or more selections are present.
@@ -183,8 +184,13 @@ export function FloatingBetslip({
   }
 
   function handleChip(amount: number) {
-    setStakeStr(amount.toString())
-    setActiveStakeTarget('multiple')
+    if (footerStakeTarget === 'multiple') {
+      setStakeStr(amount.toString())
+      setActiveStakeTarget('multiple')
+      return
+    }
+    setSingleStakeById((prev) => ({ ...prev, [footerStakeTarget]: amount.toString() }))
+    setActiveStakeTarget(footerStakeTarget)
     // Chips only set the stake — numpad opens only via the stake input field
   }
 
@@ -222,6 +228,8 @@ export function FloatingBetslip({
     : stake > 0
     ? `Place Bet — ${currency}${(betMode === 'multiple' ? multipleStake : singleStakeTotal).toFixed(2)}`
     : 'Place Bet'
+  const ctaStakeLabel = `${currency}${(betMode === 'multiple' ? multipleStake : singleStakeTotal).toFixed(2)}`
+  const ctaReturnLabel = potentialWin ? `${currency}${potentialWin}` : '—'
 
   return (
     <>
@@ -355,7 +363,7 @@ export function FloatingBetslip({
             {bets.map((bet) => (
               <div key={bet.id} className={styles.selectionBlock}>
                 <SelectionRow bet={bet} onRemove={onRemoveBet} />
-                {betMode === 'single' && (
+                {betMode === 'single' && bets.length > 1 && (
                   <div
                     className={`${styles.singleStakeRow} ${bets.length === 1 ? styles.singleStakeRowFull : ''}`}
                   >
@@ -379,7 +387,7 @@ export function FloatingBetslip({
             {/* Stake section */}
             <div className={styles.stakeSection} ref={stakeSectionRef}>
               {/* Quick-stake chips */}
-              {!numpadOpen && betMode === 'multiple' && (
+              {showFooterStakeControls && (
                 <div className={styles.stakeInputRow}>
                   <div className={styles.chips}>
                     {([25, 50, 100] as const).map((amount) => (
@@ -394,43 +402,52 @@ export function FloatingBetslip({
                     ))}
                   </div>
                   <button
-                    className={`${styles.stakeField}${stakeStr ? '' : ` ${styles.stakeFieldEmpty}`}`}
+                    className={`${styles.stakeField}${activeStakeStr ? '' : ` ${styles.stakeFieldEmpty}`}`}
                     onClick={() => {
-                      setActiveStakeTarget('multiple')
+                      setActiveStakeTarget(footerStakeTarget)
                       setNumpadOpen(true)
                     }}
                     type="button"
                     aria-label="Enter stake amount"
                   >
-                    {stakeStr && <span className={styles.stakeLabel}>Stake</span>}
-                    <span className={styles.stakeValue}>
-                      {stakeStr ? `${currency}${stakeStr}` : 'Stake'}
+                    <span className={`${styles.stakeValue}${activeStakeStr ? '' : ` ${styles.stakeValuePlaceholder}`}`}>
+                      {activeStakeStr ? `${currency}${activeStakeStr}` : 'Stake'}
                     </span>
                   </button>
                 </div>
               )}
 
-              {/* Stake display / numpad trigger (visible while numpad is open) */}
-              {betMode === 'multiple' && numpadOpen && (
+              {numpadOpen && (
                 <button
-                  className={`${styles.stakeField}${stakeStr ? '' : ` ${styles.stakeFieldEmpty}`}`}
-                  onClick={() => {
-                    setActiveStakeTarget('multiple')
-                    setNumpadOpen(true)
-                  }}
+                  className={[
+                    styles.cta,
+                    hasSuspended ? styles.ctaSuspended : ctaDisabled ? styles.ctaDisabled : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  onClick={handlePlaceBet}
+                  disabled={ctaDisabled}
                   type="button"
-                  aria-label="Enter stake amount"
                 >
-                  {stakeStr && <span className={styles.stakeLabel}>Stake</span>}
-                  <span className={styles.stakeValue}>
-                    {stakeStr ? `${currency}${stakeStr}` : 'Stake'}
-                  </span>
+                  {!hasSuspended ? (
+                    <span className={styles.ctaStack}>
+                      <span className={styles.ctaMain}>Place Bet {ctaStakeLabel}</span>
+                      <span className={styles.ctaSub}>Return {ctaReturnLabel}</span>
+                    </span>
+                  ) : (
+                    ctaLabel
+                  )}
                 </button>
               )}
 
               {/* Numpad — shown only when stake field is tapped */}
               {numpadOpen && (
-                <Numpad onKey={handleNumpadKey} onDone={() => setNumpadOpen(false)} />
+                <>
+                  <Numpad onKey={handleNumpadKey} />
+                  <button className={styles.numpadClose} onClick={() => setNumpadOpen(false)} type="button">
+                    Done
+                  </button>
+                </>
               )}
 
               {/* Summary */}
@@ -456,19 +473,21 @@ export function FloatingBetslip({
               )}
 
               {/* Place Bet CTA */}
-              <button
-                className={[
-                  styles.cta,
-                  hasSuspended ? styles.ctaSuspended : ctaDisabled ? styles.ctaDisabled : '',
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-                onClick={handlePlaceBet}
-                disabled={ctaDisabled}
-                type="button"
-              >
-                {ctaLabel}
-              </button>
+              {!numpadOpen && (
+                <button
+                  className={[
+                    styles.cta,
+                    hasSuspended ? styles.ctaSuspended : ctaDisabled ? styles.ctaDisabled : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  onClick={handlePlaceBet}
+                  disabled={ctaDisabled}
+                  type="button"
+                >
+                  {ctaLabel}
+                </button>
+              )}
             </div>
               </>
             )}
