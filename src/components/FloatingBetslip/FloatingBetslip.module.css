@@ -50,8 +50,8 @@
 /* ─── Drag handle ─── */
 .handleWrap {
   width: 100%;
-  padding: 12px 0 4px;
-  background: none;
+  padding: 8px 0 2px;
+  background: var(--surface-layer-1);
   border: none;
   cursor: pointer;
   display: flex;
@@ -72,8 +72,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px 12px;
+  padding: 6px 16px 8px;
   flex-shrink: 0;
+  background: var(--surface-layer-1);
 }
 
 .headerLeft {
@@ -112,17 +113,29 @@
   color: var(--content-accent);
 }
 
-.clearAll {
-  font-family: var(--font-sans);
-  font-size: 14px;
-  color: var(--content-secondary);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px 0;
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.clearAll:hover {
+.headerIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: var(--content-secondary);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.headerIconBtn:hover {
+  background: var(--action-neutral);
   color: var(--content-primary);
 }
 
@@ -204,26 +217,25 @@
   border-radius: 2px;
 }
 
+/* ─── Tabs bar — sits between header and scrollContent ─── */
+.tabsBar {
+  background: var(--surface-layer-1);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
 /* ─── Mode tabs ─── */
 .modeTabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: stretch;
-  height: 52px;
-  min-height: 52px;
-  border: 0;
-  border-bottom: 1px solid var(--border-subtle);
-  border-radius: 0;
-  overflow: visible;
-  background: transparent;
-  padding: 0;
+  height: 44px;
 }
 
 .modeTab {
   flex: 1;
   min-width: 0;
   height: 100%;
-  min-height: 100%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -233,9 +245,8 @@
   font-family: var(--font-sans);
   font-size: 14px;
   font-weight: 600;
-  border-radius: 0;
   cursor: pointer;
-  transition: background 120ms ease, color 120ms ease;
+  transition: color 120ms ease;
 }
 
 .modeTab:disabled {
@@ -244,9 +255,8 @@
 }
 
 .modeTabActive {
-  background: transparent;
   color: var(--content-primary);
-  box-shadow: inset 0 -3px 0 var(--content-accent);
+  box-shadow: inset 0 -2px 0 var(--border-active);
 }
 
 /* ─── Acca tag (legacy) ─── */
@@ -279,49 +289,47 @@
   gap: 6px;
 }
 
-.singleStakeRow {
+/* ─── Per-entry stake field (inside BetEntryCard footer slot) ─── */
+.entryStakeField {
+  width: 100%;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  /* surface-layer-2 creates contrast against the card's surface-layer-1 */
+  background: var(--surface-layer-2);
+  padding: 0 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 0 2px;
-}
-
-.singleStakeRowFull {
-  width: 100%;
-}
-
-.singleStakeField {
-  min-width: 96px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-default);
-  background: var(--surface-layer-1);
-  color: var(--content-primary);
-  font-family: var(--font-mono);
-  font-size: 16px;
-  font-weight: 700;
-  padding: 0 12px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
+  transition: border-color 120ms ease;
 }
 
-.singleStakeFieldFull {
-  width: 100%;
-  justify-content: flex-start;
+.entryStakeField:hover {
+  border-color: var(--border-active);
 }
 
-.singleStakeValue {
+.entryStakeLabel {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--content-subtle);
+}
+
+.entryStakeValue {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--content-primary);
   font-variant-numeric: tabular-nums;
 }
 
-.singleReturn {
-  font-family: var(--font-sans);
-  font-size: 12px;
-  color: var(--content-secondary);
-  white-space: nowrap;
+.entryStakePlaceholder {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--content-subtle);
+  font-variant-numeric: tabular-nums;
 }
 
 .selRowSuspended {
@@ -471,14 +479,15 @@
   transition: height 0.3s ease;
 }
 
-/* ─── Stake section — inside scroll, visually separated ─── */
-.stakeSection {
+/* ─── Sticky footer — locked at bottom, never scrolls ─── */
+.stickyFooter {
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding: 12px 16px 16px;
   border-top: 1px solid var(--border-subtle);
-  padding-top: 12px;
-  margin-top: 4px;
+  background: var(--surface-layer-2);
 }
 
 /* ─── Quick-stake chips ─── */
@@ -521,7 +530,7 @@
 .stakeField {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 10px 14px;
   background: var(--surface-layer-1);
   border: 1px solid var(--border-default);
@@ -529,11 +538,6 @@
   cursor: pointer;
   width: 100%;
   flex: 0 0 34%;
-  text-align: left;
-}
-
-.stakeFieldEmpty {
-  justify-content: flex-end;
 }
 
 .stakeField:hover {
@@ -845,7 +849,7 @@
 
 .figmaTheme .header {
   padding: 8px 14px 9px;
-  border-bottom-color: rgba(249, 250, 251, 0.08);
+  background: rgba(13, 19, 21, 0.98);
 }
 
 .figmaTheme .headerTitle {
@@ -861,15 +865,24 @@
   font-size: 14px;
 }
 
-.figmaTheme .clearAll {
+.figmaTheme .headerIconBtn {
   color: #8c9b97;
-  font-family: Inter, var(--font-sans), sans-serif;
-  font-size: 12px;
+}
+
+.figmaTheme .headerIconBtn:hover {
+  background: rgba(249, 250, 251, 0.06);
+  color: #d8e4e1;
 }
 
 .figmaTheme .scrollContent {
-  padding: 10px 14px 16px;
+  padding: 10px 14px 12px;
   gap: 7px;
+}
+
+.figmaTheme .stickyFooter {
+  background: rgba(13, 19, 21, 0.98);
+  border-top-color: rgba(249, 250, 251, 0.08);
+  padding: 10px 14px 14px;
 }
 
 .figmaTheme .accaTag {
@@ -879,24 +892,20 @@
   border-radius: 10px;
 }
 
-.figmaTheme .modeTabs {
-  height: 35px;
-  border-color: rgba(249, 250, 251, 0.08);
-  border-radius: 10px;
+.figmaTheme .tabsBar {
+  background: rgba(13, 19, 21, 0.98);
+  border-bottom-color: rgba(249, 250, 251, 0.08);
 }
 
 .figmaTheme .modeTab {
-  height: 35px;
   font-family: Inter, var(--font-sans), sans-serif;
   font-size: 13px;
   color: #8e9b98;
-  background: rgba(20, 26, 28, 0.96);
 }
 
 .figmaTheme .modeTabActive {
-  background: rgba(28, 35, 37, 1);
   color: #d8e4e1;
-  box-shadow: inset 0 0 0 1px rgba(249, 250, 251, 0.12);
+  box-shadow: inset 0 -2px 0 rgba(15, 186, 165, 0.7);
 }
 
 .figmaTheme .singleStakeField {

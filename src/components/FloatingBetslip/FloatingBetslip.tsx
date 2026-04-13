@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect, type MouseEvent } from 'react'
+import { useState, useRef, useEffect, type MouseEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { Trash2, ClipboardList } from 'lucide-react'
 import { MiniStrip } from './MiniStrip'
 import type { BetEntry } from './types'
 import { combinedOdds } from './types'
@@ -8,7 +9,15 @@ import styles from './FloatingBetslip.module.css'
 
 /* ─── SelectionRow ─── */
 
-function SelectionRow({ bet, onRemove }: { bet: BetEntry; onRemove: (id: string) => void }) {
+function SelectionRow({
+  bet,
+  onRemove,
+  stakeSlot,
+}: {
+  bet: BetEntry
+  onRemove: (id: string) => void
+  stakeSlot?: ReactNode
+}) {
   const topMeta = bet.isLive && bet.score
     ? `${bet.score}${bet.minute !== undefined ? ` · ${bet.minute}'` : ''}`
     : undefined
@@ -23,6 +32,8 @@ function SelectionRow({ bet, onRemove }: { bet: BetEntry; onRemove: (id: string)
         selection={bet.selection}
         market={bet.market}
         suspendedLabel={bet.suspended ? '⏸ Suspended' : undefined}
+        isLive={bet.isLive}
+        footer={stakeSlot}
         onRemove={() => onRemove(bet.id)}
         removeAriaLabel={`Remove ${bet.selection}`}
       />
@@ -348,13 +359,59 @@ export function FloatingBetslip({
               {bets.length > 0 && <span className={styles.headerMultiplier}>{combined.toFixed(2)}</span>}
             </div>
             {bets.length > 0 && (
-              <button className={styles.clearAll} onClick={onClearAll} type="button">
-                Clear all
-              </button>
+              <div className={styles.headerActions}>
+                <Link
+                  to="/my-bets"
+                  className={styles.headerIconBtn}
+                  aria-label="My Bets"
+                  onClick={handleMyBetsClick}
+                >
+                  <ClipboardList size={18} strokeWidth={1.8} />
+                </Link>
+                <button
+                  className={styles.headerIconBtn}
+                  onClick={onClearAll}
+                  type="button"
+                  aria-label="Clear all"
+                >
+                  <Trash2 size={18} strokeWidth={1.8} />
+                </button>
+              </div>
             )}
           </div>
 
-          {/* Scrollable content — everything below the header */}
+          {/* Tabs bar — locked between header and scroll, only when bets exist */}
+          {bets.length > 0 && (
+            <div className={styles.tabsBar}>
+              <div className={styles.modeTabs}>
+                <button
+                  type="button"
+                  className={`${styles.modeTab} ${betMode === 'single' ? styles.modeTabActive : ''}`}
+                  onClick={() => {
+                    setBetMode('single')
+                    setNumpadOpen(false)
+                  }}
+                >
+                  Single
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.modeTab} ${betMode === 'multiple' ? styles.modeTabActive : ''}`}
+                  onClick={() => {
+                    if (bets.length <= 1) return
+                    setBetMode('multiple')
+                    setNumpadOpen(false)
+                    setActiveStakeTarget('multiple')
+                  }}
+                  disabled={bets.length <= 1}
+                >
+                  Multiple
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Scrollable content — everything below the tabs */}
           <div className={styles.scrollContent}>
             {isDesktop && bets.length === 0 ? (
               <>
@@ -389,59 +446,39 @@ export function FloatingBetslip({
               </>
             ) : (
               <>
-              <div className={styles.modeTabs}>
-                <button
-                  type="button"
-                  className={`${styles.modeTab} ${betMode === 'single' ? styles.modeTabActive : ''}`}
-                  onClick={() => {
-                    setBetMode('single')
-                    setNumpadOpen(false)
-                  }}
-                >
-                  Single
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.modeTab} ${betMode === 'multiple' ? styles.modeTabActive : ''}`}
-                  onClick={() => {
-                    if (bets.length <= 1) return
-                    setBetMode('multiple')
-                    setNumpadOpen(false)
-                    setActiveStakeTarget('multiple')
-                  }}
-                  disabled={bets.length <= 1}
-                >
-                  Multiple
-                </button>
-              </div>
-
             {/* Selection rows */}
-            {bets.map((bet) => (
-              <div key={bet.id} className={styles.selectionBlock}>
-                <SelectionRow bet={bet} onRemove={onRemoveBet} />
-                {betMode === 'single' && bets.length > 1 && (
-                  <div
-                    className={`${styles.singleStakeRow} ${bets.length === 1 ? styles.singleStakeRowFull : ''}`}
-                  >
-                    <button
-                      className={`${styles.singleStakeField} ${bets.length === 1 ? styles.singleStakeFieldFull : ''}`}
-                      onClick={() => {
-                        setActiveStakeTarget(bet.id)
-                        setNumpadOpen(true)
-                      }}
-                      type="button"
-                    >
-                      <span className={styles.singleStakeValue}>
-                        {singleStakeById[bet.id] ? `${currency}${singleStakeById[bet.id]}` : 'Stake'}
-                      </span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
+            {bets.map((bet) => {
+              const entryStake = singleStakeById[bet.id]
+              const stakeSlot = betMode === 'single' && bets.length > 1 ? (
+                <button
+                  className={styles.entryStakeField}
+                  onClick={() => {
+                    setActiveStakeTarget(bet.id)
+                    setNumpadOpen(true)
+                  }}
+                  type="button"
+                >
+                  <span className={styles.entryStakeLabel}>Stake</span>
+                  <span className={entryStake ? styles.entryStakeValue : styles.entryStakePlaceholder}>
+                    {entryStake ? `${currency}${entryStake}` : '0.00'}
+                  </span>
+                </button>
+              ) : undefined
 
-            {/* Stake section */}
-            <div className={styles.stakeSection} ref={stakeSectionRef}>
+              return (
+                <div key={bet.id} className={styles.selectionBlock}>
+                  <SelectionRow bet={bet} onRemove={onRemoveBet} stakeSlot={stakeSlot} />
+                </div>
+              )
+            })}
+
+              </>
+            )}
+          </div>
+
+          {/* Sticky footer — locked at bottom, never scrolls */}
+          {bets.length > 0 && (
+            <div className={styles.stickyFooter} ref={stakeSectionRef}>
               {/* Quick-stake chips */}
               {showFooterStakeControls && (
                 <div className={styles.stakeInputRow}>
@@ -458,7 +495,7 @@ export function FloatingBetslip({
                     ))}
                   </div>
                   <button
-                    className={`${styles.stakeField}${activeStakeStr ? '' : ` ${styles.stakeFieldEmpty}`}`}
+                    className={styles.stakeField}
                     onClick={() => {
                       setActiveStakeTarget(footerStakeTarget)
                       setNumpadOpen(true)
@@ -563,9 +600,7 @@ export function FloatingBetslip({
                 </button>
               )}
             </div>
-              </>
-            )}
-          </div>
+          )}
 
           {/* Bet placement summary stage */}
           {betPlacementStage === 'summary' && betPlacementSummary && (

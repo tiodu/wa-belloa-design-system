@@ -44,6 +44,15 @@
   font-family: var(--font-mono);
 }
 
+.metaLive {
+  animation: livePulse 1.6s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+
 .removeButton {
   width: 20px;
   height: 20px;
@@ -147,4 +156,11 @@
   color: var(--status-warning-fg);
   font-size: 11px;
   font-weight: 600;
+}
+
+/* ─── Footer slot (e.g. per-entry stake input) ─── */
+.footer {
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 2px;
+  padding-top: 8px;
 }

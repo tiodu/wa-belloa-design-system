@@ -3,12 +3,14 @@ import type { BetEntry } from './types'
 import { combinedOdds } from './types'
 import styles from './MiniStrip.module.css'
 
+const MAX_VISIBLE_LABELS = 3
+
 export type MiniStripProps = {
   /** Active bet selections in the slip. Renders nothing when empty. */
   bets: BetEntry[]
-  /** Current stake in the major currency unit (e.g. 50 → renders "₺50.00"). */
+  /** @deprecated No longer rendered — kept for API compatibility. */
   stake?: number
-  /** Currency symbol prefix. Defaults to ₺ for TR market. */
+  /** @deprecated No longer rendered — kept for API compatibility. */
   currency?: string
   /** Called when the user taps anywhere on the strip to open the full drawer. */
   onOpen: () => void
@@ -34,8 +36,6 @@ const IconChevronUp = () => (
 
 export function MiniStrip({
   bets,
-  stake,
-  currency = '₺',
   onOpen,
   className,
   style,
@@ -49,10 +49,9 @@ export function MiniStrip({
   // First bet with a direction signal drives the flash colour
   const oddsDirection = bets.find(b => b.oddsDirection)?.oddsDirection
 
-  const label = bets.map((bet) => bet.selection).join(', ')
-
-  const stakeLabel =
-    stake && stake > 0 ? `${currency}${stake.toFixed(2)}` : `${currency}—`
+  const visibleBets = bets.slice(0, MAX_VISIBLE_LABELS)
+  const overflowCount = bets.length - MAX_VISIBLE_LABELS
+  const label = visibleBets.map((bet) => bet.selection).join(', ')
 
   // Key the odds span on value + direction so CSS animation re-fires on change
   const oddsKey = `${combined.toFixed(2)}-${oddsDirection ?? 'none'}`
@@ -78,7 +77,7 @@ export function MiniStrip({
       type="button"
       aria-label={`Bahis kuponu — ${bets.length} seçim, oran ${combined.toFixed(2)}, seçimler ${label}`}
     >
-      {/* Left: badge · odds · label */}
+      {/* Left: badge · odds · label · overflow */}
       <div className={styles.left}>
         <span className={styles.badge} aria-hidden="true">
           {bets.length}
@@ -90,6 +89,12 @@ export function MiniStrip({
 
         <span className={styles.label}>{label}</span>
 
+        {overflowCount > 0 && (
+          <span className={styles.overflow} aria-label={`ve ${overflowCount} seçim daha`}>
+            +{overflowCount}
+          </span>
+        )}
+
         {hasSuspended && (
           <span
             className={styles.suspendedDot}
@@ -99,12 +104,8 @@ export function MiniStrip({
         )}
       </div>
 
-      {/* Right: stake · divider · open button */}
+      {/* Right: open button */}
       <div className={styles.right}>
-        <span className={styles.stakeDisplay} aria-label="Bahis miktarı">
-          {stakeLabel}
-        </span>
-        <span className={styles.divider} aria-hidden="true" />
         <span className={styles.openBtn} aria-hidden="true">
           <IconChevronUp />
         </span>

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import styles from './BetEntryCard.module.css'
 
 type OddsDirection = 'up' | 'down'
@@ -12,6 +13,9 @@ type BetEntryCardProps = {
   market: string
   suspendedLabel?: string
   oddsDirection?: OddsDirection
+  isLive?: boolean
+  /** Optional slot rendered inside the card below a divider (e.g. per-entry stake input). */
+  footer?: ReactNode
   onRemove?: () => void
   removeAriaLabel?: string
 }
@@ -26,6 +30,8 @@ export function BetEntryCard({
   market,
   suspendedLabel,
   oddsDirection,
+  isLive = false,
+  footer,
   onRemove,
   removeAriaLabel = 'Remove selection',
 }: BetEntryCardProps) {
@@ -41,7 +47,11 @@ export function BetEntryCard({
       <div className={styles.top}>
         <div className={styles.topLine}>
           <span className={styles.topPrimary}>
-            {topMeta && <span className={styles.meta}>{topMeta}</span>}
+            {topMeta && (
+              <span className={`${styles.meta}${isLive ? ` ${styles.metaLive}` : ''}`}>
+                {topMeta}
+              </span>
+            )}
             <span>{topPrimary}</span>
           </span>
           {onRemove ? (
@@ -83,6 +93,12 @@ export function BetEntryCard({
       </div>
 
       <div className={styles.market}>{market}</div>
+
+      {footer && (
+        <div className={styles.footer}>
+          {footer}
+        </div>
+      )}
     </div>
   )
 }
