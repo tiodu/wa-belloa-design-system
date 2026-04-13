@@ -80,6 +80,30 @@
   gap: 3px;
 }
 
+.boostedOdds {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.boostedValues {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.originalOdds {
+  color: var(--content-subtle);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: line-through;
+}
+
+.boostedCurrentOdds {
+  color: var(--status-success-fg);
+}
+
 .odds {
   color: var(--content-accent);
   font-family: var(--font-mono);

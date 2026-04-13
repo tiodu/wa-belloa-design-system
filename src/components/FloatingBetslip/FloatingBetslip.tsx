@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, type MouseEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { MiniStrip } from './MiniStrip'
 import type { BetEntry } from './types'
 import { combinedOdds } from './types'
@@ -32,6 +33,17 @@ function SelectionRow({ bet, onRemove }: { bet: BetEntry; onRemove: (id: string)
 /* ─── Numpad ─── */
 
 const NUMPAD_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', '⌫'] as const
+const PLACE_BET_LOADING_MS = 1000
+const BET_SUMMARY_VISIBLE_MS = 5000
+
+type BetPlacementStage = 'idle' | 'loading' | 'summary'
+
+type BetPlacementSummary = {
+  ref: string
+  stake: string
+  odds: string
+  potentialWin: string
+}
 
 function Numpad({ onKey }: { onKey: (k: string) => void }) {
   return (
@@ -67,6 +79,8 @@ export type FloatingBetslipProps = {
   openSignal?: number
   /** Layout mode: floating mobile drawer or docked desktop panel. */
   layout?: 'floating' | 'desktop'
+  /** Optional in-context navigation for contained previews. */
+  onOpenMyBets?: () => void
 }
 
 export function FloatingBetslip({
@@ -79,6 +93,7 @@ export function FloatingBetslip({
   variant = 'default',
   openSignal,
   layout = 'floating',
+  onOpenMyBets,
 }: FloatingBetslipProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [numpadOpen, setNumpadOpen] = useState(false)
@@ -86,9 +101,10 @@ export function FloatingBetslip({
   const [singleStakeById, setSingleStakeById] = useState<Record<string, string>>({})
   const [activeStakeTarget, setActiveStakeTarget] = useState<'multiple' | string>('multiple')
   const [betMode, setBetMode] = useState<'single' | 'multiple'>('single')
-  const [confirming, setConfirming] = useState(false)
-  const [confirmRef, setConfirmRef] = useState('')
-  const confirmTimer = useRef<ReturnType<typeof setTimeout>>()
+  const [betPlacementStage, setBetPlacementStage] = useState<BetPlacementStage>('idle')
+  const [betPlacementSummary, setBetPlacementSummary] = useState<BetPlacementSummary | null>(null)
+  const loadingTimer = useRef<ReturnType<typeof setTimeout>>()
+  const summaryTimer = useRef<ReturnType<typeof setTimeout>>()
   const stakeSectionRef = useRef<HTMLDivElement>(null)
 
   const multipleStake = parseFloat(stakeStr) || 0
@@ -110,7 +126,27 @@ export function FloatingBetslip({
     betMode === 'multiple' ? 'multiple' : (bets[0]?.id ?? 'multiple')
   const isDesktop = layout === 'desktop'
 
-  useEffect(() => () => clearTimeout(confirmTimer.current), [])
+  useEffect(
+    () => () => {
+      clearTimeout(loadingTimer.current)
+      clearTimeout(summaryTimer.current)
+    },
+    []
+  )
+
+  function clearPlacementTimers() {
+    clearTimeout(loadingTimer.current)
+    clearTimeout(summaryTimer.current)
+  }
+
+  function finalizePlacedBet() {
+    clearPlacementTimers()
+    setBetPlacementStage('idle')
+    setBetPlacementSummary(null)
+    setStakeStr('')
+    setSingleStakeById({})
+    onClearAll()
+  }
 
   // If all bets are removed externally, collapse the drawer
   useEffect(() => {
@@ -121,6 +157,9 @@ export function FloatingBetslip({
       setSingleStakeById({})
       setBetMode('single')
       setActiveStakeTarget('multiple')
+      setBetPlacementStage('idle')
+      setBetPlacementSummary(null)
+      clearPlacementTimers()
     }
   }, [bets.length])
 
@@ -142,8 +181,7 @@ export function FloatingBetslip({
   }, [openSignal])
 
   useEffect(() => {
-    if (!numpadOpen) return
-    // Ensure Done + Place Bet remain visible inside constrained previews.
+    // Keep the same micro-animation on both numpad open and close transitions.
     requestAnimationFrame(() => {
       stakeSectionRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' })
     })
@@ -152,6 +190,9 @@ export function FloatingBetslip({
   function handleClose() {
     setIsOpen(false)
     setNumpadOpen(false)
+    if (betPlacementStage !== 'idle') {
+      finalizePlacedBet()
+    }
   }
 
   function handleNumpadKey(k: string) {
@@ -201,35 +242,50 @@ export function FloatingBetslip({
     }
     const placedStake = betMode === 'multiple' ? multipleStake : singleStakeTotal
     if (placedStake <= 0) return
-
+    setNumpadOpen(false)
     const ref = `BLX-${Math.floor(100000 + Math.random() * 900000)}`
-    setConfirmRef(ref)
-    setConfirming(true)
+    setBetPlacementSummary({
+      ref,
+      stake: placedStake.toFixed(2),
+      odds: combined.toFixed(2),
+      potentialWin: ((betMode === 'multiple' ? placedStake * combined : singlePotentialWin) || 0).toFixed(2),
+    })
     onPlaceBet?.(placedStake)
-
-    confirmTimer.current = setTimeout(() => {
-      setConfirming(false)
-      setIsOpen(false)
-      setNumpadOpen(false)
-      setStakeStr('')
-      setSingleStakeById({})
-      onClearAll()
-    }, 2800)
+    clearPlacementTimers()
+    setBetPlacementStage('loading')
+    loadingTimer.current = setTimeout(() => {
+      setBetPlacementStage('summary')
+      summaryTimer.current = setTimeout(() => {
+        setIsOpen(false)
+        finalizePlacedBet()
+      }, BET_SUMMARY_VISIBLE_MS)
+    }, PLACE_BET_LOADING_MS)
   }
 
   if (bets.length === 0 && !isDesktop) return null
 
   const posClass = contained ? styles.posAbsolute : styles.posFixed
   const themeClass = variant === 'figma' ? styles.figmaTheme : ''
-  const ctaDisabled = !hasSuspended && (betMode === 'multiple' ? multipleStake <= 0 : singleStakeTotal <= 0)
+  const isBetPlacementPending = betPlacementStage === 'loading' || betPlacementStage === 'summary'
+  const ctaDisabled =
+    isBetPlacementPending || (!hasSuspended && (betMode === 'multiple' ? multipleStake <= 0 : singleStakeTotal <= 0))
 
-  const ctaLabel = hasSuspended
+  const ctaLabel = betPlacementStage === 'loading'
+    ? 'Placing bet...'
+    : hasSuspended
     ? '⏸ Remove suspended selections'
     : stake > 0
     ? `Place Bet — ${currency}${(betMode === 'multiple' ? multipleStake : singleStakeTotal).toFixed(2)}`
     : 'Place Bet'
   const ctaStakeLabel = `${currency}${(betMode === 'multiple' ? multipleStake : singleStakeTotal).toFixed(2)}`
   const ctaReturnLabel = potentialWin ? `${currency}${potentialWin}` : '—'
+
+  function handleMyBetsClick(event: MouseEvent<HTMLAnchorElement>) {
+    if (!onOpenMyBets) return
+    event.preventDefault()
+    handleClose()
+    onOpenMyBets()
+  }
 
   return (
     <>
@@ -431,8 +487,19 @@ export function FloatingBetslip({
                 >
                   {!hasSuspended ? (
                     <span className={styles.ctaStack}>
-                      <span className={styles.ctaMain}>Place Bet {ctaStakeLabel}</span>
-                      <span className={styles.ctaSub}>Return {ctaReturnLabel}</span>
+                      <span className={styles.ctaMain}>
+                        {betPlacementStage === 'loading' ? (
+                          <span className={styles.ctaLoading}>
+                            <span className={styles.ctaSpinner} aria-hidden="true" />
+                            Placing bet...
+                          </span>
+                        ) : (
+                          <>Place Bet {ctaStakeLabel}</>
+                        )}
+                      </span>
+                      <span className={styles.ctaSub}>
+                        {betPlacementStage === 'loading' ? 'Please wait' : `Return ${ctaReturnLabel}`}
+                      </span>
                     </span>
                   ) : (
                     ctaLabel
@@ -485,7 +552,14 @@ export function FloatingBetslip({
                   disabled={ctaDisabled}
                   type="button"
                 >
-                  {ctaLabel}
+                  {betPlacementStage === 'loading' ? (
+                    <span className={styles.ctaLoading}>
+                      <span className={styles.ctaSpinner} aria-hidden="true" />
+                      Placing bet...
+                    </span>
+                  ) : (
+                    ctaLabel
+                  )}
                 </button>
               )}
             </div>
@@ -493,18 +567,26 @@ export function FloatingBetslip({
             )}
           </div>
 
-          {/* Confirmation card — slides over the drawer after placement */}
-          {confirming && (
-            <div className={styles.confirmation}>
-              <div className={styles.confirmIcon}>✓</div>
-              <div className={styles.confirmTitle}>Bet Confirmed!</div>
-              <div className={styles.confirmRef}>{confirmRef}</div>
-              <div className={styles.confirmDetails}>
-                <span>{currency}{stake.toFixed(2)}</span>
-                <span className={styles.confirmSep}>·</span>
-                <span>Odds {combined.toFixed(2)}</span>
-                <span className={styles.confirmSep}>·</span>
-                <span>Win {currency}{potentialWin ?? '—'}</span>
+          {/* Bet placement summary stage */}
+          {betPlacementStage === 'summary' && betPlacementSummary && (
+            <div className={styles.betSummaryOverlay}>
+              <div className={styles.betSummaryTimerTrack}>
+                <div className={styles.betSummaryTimerFill} />
+              </div>
+              <div className={styles.betSummaryContent}>
+                <div className={styles.betSummaryIcon}>✓</div>
+                <div className={styles.betSummaryTitle}>Bet placed</div>
+                <div className={styles.betSummaryRef}>{betPlacementSummary.ref}</div>
+                <div className={styles.betSummaryDetails}>
+                  <span>{currency}{betPlacementSummary.stake}</span>
+                  <span className={styles.betSummarySep}>·</span>
+                  <span>Odds {betPlacementSummary.odds}</span>
+                  <span className={styles.betSummarySep}>·</span>
+                  <span>Return {currency}{betPlacementSummary.potentialWin}</span>
+                </div>
+                <Link to="/my-bets" className={styles.betSummaryLink} onClick={handleMyBetsClick}>
+                  My Bets
+                </Link>
               </div>
             </div>
           )}

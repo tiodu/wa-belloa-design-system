@@ -7,6 +7,7 @@ type BetEntryCardProps = {
   topPrimary: string
   topSecondary?: string
   odds?: string
+  originalOdds?: string
   selection?: string
   market: string
   suspendedLabel?: string
@@ -20,6 +21,7 @@ export function BetEntryCard({
   topPrimary,
   topSecondary,
   odds,
+  originalOdds,
   selection,
   market,
   suspendedLabel,
@@ -59,8 +61,17 @@ export function BetEntryCard({
         ) : (
           <>
             <span className={styles.oddsWrap}>
-              {odds && <span className={oddsClass}>{odds}</span>}
-              {oddsDirection && (
+              {odds && originalOdds ? (
+                <span className={styles.boostedOdds}>
+                  <span className={styles.boostedValues}>
+                    <span className={styles.originalOdds}>{originalOdds}</span>
+                    <span className={`${oddsClass} ${styles.boostedCurrentOdds}`}>{odds}</span>
+                  </span>
+                </span>
+              ) : (
+                odds && <span className={oddsClass}>{odds}</span>
+              )}
+              {!originalOdds && oddsDirection && (
                 <span className={oddsDirection === 'up' ? styles.deltaUp : styles.deltaDown}>
                   {oddsDirection === 'up' ? '▲' : '▼'}
                 </span>

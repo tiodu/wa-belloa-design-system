@@ -25,6 +25,14 @@ export function HomeHubPage() {
             Full desktop sportsbook layout and the three legacy betslip implementations.
           </p>
         </Link>
+
+        <Link className={styles.card} to="/my-bets">
+          <span className={styles.cardTag}>Placeholder</span>
+          <h2 className={styles.cardTitle}>My Bets</h2>
+          <p className={styles.cardDescription}>
+            Temporary destination page for post-placement navigation from the floating betslip summary.
+          </p>
+        </Link>
       </section>
     </main>
   )

@@ -209,6 +209,7 @@ const MOBILE_MATCHES_PREMATCH: MobileMatch[] = [
 ]
 
 type EntryMode = 'live' | 'prematch'
+type MobileView = 'sportsbook' | 'mybets'
 
 const FLOAT_BETS_BY_MODE: Record<EntryMode, FloatBetEntry[]> = {
   live: FLOAT_BETS_LIVE,
@@ -235,6 +236,7 @@ type EntryVariantMock = {
   topPrimary: string
   topSecondary?: string
   odds: string
+  originalOdds?: string
   selection: string
   market: string
 }
@@ -275,6 +277,12 @@ const ENTRY_COVERAGE_ROWS: EntryCoverageRow[] = [
     topZone: 'Teams + map/round state',
     selectionZone: 'Odds + team/map outcome',
     marketZone: 'Map Winner · Map 2',
+  },
+  {
+    scenario: 'Boosted odds special',
+    topZone: 'Match line only',
+    selectionZone: 'Decimal old odds (strikethrough) + boosted decimal odds',
+    marketZone: 'Keep market visible under boosted block',
   },
   {
     scenario: 'Suspended selection',
@@ -342,6 +350,16 @@ const ENTRY_VARIANTS: EntryVariantMock[] = [
   },
   {
     id: 'v6',
+    title: 'Boosted Odds — Popular',
+    state: 'Pre-match',
+    topPrimary: 'Galatasaray & Fenerbahce Both To Win',
+    odds: '6.10',
+    originalOdds: '5.10',
+    selection: 'Boosted Price',
+    market: 'Istedigi Zaman Gol',
+  },
+  {
+    id: 'v7',
     title: 'Suspended Example',
     state: 'Suspended',
     topMeta: "2-1 · 88'",
@@ -677,6 +695,97 @@ function MobileSportsbookMock({
   )
 }
 
+function MobileMyBetsMock() {
+  const myBetRows = [
+    { id: 'b1', market: 'Bet Builder', stake: '₺0.10', returnValue: '₺0.47', status: 'Open' },
+    { id: 'b2', market: 'Match Result', stake: '₺5.00', returnValue: '₺12.40', status: 'Settled' },
+  ]
+
+  return (
+    <div className={styles.mobileViewport}>
+      <div className={styles.mobileBook}>
+        <div className={styles.mobileHeader}>
+          <button className={styles.mobileHeaderBtn} type="button">⌕</button>
+          <div className={styles.mobileLogo}>110x28</div>
+          <button className={styles.mobileIconGhost} type="button">🎁</button>
+          <div className={styles.mobileHeaderActions}>
+            <button className={styles.mobilePillGhost} type="button">Log in</button>
+            <button className={styles.mobilePillPrimary} type="button">Register</button>
+          </div>
+        </div>
+
+        <section className={styles.mobileMyBetsSection}>
+          <div className={styles.mobileMyBetsHead}>
+            <span className={styles.mobileMyBetsTitle}>My Bets</span>
+            <span className={styles.mobileMyBetsCounter}>{myBetRows.length}</span>
+          </div>
+          <div className={styles.mobileMyBetsTabs}>
+            <button type="button" className={`${styles.mobileMyBetsTab} ${styles.mobileMyBetsTabActive}`}>Open</button>
+            <button type="button" className={styles.mobileMyBetsTab}>Settled</button>
+            <button type="button" className={styles.mobileMyBetsTab}>Live</button>
+          </div>
+          <div className={styles.mobileMyBetsList}>
+            {myBetRows.map((row) => (
+              <article key={row.id} className={styles.mobileMyBetsCard}>
+                <div className={styles.mobileMyBetsCardTop}>
+                  <span>{row.market}</span>
+                  <span className={styles.mobileMyBetsStatus}>{row.status}</span>
+                </div>
+                <div className={styles.mobileMyBetsCardBottom}>
+                  <div>
+                    <span className={styles.mobileMyBetsMeta}>Stake</span>
+                    <strong>{row.stake}</strong>
+                  </div>
+                  <div>
+                    <span className={styles.mobileMyBetsMeta}>Return</span>
+                    <strong>{row.returnValue}</strong>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  )
+}
+
+function PhoneBottomNav({
+  mobileView,
+  onChange,
+}: {
+  mobileView: MobileView
+  onChange: (next: MobileView) => void
+}) {
+  return (
+    <div className={styles.phoneBottomNav}>
+      <button
+        type="button"
+        className={`${styles.phoneBottomNavItem} ${mobileView === 'sportsbook' ? styles.phoneBottomNavItemActive : ''}`}
+        onClick={() => onChange('sportsbook')}
+      >
+        Home
+      </button>
+      <button type="button" className={styles.phoneBottomNavItem} onClick={() => onChange('sportsbook')}>
+        All Sports
+      </button>
+      <button type="button" className={styles.phoneBottomNavItem} onClick={() => onChange('sportsbook')}>
+        In-Play
+      </button>
+      <button
+        type="button"
+        className={`${styles.phoneBottomNavItem} ${mobileView === 'mybets' ? styles.phoneBottomNavItemActive : ''}`}
+        onClick={() => onChange('mybets')}
+      >
+        My Bets
+      </button>
+      <button type="button" className={styles.phoneBottomNavItem} onClick={() => onChange('sportsbook')}>
+        Casino
+      </button>
+    </div>
+  )
+}
+
 /* ---- Main Visualiser ---- */
 
 type SportsbookVisualiserMode = 'official' | 'playground'
@@ -692,6 +801,7 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
   const [entryMode, setEntryMode] = useState<EntryMode>('live')
   const [floatBets, setFloatBets] = useState<FloatBetEntry[]>(FLOAT_BETS_BY_MODE.live)
   const [openDefaultSignal, setOpenDefaultSignal] = useState(0)
+  const [mobileView, setMobileView] = useState<MobileView>('sportsbook')
   const sourceFloatBets = FLOAT_BETS_BY_MODE[entryMode]
   const currentMobileMatches = MOBILE_MATCHES_BY_MODE[entryMode]
 
@@ -872,25 +982,34 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
             <span className={styles.phoneVariantLabel}>Mobile preview · Current</span>
             <div
               className={`${styles.phoneFrame} ${styles.phoneFrameBgLive}`}
-              onClick={() => setOpenDefaultSignal((s) => s + 1)}
+              onClick={() => {
+                if (mobileView === 'sportsbook') setOpenDefaultSignal((s) => s + 1)
+              }}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') setOpenDefaultSignal((s) => s + 1)
+                if (mobileView === 'sportsbook' && (e.key === 'Enter' || e.key === ' ')) {
+                  setOpenDefaultSignal((s) => s + 1)
+                }
               }}
             >
-              <MobileSportsbookMock
-                floatBets={floatBets}
-                matches={currentMobileMatches}
-                entryMode={entryMode}
-                onToggleOdd={toggleFromOdds}
-              />
-              <div className={styles.phoneBottomNav} />
+              {mobileView === 'sportsbook' ? (
+                <MobileSportsbookMock
+                  floatBets={floatBets}
+                  matches={currentMobileMatches}
+                  entryMode={entryMode}
+                  onToggleOdd={toggleFromOdds}
+                />
+              ) : (
+                <MobileMyBetsMock />
+              )}
+              <PhoneBottomNav mobileView={mobileView} onChange={setMobileView} />
               <FloatingBetslip
                 bets={floatBets}
                 contained
                 variant="default"
                 openSignal={openDefaultSignal}
+                onOpenMyBets={() => setMobileView('mybets')}
                 onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
                 onClearAll={() => setFloatBets([])}
               />
@@ -984,6 +1103,7 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                 topPrimary={variant.topPrimary}
                 topSecondary={variant.topSecondary}
                 odds={variant.odds}
+                originalOdds={variant.originalOdds}
                 selection={variant.selection}
                 market={variant.market}
                 suspendedLabel={variant.state === 'Suspended' ? '⏸ Suspended' : undefined}
