@@ -18,6 +18,18 @@ export type BetEntry = {
 
 export type BetslipState = 'mini' | 'open' | 'closed'
 
+export type BonusThreshold = {
+  selections: number   // qualifying selections needed
+  percent: number      // boost percentage at this tier
+}
+
+export type BonusTrackerConfig = {
+  label: string
+  thresholds: BonusThreshold[]
+  /** Minimum odds required for a selection to count toward the boost (e.g. 1.3) */
+  minOdds?: number
+}
+
 /* ---- Odds helpers ---- */
 
 export function combinedOdds(bets: BetEntry[]): number {

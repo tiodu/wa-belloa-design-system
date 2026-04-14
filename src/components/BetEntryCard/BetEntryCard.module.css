@@ -158,6 +158,30 @@
   font-weight: 600;
 }
 
+/* ─── Odds changed banner ─── */
+.oddsChangedBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--action-primary);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-top: 4px;
+}
+
+.oddsChangedIcon {
+  color: var(--content-on-action);
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.oddsChangedText {
+  color: var(--content-on-action);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 /* ─── Footer slot (e.g. per-entry stake input) ─── */
 .footer {
   border-top: 1px solid var(--border-subtle);

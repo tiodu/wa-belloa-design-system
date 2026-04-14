@@ -94,6 +94,13 @@ export function BetEntryCard({
 
       <div className={styles.market}>{market}</div>
 
+      {oddsDirection && !suspendedLabel && (
+        <div className={styles.oddsChangedBanner}>
+          <span className={styles.oddsChangedIcon}>ⓘ</span>
+          <span className={styles.oddsChangedText}>Odds changed</span>
+        </div>
+      )}
+
       {footer && (
         <div className={styles.footer}>
           {footer}

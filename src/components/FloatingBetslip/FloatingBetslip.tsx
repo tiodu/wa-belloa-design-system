@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, type MouseEvent, type ReactNode } from 're
 import { Link } from 'react-router-dom'
 import { Trash2, ClipboardList } from 'lucide-react'
 import { MiniStrip } from './MiniStrip'
-import type { BetEntry } from './types'
+import type { BetEntry, BonusTrackerConfig } from './types'
 import { combinedOdds } from './types'
 import { BetEntryCard } from '../BetEntryCard'
 import styles from './FloatingBetslip.module.css'
@@ -70,6 +70,62 @@ function Numpad({ onKey }: { onKey: (k: string) => void }) {
   )
 }
 
+/* ─── BonusTrackerBar ─── */
+
+function BonusTrackerBar({
+  label,
+  thresholds,
+  betsCount,
+  minOdds,
+}: {
+  label: string
+  thresholds: BonusTrackerConfig['thresholds']
+  betsCount: number
+  minOdds?: number
+}) {
+  const sorted = [...thresholds].sort((a, b) => a.selections - b.selections)
+  const maxSel = sorted[sorted.length - 1]?.selections ?? 1
+  const activeTier = [...sorted].reverse().find((t) => betsCount >= t.selections)
+  const progress = Math.min(betsCount / maxSel, 1)
+  const nextTier = sorted.find((t) => betsCount < t.selections)
+
+  return (
+    <div className={styles.bonusTracker}>
+      <div className={styles.bonusTrackerHeader}>
+        <span className={styles.bonusTrackerLabelGroup}>
+          <span className={styles.bonusTrackerLabel}>{label}</span>
+          {minOdds !== undefined && (
+            <span className={styles.bonusTrackerMinOdds}>Min odds {minOdds}</span>
+          )}
+        </span>
+        <span className={styles.bonusTrackerTier}>
+          {activeTier
+            ? `${activeTier.percent}% ★`
+            : nextTier
+            ? `Add ${nextTier.selections - betsCount} more`
+            : null}
+        </span>
+      </div>
+      <div className={styles.bonusTrackerTrack}>
+        <div className={styles.bonusTrackerFill} style={{ width: `${progress * 100}%` }} />
+        {sorted.map((t) => {
+          const isActive = betsCount >= t.selections
+          return (
+            <span
+              key={t.selections}
+              className={`${styles.bonusTrackerTick}${isActive ? ` ${styles.bonusTrackerTickActive}` : ''}`}
+              style={{ left: `${(t.selections / maxSel) * 100}%` }}
+            >
+              <span className={styles.bonusTrackerTickDot} />
+              <span className={styles.bonusTrackerTickLabel}>{t.percent}%</span>
+            </span>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 /* ─── FloatingBetslip ─── */
 
 export type FloatingBetslipProps = {
@@ -92,6 +148,8 @@ export type FloatingBetslipProps = {
   layout?: 'floating' | 'desktop'
   /** Optional in-context navigation for contained previews. */
   onOpenMyBets?: () => void
+  /** When provided, renders a bonus tracker bar below selections and a boosted return line in the summary. */
+  bonusTracker?: BonusTrackerConfig
 }
 
 export function FloatingBetslip({
@@ -105,6 +163,7 @@ export function FloatingBetslip({
   openSignal,
   layout = 'floating',
   onOpenMyBets,
+  bonusTracker,
 }: FloatingBetslipProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [numpadOpen, setNumpadOpen] = useState(false)
@@ -132,6 +191,16 @@ export function FloatingBetslip({
       ? (betMode === 'multiple' ? stake * combined : singlePotentialWin).toFixed(2)
       : null
   const hasSuspended = bets.some((b) => b.suspended)
+  const hasOddsChanged = bets.some((b) => b.oddsDirection !== undefined)
+  const activePercent = (() => {
+    if (!bonusTracker) return 0
+    const sorted = [...bonusTracker.thresholds].sort((a, b) => a.selections - b.selections)
+    return [...sorted].reverse().find((t) => bets.length >= t.selections)?.percent ?? 0
+  })()
+  const boostedPotentialWin =
+    bonusTracker && activePercent > 0 && potentialWin
+      ? (parseFloat(potentialWin) * (activePercent / 100)).toFixed(2)
+      : null
   const showFooterStakeControls = betMode === 'multiple' || bets.length === 1
   const footerStakeTarget =
     betMode === 'multiple' ? 'multiple' : (bets[0]?.id ?? 'multiple')
@@ -281,12 +350,17 @@ export function FloatingBetslip({
   const ctaDisabled =
     isBetPlacementPending || (!hasSuspended && (betMode === 'multiple' ? multipleStake <= 0 : singleStakeTotal <= 0))
 
+  const stakeAmount = (betMode === 'multiple' ? multipleStake : singleStakeTotal).toFixed(2)
   const ctaLabel = betPlacementStage === 'loading'
     ? 'Placing bet...'
     : hasSuspended
     ? '⏸ Remove suspended selections'
+    : hasOddsChanged && stake > 0
+    ? `Accept odds & place bet — ${currency}${stakeAmount}`
+    : hasOddsChanged
+    ? 'Accept odds & place bet'
     : stake > 0
-    ? `Place Bet — ${currency}${(betMode === 'multiple' ? multipleStake : singleStakeTotal).toFixed(2)}`
+    ? `Place Bet — ${currency}${stakeAmount}`
     : 'Place Bet'
   const ctaStakeLabel = `${currency}${(betMode === 'multiple' ? multipleStake : singleStakeTotal).toFixed(2)}`
   const ctaReturnLabel = potentialWin ? `${currency}${potentialWin}` : '—'
@@ -472,6 +546,18 @@ export function FloatingBetslip({
               )
             })}
 
+            {/* Bonus tracker bar — only relevant for acca/multiple mode */}
+            {bonusTracker && betMode === 'multiple' && bets.length > 0 && (
+              <div className={styles.bonusTrackerWrap}>
+                <BonusTrackerBar
+                  label={bonusTracker.label}
+                  thresholds={bonusTracker.thresholds}
+                  betsCount={bets.length}
+                  minOdds={bonusTracker.minOdds}
+                />
+              </div>
+            )}
+
               </>
             )}
           </div>
@@ -531,7 +617,7 @@ export function FloatingBetslip({
                             Placing bet...
                           </span>
                         ) : (
-                          <>Place Bet {ctaStakeLabel}</>
+                          <>{hasOddsChanged ? 'Accept odds & place bet' : 'Place Bet'} {ctaStakeLabel}</>
                         )}
                       </span>
                       <span className={styles.ctaSub}>
@@ -565,6 +651,14 @@ export function FloatingBetslip({
                       {betMode === 'multiple' ? combined.toFixed(2) : `${currency}${singleStakeTotal.toFixed(2)}`}
                     </span>
                   </div>
+                  {boostedPotentialWin && (
+                    <div className={styles.summaryRow}>
+                      <span className={styles.summaryLabel}>Boosted Return</span>
+                      <span className={`${styles.summaryWin} ${styles.summaryBoosted}`}>
+                        {currency}{boostedPotentialWin}
+                      </span>
+                    </div>
+                  )}
                   <div className={styles.summaryRow}>
                     <span className={styles.summaryLabel}>
                       {betMode === 'multiple' ? 'Potential Win' : 'Total Return'}

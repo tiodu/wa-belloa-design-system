@@ -848,6 +848,15 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                   layout="desktop"
                   onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
                   onClearAll={() => setFloatBets([])}
+                  bonusTracker={{
+                    label: 'Acca Boost',
+                    thresholds: [
+                      { selections: 3, percent: 10 },
+                      { selections: 5, percent: 20 },
+                      { selections: 7, percent: 30 },
+                    ],
+                    minOdds: 1.3,
+                  }}
                 />
               </div>
               <LatestResults />
@@ -1012,6 +1021,15 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                 onOpenMyBets={() => setMobileView('mybets')}
                 onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
                 onClearAll={() => setFloatBets([])}
+                bonusTracker={{
+                  label: 'Acca Boost',
+                  thresholds: [
+                    { selections: 3, percent: 10 },
+                    { selections: 5, percent: 20 },
+                    { selections: 7, percent: 30 },
+                  ],
+                  minOdds: 1.3,
+                }}
               />
             </div>
           </div>
@@ -1030,6 +1048,15 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                       layout="desktop"
                       onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
                       onClearAll={() => setFloatBets([])}
+                      bonusTracker={{
+                        label: 'Acca Boost',
+                        thresholds: [
+                          { selections: 3, percent: 10 },
+                          { selections: 5, percent: 20 },
+                          { selections: 7, percent: 30 },
+                        ],
+                        minOdds: 1.3,
+                      }}
                     />
                   </div>
                   <LatestResults />

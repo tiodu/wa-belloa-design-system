@@ -651,6 +651,114 @@
 .summaryLabel { font-family: var(--font-sans); font-size: 12px; color: var(--content-secondary); }
 .summaryValue { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--content-primary); }
 .summaryWin   { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--content-accent); }
+.summaryBoosted { color: var(--status-success-fg); }
+
+/* ─── Bonus tracker bar ─── */
+.bonusTrackerWrap {
+  padding: 4px 0 0;
+}
+
+.bonusTracker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface-layer-1);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+
+.bonusTrackerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bonusTrackerLabelGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bonusTrackerLabel {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--content-secondary);
+}
+
+.bonusTrackerMinOdds {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--content-subtle);
+  background: var(--surface-layer-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+.bonusTrackerTier {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--content-accent);
+}
+
+.bonusTrackerTrack {
+  position: relative;
+  height: 6px;
+  background: var(--surface-layer-2);
+  border-radius: 3px;
+  margin-top: 4px;
+  margin-bottom: 18px;
+}
+
+.bonusTrackerFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: var(--content-accent);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.bonusTrackerTick {
+  position: absolute;
+  top: -1px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bonusTrackerTickDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--surface-layer-2);
+  border: 1.5px solid var(--border-default);
+  flex-shrink: 0;
+}
+
+.bonusTrackerTickActive .bonusTrackerTickDot {
+  background: var(--content-accent);
+  border-color: var(--content-accent);
+}
+
+.bonusTrackerTickLabel {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  color: var(--content-subtle);
+  white-space: nowrap;
+  margin-top: 4px;
+}
+
+.bonusTrackerTickActive .bonusTrackerTickLabel {
+  color: var(--content-accent);
+}
 
 /* ─── CTA ─── */
 .cta {
@@ -1042,6 +1150,10 @@
 .figmaTheme .summaryWin {
   color: #1ed9be;
   font-size: 12px;
+}
+
+.figmaTheme .summaryBoosted {
+  color: #1ed9be;
 }
 
 .figmaTheme .cta {
