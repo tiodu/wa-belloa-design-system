@@ -81,6 +81,8 @@ const meta = {
   args: {
     currency: '₺',
     contained: true,
+    onRemoveBet: () => {},
+    onClearAll: () => {},
   },
   argTypes: {
     onRemoveBet: { action: 'removeBet' },
