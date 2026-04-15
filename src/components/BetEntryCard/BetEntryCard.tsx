@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import styles from './BetEntryCard.module.css'
 
 type OddsDirection = 'up' | 'down'
@@ -13,12 +13,16 @@ type BetEntryCardProps = {
   market: string
   suspendedLabel?: string
   oddsDirection?: OddsDirection
+  oddsChangeSignal?: number
   isLive?: boolean
   /** Optional slot rendered inside the card below a divider (e.g. per-entry stake input). */
   footer?: ReactNode
   onRemove?: () => void
   removeAriaLabel?: string
+  onBannerDismiss?: () => void
 }
+
+const BLINK_DURATION_MS = 1800
 
 export function BetEntryCard({
   topMeta,
@@ -30,16 +34,35 @@ export function BetEntryCard({
   market,
   suspendedLabel,
   oddsDirection,
+  oddsChangeSignal,
   isLive = false,
   footer,
   onRemove,
   removeAriaLabel = 'Remove selection',
+  onBannerDismiss,
 }: BetEntryCardProps) {
+  const [animDir, setAnimDir] = useState<'up' | 'down' | null>(null)
+  const [showBanner, setShowBanner] = useState(false)
+
+  useEffect(() => {
+    if (!oddsDirection) {
+      setAnimDir(null)
+      setShowBanner(false)
+      return
+    }
+    setAnimDir(oddsDirection)
+    setShowBanner(true)
+    const timer = setTimeout(() => setAnimDir(null), BLINK_DURATION_MS)
+    return () => clearTimeout(timer)
+  // oddsChangeSignal increments on each trigger so the effect re-runs even if direction stays the same
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [oddsChangeSignal, oddsDirection])
+
   const oddsClass =
-    oddsDirection === 'up'
-      ? `${styles.odds} ${styles.oddsUp}`
-      : oddsDirection === 'down'
-      ? `${styles.odds} ${styles.oddsDown}`
+    animDir === 'up'
+      ? `${styles.odds} ${styles.oddsBlinkUp}`
+      : animDir === 'down'
+      ? `${styles.odds} ${styles.oddsBlinkDown}`
       : styles.odds
 
   return (
@@ -81,9 +104,9 @@ export function BetEntryCard({
               ) : (
                 odds && <span className={oddsClass}>{odds}</span>
               )}
-              {!originalOdds && oddsDirection && (
-                <span className={oddsDirection === 'up' ? styles.deltaUp : styles.deltaDown}>
-                  {oddsDirection === 'up' ? '▲' : '▼'}
+              {!originalOdds && animDir && (
+                <span className={animDir === 'up' ? styles.deltaBlinkUp : styles.deltaBlinkDown}>
+                  {animDir === 'up' ? '▲' : '▼'}
                 </span>
               )}
             </span>
@@ -94,10 +117,18 @@ export function BetEntryCard({
 
       <div className={styles.market}>{market}</div>
 
-      {oddsDirection && !suspendedLabel && (
+      {showBanner && !suspendedLabel && (
         <div className={styles.oddsChangedBanner}>
           <span className={styles.oddsChangedIcon}>ⓘ</span>
           <span className={styles.oddsChangedText}>Odds changed</span>
+          <button
+            className={styles.oddsChangedClose}
+            onClick={() => { setShowBanner(false); onBannerDismiss?.() }}
+            type="button"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
         </div>
       )}
 

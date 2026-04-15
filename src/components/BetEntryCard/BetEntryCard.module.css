@@ -120,22 +120,60 @@
   font-weight: 700;
 }
 
-.oddsUp {
-  color: var(--status-success-fg);
+@keyframes blinkUp {
+  0%   { color: var(--content-accent); }
+  20%  { color: var(--status-success-fg); }
+  40%  { color: var(--content-accent); }
+  60%  { color: var(--status-success-fg); }
+  80%  { color: var(--content-accent); }
+  100% { color: var(--content-accent); }
 }
 
-.oddsDown {
-  color: var(--status-critical-fg);
+@keyframes blinkDown {
+  0%   { color: var(--content-accent); }
+  20%  { color: var(--status-critical-fg); }
+  40%  { color: var(--content-accent); }
+  60%  { color: var(--status-critical-fg); }
+  80%  { color: var(--content-accent); }
+  100% { color: var(--content-accent); }
 }
 
-.deltaUp {
+@keyframes arrowBlinkUp {
+  0%   { color: var(--status-success-fg); opacity: 1; }
+  20%  { opacity: 1; }
+  40%  { opacity: 0.1; }
+  60%  { opacity: 1; }
+  80%  { opacity: 0.1; }
+  100% { opacity: 1; }
+}
+
+@keyframes arrowBlinkDown {
+  0%   { color: var(--status-critical-fg); opacity: 1; }
+  20%  { opacity: 1; }
+  40%  { opacity: 0.1; }
+  60%  { opacity: 1; }
+  80%  { opacity: 0.1; }
+  100% { opacity: 1; }
+}
+
+.oddsBlinkUp {
+  animation: blinkUp 1.8s ease-in-out forwards;
+}
+
+.oddsBlinkDown {
+  animation: blinkDown 1.8s ease-in-out forwards;
+}
+
+.deltaBlinkUp {
   font-size: 9px;
   color: var(--status-success-fg);
+  animation: arrowBlinkUp 1.8s ease-in-out forwards;
 }
 
-.deltaDown {
+.deltaBlinkDown {
   font-size: 9px;
   color: var(--status-critical-fg);
+  animation: arrowBlinkDown 1.8s ease-in-out forwards;
 }
 
 .selection {
@@ -180,6 +218,23 @@
   color: var(--content-on-action);
   font-size: 13px;
   font-weight: 600;
+  flex: 1;
+}
+
+.oddsChangedClose {
+  background: none;
+  border: none;
+  color: var(--content-on-action);
+  font-size: 10px;
+  opacity: 0.7;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.oddsChangedClose:hover {
+  opacity: 1;
 }
 
 /* ─── Footer slot (e.g. per-entry stake input) ─── */

@@ -365,7 +365,7 @@ const ENTRY_VARIANTS: EntryVariantMock[] = [
 
 /* ---- Nav ---- */
 
-function TopNav() {
+function TopNav({ isLoggedIn, balance }: { isLoggedIn: boolean; balance: number }) {
   return (
     <header className={styles.topNav}>
       <div className={styles.navLeft}>
@@ -385,13 +385,22 @@ function TopNav() {
         <button className={styles.navIconBtn} type="button" aria-label="Language">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.2"/><ellipse cx="8" cy="8" rx="2.5" ry="6.5" stroke="currentColor" strokeWidth="1.2"/><path d="M1.5 6h13M1.5 10h13" stroke="currentColor" strokeWidth="1.2"/></svg>
         </button>
-        <button className={styles.depositBtn} type="button">Deposit</button>
-        <span className={styles.navBalance}>EUR 0.00</span>
-        <button className={styles.navUser} type="button">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="3" stroke="currentColor" strokeWidth="1.2"/><path d="M1.5 13c0-3.038 2.462-5.5 5.5-5.5s5.5 2.462 5.5 5.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-          <span>User-name</span>
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>
-        </button>
+        {isLoggedIn ? (
+          <>
+            <button className={styles.depositBtn} type="button">Deposit</button>
+            <span className={styles.navBalance}>₺{balance.toFixed(2)}</span>
+            <button className={styles.navUser} type="button">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="3" stroke="currentColor" strokeWidth="1.2"/><path d="M1.5 13c0-3.038 2.462-5.5 5.5-5.5s5.5 2.462 5.5 5.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              <span>User-name</span>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>
+            </button>
+          </>
+        ) : (
+          <>
+            <button className={styles.depositBtn} type="button">Log in</button>
+            <button className={styles.navUser} type="button">Register</button>
+          </>
+        )}
       </div>
     </header>
   )
@@ -573,11 +582,15 @@ function MobileSportsbookMock({
   matches,
   entryMode,
   onToggleOdd,
+  isLoggedIn,
+  balance,
 }: {
   floatBets: FloatBetEntry[]
   matches: MobileMatch[]
   entryMode: EntryMode
   onToggleOdd: (match: MobileMatch, odd: MobileOddKey) => void
+  isLoggedIn: boolean
+  balance: number
 }) {
   const activeByMatch = useMemo(() => {
     const map: Record<string, MobileOddKey | undefined> = {}
@@ -596,8 +609,17 @@ function MobileSportsbookMock({
           <div className={styles.mobileLogo}>110x28</div>
           <button className={styles.mobileIconGhost} type="button">🎁</button>
           <div className={styles.mobileHeaderActions}>
-            <button className={styles.mobilePillGhost} type="button">Log in</button>
-            <button className={styles.mobilePillPrimary} type="button">Register</button>
+            {isLoggedIn ? (
+              <div className={styles.mobileUserInfo}>
+                <span className={styles.mobileUserBalance}>₺{balance.toFixed(2)}</span>
+                <button className={styles.mobilePillPrimary} type="button">Deposit</button>
+              </div>
+            ) : (
+              <>
+                <button className={styles.mobilePillGhost} type="button">Log in</button>
+                <button className={styles.mobilePillPrimary} type="button">Register</button>
+              </>
+            )}
           </div>
         </div>
 
@@ -698,7 +720,7 @@ function MobileSportsbookMock({
   )
 }
 
-function MobileMyBetsMock() {
+function MobileMyBetsMock({ isLoggedIn, balance }: { isLoggedIn: boolean; balance: number }) {
   const myBetRows = [
     { id: 'b1', market: 'Bet Builder', stake: '₺0.10', returnValue: '₺0.47', status: 'Open' },
     { id: 'b2', market: 'Match Result', stake: '₺5.00', returnValue: '₺12.40', status: 'Settled' },
@@ -712,8 +734,17 @@ function MobileMyBetsMock() {
           <div className={styles.mobileLogo}>110x28</div>
           <button className={styles.mobileIconGhost} type="button">🎁</button>
           <div className={styles.mobileHeaderActions}>
-            <button className={styles.mobilePillGhost} type="button">Log in</button>
-            <button className={styles.mobilePillPrimary} type="button">Register</button>
+            {isLoggedIn ? (
+              <div className={styles.mobileUserInfo}>
+                <span className={styles.mobileUserBalance}>₺{balance.toFixed(2)}</span>
+                <button className={styles.mobilePillPrimary} type="button">Deposit</button>
+              </div>
+            ) : (
+              <>
+                <button className={styles.mobilePillGhost} type="button">Log in</button>
+                <button className={styles.mobilePillPrimary} type="button">Register</button>
+              </>
+            )}
           </div>
         </div>
 
@@ -803,8 +834,11 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
   const [trBets, setTrBets] = useState<BetEntryTR[]>(TR_BETS)
   const [entryMode, setEntryMode] = useState<EntryMode>('live')
   const [floatBets, setFloatBets] = useState<FloatBetEntry[]>(FLOAT_BETS_BY_MODE.live)
-  const [openDefaultSignal, setOpenDefaultSignal] = useState(0)
   const [mobileView, setMobileView] = useState<MobileView>('sportsbook')
+  const [viewLayout, setViewLayout] = useState<'mobile' | 'desktop' | 'both'>('both')
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [theme, setTheme] = useState<'belloa' | 'superbetin'>('belloa')
+  const BALANCE = 1000
   const sourceFloatBets = FLOAT_BETS_BY_MODE[entryMode]
   const currentMobileMatches = MOBILE_MATCHES_BY_MODE[entryMode]
 
@@ -833,10 +867,10 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
   const isPlayground = mode === 'playground'
 
   return (
-    <div className={styles.page}>
+    <div className={styles.page} data-theme={theme}>
       {isPlayground && (
         <div className={styles.sportsbook}>
-          <TopNav />
+          <TopNav isLoggedIn={isLoggedIn} balance={BALANCE} />
 
           <div className={styles.layout}>
             <LeftSidebar />
@@ -855,6 +889,8 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                   layout="desktop"
                   onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
                   onClearAll={() => setFloatBets([])}
+                  isLoggedIn={isLoggedIn}
+                  balance={BALANCE}
                   bonusTracker={{
                     label: 'Acca Boost',
                     thresholds: [
@@ -881,6 +917,38 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
 
         {/* Controls */}
         <div className={styles.miniStripControls}>
+          <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>Theme</span>
+            <select
+              className={styles.themeSelect}
+              value={theme}
+              onChange={(e) => setTheme(e.target.value as 'belloa' | 'superbetin')}
+            >
+              <option value="belloa">Belloa</option>
+              <option value="superbetin">Superbetin</option>
+            </select>
+          </div>
+
+          <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>User</span>
+            <div className={styles.chipRow}>
+              <button
+                className={`${styles.chip} ${!isLoggedIn ? styles.chipActive : ''}`}
+                onClick={() => setIsLoggedIn(false)}
+                type="button"
+              >
+                Logged out
+              </button>
+              <button
+                className={`${styles.chip} ${isLoggedIn ? styles.chipActive : ''}`}
+                onClick={() => setIsLoggedIn(true)}
+                type="button"
+              >
+                Logged in · ₺{BALANCE}
+              </button>
+            </div>
+          </div>
+
           <div className={styles.controlGroup}>
             <span className={styles.controlLabel}>Entries</span>
             <div className={styles.chipRow}>
@@ -953,9 +1021,12 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                   className={styles.chip}
                   onClick={() =>
                     setFloatBets((prev) =>
-                      prev.map((b, i) =>
-                        i === 0 ? { ...b, oddsDirection: dir === 'none' ? undefined : dir } : b
-                      )
+                      prev.map((b, i) => {
+                        if (i !== 0) return b
+                        if (dir === 'none') return { ...b, oddsDirection: undefined, oddsChangeSignal: undefined }
+                        const delta = dir === 'up' ? 0.10 : -0.10
+                        return { ...b, odds: Math.max(1.01, parseFloat((b.odds + delta).toFixed(2))), oddsDirection: dir, oddsChangeSignal: (b.oddsChangeSignal ?? 0) + 1 }
+                      })
                     )
                   }
                   type="button"
@@ -991,42 +1062,49 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
               </button>
             </div>
           </div>
+
+          <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>Visualisation</span>
+            <div className={styles.chipRow}>
+              {(['mobile', 'desktop', 'both'] as const).map((v) => (
+                <button
+                  key={v}
+                  className={`${styles.chip} ${viewLayout === v ? styles.chipActive : ''}`}
+                  onClick={() => setViewLayout(v)}
+                  type="button"
+                >
+                  {v === 'mobile' ? 'Mobile' : v === 'desktop' ? 'Desktop' : 'Both'}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className={styles.floatDemoRow}>
-          <div className={styles.phoneDemoCol}>
+          {(viewLayout === 'mobile' || viewLayout === 'both') && <div className={styles.phoneDemoCol}>
             <span className={styles.phoneVariantLabel}>Mobile preview · Current</span>
-            <div
-              className={`${styles.phoneFrame} ${styles.phoneFrameBgLive}`}
-              onClick={() => {
-                if (mobileView === 'sportsbook') setOpenDefaultSignal((s) => s + 1)
-              }}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (mobileView === 'sportsbook' && (e.key === 'Enter' || e.key === ' ')) {
-                  setOpenDefaultSignal((s) => s + 1)
-                }
-              }}
-            >
+            <div className={`${styles.phoneFrame} ${styles.phoneFrameBgLive}`}>
               {mobileView === 'sportsbook' ? (
                 <MobileSportsbookMock
                   floatBets={floatBets}
                   matches={currentMobileMatches}
                   entryMode={entryMode}
                   onToggleOdd={toggleFromOdds}
+                  isLoggedIn={isLoggedIn}
+                  balance={BALANCE}
                 />
               ) : (
-                <MobileMyBetsMock />
+                <MobileMyBetsMock isLoggedIn={isLoggedIn} balance={BALANCE} />
               )}
               <PhoneBottomNav mobileView={mobileView} onChange={setMobileView} />
               <FloatingBetslip
                 bets={floatBets}
                 contained
-                openSignal={openDefaultSignal}
                 onOpenMyBets={() => setMobileView('mybets')}
                 onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
                 onClearAll={() => setFloatBets([])}
+                isLoggedIn={isLoggedIn}
+                balance={BALANCE}
                 bonusTracker={{
                   label: 'Acca Boost',
                   thresholds: [
@@ -1038,12 +1116,12 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                 }}
               />
             </div>
-          </div>
+          </div>}
 
-          <div className={styles.desktopDemoCol}>
+          {(viewLayout === 'desktop' || viewLayout === 'both') && <div className={styles.desktopDemoCol}>
             <span className={styles.phoneVariantLabel}>Desktop preview · Current</span>
             <div className={styles.desktopPreviewShell}>
-              <TopNav />
+              <TopNav isLoggedIn={isLoggedIn} balance={BALANCE} />
               <div className={styles.layout}>
                 <LeftSidebar />
                 <CenterContent
@@ -1058,6 +1136,8 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                       layout="desktop"
                       onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
                       onClearAll={() => setFloatBets([])}
+                      isLoggedIn={isLoggedIn}
+                      balance={BALANCE}
                       bonusTracker={{
                         label: 'Acca Boost',
                         thresholds: [
@@ -1074,7 +1154,7 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                 </aside>
               </div>
             </div>
-          </div>
+          </div>}
         </div>
       </div>}
 

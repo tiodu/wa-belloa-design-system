@@ -13,10 +13,12 @@ function SelectionRow({
   bet,
   onRemove,
   stakeSlot,
+  onBannerDismiss,
 }: {
   bet: BetEntry
   onRemove: (id: string) => void
   stakeSlot?: ReactNode
+  onBannerDismiss?: (id: string) => void
 }) {
   const topMeta = bet.isLive && bet.score
     ? `${bet.score}${bet.minute !== undefined ? ` · ${bet.minute}'` : ''}`
@@ -29,6 +31,7 @@ function SelectionRow({
         topPrimary={bet.match}
         odds={bet.odds.toFixed(2)}
         oddsDirection={bet.oddsDirection}
+        oddsChangeSignal={bet.oddsChangeSignal}
         selection={bet.selection}
         market={bet.market}
         suspendedLabel={bet.suspended ? '⏸ Suspended' : undefined}
@@ -36,6 +39,7 @@ function SelectionRow({
         footer={stakeSlot}
         onRemove={() => onRemove(bet.id)}
         removeAriaLabel={`Remove ${bet.selection}`}
+        onBannerDismiss={() => onBannerDismiss?.(bet.id)}
       />
     </div>
   )
@@ -148,6 +152,10 @@ export type FloatingBetslipProps = {
   onOpenMyBets?: () => void
   /** When provided, renders a bonus tracker bar below selections and a boosted return line in the summary. */
   bonusTracker?: BonusTrackerConfig
+  /** Whether the user is logged in. Affects CTA label and disables betting when false. */
+  isLoggedIn?: boolean
+  /** User balance used for the Max Bet button. When provided, a Max Bet chip appears alongside preset stakes. */
+  balance?: number
 }
 
 export function FloatingBetslip({
@@ -161,6 +169,8 @@ export function FloatingBetslip({
   layout = 'floating',
   onOpenMyBets,
   bonusTracker,
+  isLoggedIn = true,
+  balance,
 }: FloatingBetslipProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [numpadOpen, setNumpadOpen] = useState(false)
@@ -170,9 +180,11 @@ export function FloatingBetslip({
   const [betMode, setBetMode] = useState<'single' | 'multiple'>('single')
   const [betPlacementStage, setBetPlacementStage] = useState<BetPlacementStage>('idle')
   const [betPlacementSummary, setBetPlacementSummary] = useState<BetPlacementSummary | null>(null)
+  const [dismissedOddsIds, setDismissedOddsIds] = useState<Set<string>>(new Set())
   const loadingTimer = useRef<ReturnType<typeof setTimeout>>()
   const summaryTimer = useRef<ReturnType<typeof setTimeout>>()
   const stakeSectionRef = useRef<HTMLDivElement>(null)
+  const userDismissed = useRef(false)
 
   const multipleStake = parseFloat(stakeStr) || 0
   const singleStakeTotal = bets.reduce((sum, b) => sum + (parseFloat(singleStakeById[b.id] ?? '') || 0), 0)
@@ -188,7 +200,7 @@ export function FloatingBetslip({
       ? (betMode === 'multiple' ? stake * combined : singlePotentialWin).toFixed(2)
       : null
   const hasSuspended = bets.some((b) => b.suspended)
-  const hasOddsChanged = bets.some((b) => b.oddsDirection !== undefined)
+  const hasOddsChanged = bets.some((b) => b.oddsDirection !== undefined && !dismissedOddsIds.has(b.id))
   const activePercent = (() => {
     if (!bonusTracker) return 0
     const sorted = [...bonusTracker.thresholds].sort((a, b) => a.selections - b.selections)
@@ -225,8 +237,9 @@ export function FloatingBetslip({
     onClearAll()
   }
 
-  // If all bets are removed externally, collapse the drawer
+  // Drawer open/close based on bet count changes
   useEffect(() => {
+    if (isDesktop) return
     if (bets.length === 0) {
       setIsOpen(false)
       setNumpadOpen(false)
@@ -236,7 +249,13 @@ export function FloatingBetslip({
       setActiveStakeTarget('multiple')
       setBetPlacementStage('idle')
       setBetPlacementSummary(null)
+      userDismissed.current = false
       clearPlacementTimers()
+      return
+    }
+    // Auto-open only on the very first selection; stay minimised for all subsequent ones
+    if (bets.length === 1 && !userDismissed.current) {
+      setIsOpen(true)
     }
   }, [bets.length])
 
@@ -267,6 +286,7 @@ export function FloatingBetslip({
   function handleClose() {
     setIsOpen(false)
     setNumpadOpen(false)
+    userDismissed.current = true
     if (betPlacementStage !== 'idle') {
       finalizePlacedBet()
     }
@@ -344,19 +364,23 @@ export function FloatingBetslip({
   const posClass = contained ? styles.posAbsolute : styles.posFixed
   const isBetPlacementPending = betPlacementStage === 'loading' || betPlacementStage === 'summary'
   const ctaDisabled =
-    isBetPlacementPending || (!hasSuspended && (betMode === 'multiple' ? multipleStake <= 0 : singleStakeTotal <= 0))
+    !isLoggedIn ||
+    isBetPlacementPending ||
+    (!hasSuspended && (betMode === 'multiple' ? multipleStake <= 0 : singleStakeTotal <= 0))
 
   const stakeAmount = (betMode === 'multiple' ? multipleStake : singleStakeTotal).toFixed(2)
-  const ctaLabel = betPlacementStage === 'loading'
+  const ctaLabel = !isLoggedIn
+    ? 'Please log in to bet'
+    : betPlacementStage === 'loading'
     ? 'Placing bet...'
     : hasSuspended
     ? '⏸ Remove suspended selections'
     : hasOddsChanged && stake > 0
-    ? `Accept odds & place bet — ${currency}${stakeAmount}`
+    ? `Accept odds & place bet ${currency}${stakeAmount}`
     : hasOddsChanged
     ? 'Accept odds & place bet'
     : stake > 0
-    ? `Place Bet — ${currency}${stakeAmount}`
+    ? `Place Bet ${currency}${stakeAmount}`
     : 'Place Bet'
   const ctaStakeLabel = `${currency}${(betMode === 'multiple' ? multipleStake : singleStakeTotal).toFixed(2)}`
   const ctaReturnLabel = potentialWin ? `${currency}${potentialWin}` : '—'
@@ -521,7 +545,12 @@ export function FloatingBetslip({
 
               return (
                 <div key={bet.id} className={styles.selectionBlock}>
-                  <SelectionRow bet={bet} onRemove={onRemoveBet} stakeSlot={stakeSlot} />
+                  <SelectionRow
+                    bet={bet}
+                    onRemove={onRemoveBet}
+                    stakeSlot={stakeSlot}
+                    onBannerDismiss={(id) => setDismissedOddsIds((prev) => new Set(prev).add(id))}
+                  />
                 </div>
               )
             })}
@@ -559,6 +588,15 @@ export function FloatingBetslip({
                         {currency}{amount}
                       </button>
                     ))}
+                    {balance !== undefined && (
+                      <button
+                        className={`${styles.chip}${stake === balance ? ` ${styles.chipActive}` : ''}`}
+                        onClick={() => handleChip(balance)}
+                        type="button"
+                      >
+                        Max
+                      </button>
+                    )}
                   </div>
                   <button
                     className={styles.stakeField}

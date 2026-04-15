@@ -9,6 +9,7 @@ export type BetEntry = {
   odds: number
   originalOdds?: number        // odds when first added (for flash direction)
   oddsDirection?: OddsDirection
+  oddsChangeSignal?: number      // increment to re-trigger blink animation
   suspended?: boolean
   isLive?: boolean
   score?: string               // e.g. "1-0"
