@@ -140,8 +140,6 @@ export type FloatingBetslipProps = {
    * Defaults to false (position:fixed, covers the full viewport).
    */
   contained?: boolean
-  /** Visual theme variant for the mini strip + drawer. */
-  variant?: 'default' | 'figma'
   /** External signal to open the drawer (increments/triggers). */
   openSignal?: number
   /** Layout mode: floating mobile drawer or docked desktop panel. */
@@ -159,7 +157,6 @@ export function FloatingBetslip({
   onPlaceBet,
   currency = '₺',
   contained = false,
-  variant = 'default',
   openSignal,
   layout = 'floating',
   onOpenMyBets,
@@ -345,7 +342,6 @@ export function FloatingBetslip({
   if (bets.length === 0 && !isDesktop) return null
 
   const posClass = contained ? styles.posAbsolute : styles.posFixed
-  const themeClass = variant === 'figma' ? styles.figmaTheme : ''
   const isBetPlacementPending = betPlacementStage === 'loading' || betPlacementStage === 'summary'
   const ctaDisabled =
     isBetPlacementPending || (!hasSuspended && (betMode === 'multiple' ? multipleStake <= 0 : singleStakeTotal <= 0))
@@ -380,7 +376,6 @@ export function FloatingBetslip({
           bets={bets}
           stake={stake > 0 ? stake : undefined}
           currency={currency}
-          variant={variant}
           onOpen={() => setIsOpen(true)}
           style={
             contained
@@ -407,7 +402,6 @@ export function FloatingBetslip({
           className={[
             styles.drawer,
             isDesktop ? styles.desktopDrawer : posClass,
-            themeClass,
           ]
             .filter(Boolean)
             .join(' ')}
@@ -486,36 +480,22 @@ export function FloatingBetslip({
           )}
 
           {/* Scrollable content — everything below the tabs */}
-          <div className={styles.scrollContent}>
+          <div className={`${styles.scrollContent}${isDesktop ? ` ${styles.scrollContentDesktop}` : ''}`}>
             {isDesktop && bets.length === 0 ? (
               <>
-                <div className={styles.desktopTabs}>
-                  <button type="button" className={`${styles.desktopTab} ${styles.desktopTabActive}`}>Single</button>
-                  <button type="button" className={styles.desktopTab}>Acca</button>
-                  <button type="button" className={styles.desktopTab}>Multiples</button>
-                </div>
-
                 <div className={styles.desktopEmptyState}>
-                  <svg width="72" height="72" viewBox="0 0 72 72" fill="none" aria-hidden="true">
-                    <path d="M22 12h28a4 4 0 0 1 4 4v36l-6-4-6 4-6-4-6 4-6-4V16a4 4 0 0 1 4-4Z" stroke="currentColor" strokeWidth="2.5" />
-                    <path d="M29 27h14M29 35h14M29 43h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                  <svg className={styles.desktopEmptyIcon} viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                    <rect x="8" y="12" width="32" height="28" rx="4" stroke="currentColor" strokeWidth="2" />
+                    <path d="M16 22h16M16 30h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M28 8v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <circle cx="28" cy="8" r="2" fill="currentColor" />
                   </svg>
-                  <p className={styles.desktopEmptyTitle}>Your bet slip is empty</p>
-                </div>
-
-                <div className={styles.desktopFooter}>
-                  <div className={styles.desktopFooterRow}>
-                    <span>Single</span>
-                    <span>To return</span>
-                  </div>
-                  <div className={styles.desktopFooterRow}>
-                    <span>—</span>
-                    <span className={styles.desktopReturnDash}>—</span>
-                  </div>
+                  <span className={styles.desktopEmptyTitle}>Your bet slip is empty</span>
+                  <span className={styles.desktopEmptySubtitle}>Add selections to build your bet</span>
                 </div>
 
                 <button className={`${styles.cta} ${styles.ctaDisabled}`} disabled type="button">
-                  Place bet
+                  Place Bet
                 </button>
               </>
             ) : (

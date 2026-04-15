@@ -106,13 +106,6 @@ const SPORTS = [
   { icon: '🏏', label: 'Cricket', count: 234 },
 ]
 
-const LIVE_MATCHES = [
-  { time: '74\'', home: 'Arsenal', away: 'Manchester City', o1: '2.96', ox: '2.96', o2: '2.96', badge: '+1596' },
-  { time: '61\'', home: 'Liverpool', away: 'Chelsea', o1: '2.96', ox: '2.96', o2: '2.96', badge: '+815' },
-  { time: '88\'', home: 'Tottenham', away: 'Man United', o1: '2.96', ox: '2.96', o2: '2.96', highlighted: true },
-  { time: '45\'', home: 'Juventus', away: 'AC Milan', o1: '2.96', ox: '2.96', o2: '2.96', badge: '+609' },
-  { time: '32\'', home: 'Barcelona', away: 'Real Madrid', o1: '2.96', ox: '2.96', o2: '2.96', badge: '+603' },
-]
 
 const RESULTS = [
   { league: 'Serie A – 14 Usa', date: '28/10 23:00', home: 'Juventus', away: 'Real Madrid', s1: 2, s2: 3 },
@@ -447,7 +440,13 @@ function LeftSidebar() {
 
 /* ---- Center content ---- */
 
-function CenterContent() {
+type CenterContentProps = {
+  matches: MobileMatch[]
+  floatBets: FloatBetEntry[]
+  onToggleOdd: (match: MobileMatch, odd: MobileOddKey) => void
+}
+
+function CenterContent({ matches, floatBets, onToggleOdd }: CenterContentProps) {
   return (
     <main className={styles.center}>
       {/* Hero */}
@@ -469,19 +468,23 @@ function CenterContent() {
           <span className={styles.oddsHeaderCell}>x</span>
           <span className={styles.oddsHeaderCell}>2</span>
         </div>
-        {LIVE_MATCHES.map((m, i) => (
-          <div key={i} className={styles.matchRow}>
-            <span className={styles.matchTime}>{m.time}</span>
+        {matches.map((m) => (
+          <div key={m.id} className={styles.matchRow}>
+            <span className={styles.matchTime}>{m.minute ?? '—'}</span>
             <span className={styles.matchTeams}>{m.home} – {m.away}</span>
-            {m.highlighted
-              ? <span className={styles.suspended}>⚠ BET SUSPENDED</span>
-              : <>
-                  <span className={`${styles.odd} ${i === 0 ? styles['odd--active'] : ''}`}>{m.o1}</span>
-                  <span className={styles.odd}>{m.ox}</span>
-                  <span className={styles.odd}>{m.o2}</span>
-                  {m.badge && <span className={styles.matchBadge}>{m.badge}</span>}
-                </>
-            }
+            {(['home', 'draw', 'away'] as const).map((oddKey) => {
+              const isActive = floatBets.some((b) => b.id === `${m.id}-${oddKey}`)
+              return (
+                <button
+                  key={oddKey}
+                  type="button"
+                  className={`${styles.odd}${isActive ? ` ${styles['odd--active']}` : ''}`}
+                  onClick={() => onToggleOdd(m, oddKey)}
+                >
+                  {m.odds[oddKey].label}
+                </button>
+              )
+            })}
           </div>
         ))}
       </section>
@@ -838,7 +841,11 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
           <div className={styles.layout}>
             <LeftSidebar />
 
-            <CenterContent />
+            <CenterContent
+              matches={currentMobileMatches}
+              floatBets={floatBets}
+              onToggleOdd={toggleFromOdds}
+            />
 
             {/* Right sidebar */}
             <aside className={styles.rightSidebar}>
@@ -1016,7 +1023,6 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
               <FloatingBetslip
                 bets={floatBets}
                 contained
-                variant="default"
                 openSignal={openDefaultSignal}
                 onOpenMyBets={() => setMobileView('mybets')}
                 onRemoveBet={(id) => setFloatBets((prev) => prev.filter((b) => b.id !== id))}
@@ -1040,7 +1046,11 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
               <TopNav />
               <div className={styles.layout}>
                 <LeftSidebar />
-                <CenterContent />
+                <CenterContent
+                  matches={currentMobileMatches}
+                  floatBets={floatBets}
+                  onToggleOdd={toggleFromOdds}
+                />
                 <aside className={styles.rightSidebar}>
                   <div className={styles.betslipSlot}>
                     <FloatingBetslip

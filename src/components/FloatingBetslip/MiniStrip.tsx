@@ -18,8 +18,6 @@ export type MiniStripProps = {
   className?: string
   /** Inline style overrides on the root element. */
   style?: React.CSSProperties
-  /** Visual theme variant for the strip. */
-  variant?: 'default' | 'figma'
 }
 
 const IconChevronUp = () => (
@@ -39,7 +37,6 @@ export function MiniStrip({
   onOpen,
   className,
   style,
-  variant = 'default',
 }: MiniStripProps) {
   if (bets.length === 0) return null
 
@@ -65,13 +62,7 @@ export function MiniStrip({
 
   return (
     <button
-      className={[
-        styles.strip,
-        variant === 'figma' ? styles.stripFigma : '',
-        className ?? '',
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      className={[styles.strip, className ?? ''].filter(Boolean).join(' ')}
       style={style}
       onClick={onOpen}
       type="button"

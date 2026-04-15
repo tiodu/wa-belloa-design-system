@@ -33,13 +33,18 @@
 }
 
 .desktopDrawer {
-  position: static;
+  position: relative;
   max-height: none;
   height: auto;
-  min-height: 560px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
   animation: none;
+}
+
+/* Scroll after 6 entries (~88px each) */
+.scrollContentDesktop {
+  max-height: 528px;
+  overflow-y: auto;
 }
 
 @keyframes slideUp {
@@ -150,64 +155,38 @@
   min-height: 0;
 }
 
-.desktopTabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0;
-  border-bottom: 1px solid var(--border-subtle);
-  margin: -12px -16px 0;
-}
-
-.desktopTab {
-  height: 44px;
-  border: none;
-  background: transparent;
-  color: var(--content-secondary);
-  font-family: var(--font-sans);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.desktopTabActive {
-  color: var(--content-primary);
-}
-
 .desktopEmptyState {
-  min-height: 220px;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4);
+  text-align: center;
+  min-height: 220px;
+  color: var(--content-subtle);
+}
+
+.desktopEmptyIcon {
+  width: 48px;
+  height: 48px;
   color: var(--content-subtle);
 }
 
 .desktopEmptyTitle {
-  margin: 0;
-  font-size: 20px;
+  font-family: var(--font-family);
+  font-size: var(--text-title-sm-size);
+  font-weight: var(--text-title-sm-weight);
+  line-height: var(--text-title-sm-line-height);
   color: var(--content-primary);
-  font-weight: 600;
 }
 
-.desktopFooter {
-  border-top: 1px solid var(--border-subtle);
-  padding-top: 12px;
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.desktopFooterRow {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  color: var(--content-primary);
-  font-weight: 600;
-}
-
-.desktopReturnDash {
-  color: var(--content-accent);
+.desktopEmptySubtitle {
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line-height);
+  color: var(--content-subtle);
 }
 
 .scrollContent::-webkit-scrollbar          { width: 3px; }
@@ -938,243 +917,3 @@
   border-bottom-color: currentColor;
 }
 
-/* ─── Figma variant ─── */
-.figmaTheme {
-  background: rgba(13, 19, 21, 0.98);
-  border: 1px solid rgba(249, 250, 251, 0.07);
-  border-radius: 16px 16px 0 0;
-}
-
-.figmaTheme .handleWrap {
-  padding: 10px 0 2px;
-}
-
-.figmaTheme .handle {
-  width: 34px;
-  height: 3px;
-  background: rgba(249, 250, 251, 0.22);
-}
-
-.figmaTheme .header {
-  padding: 8px 14px 9px;
-  background: rgba(13, 19, 21, 0.98);
-}
-
-.figmaTheme .headerTitle {
-  color: #e1ebe8;
-  font-family: Inter, var(--font-sans), sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.figmaTheme .headerMultiplier {
-  color: #1ed9be;
-  font-family: Inter, var(--font-mono), sans-serif;
-  font-size: 14px;
-}
-
-.figmaTheme .headerIconBtn {
-  color: #8c9b97;
-}
-
-.figmaTheme .headerIconBtn:hover {
-  background: rgba(249, 250, 251, 0.06);
-  color: #d8e4e1;
-}
-
-.figmaTheme .scrollContent {
-  padding: 10px 14px 12px;
-  gap: 7px;
-}
-
-.figmaTheme .stickyFooter {
-  background: rgba(13, 19, 21, 0.98);
-  border-top-color: rgba(249, 250, 251, 0.08);
-  padding: 10px 14px 14px;
-}
-
-.figmaTheme .accaTag {
-  padding: 6px 10px;
-  background: rgba(18, 31, 34, 0.88);
-  border-color: rgba(15, 186, 165, 0.25);
-  border-radius: 10px;
-}
-
-.figmaTheme .tabsBar {
-  background: rgba(13, 19, 21, 0.98);
-  border-bottom-color: rgba(249, 250, 251, 0.08);
-}
-
-.figmaTheme .modeTab {
-  font-family: Inter, var(--font-sans), sans-serif;
-  font-size: 13px;
-  color: #8e9b98;
-}
-
-.figmaTheme .modeTabActive {
-  color: #d8e4e1;
-  box-shadow: inset 0 -2px 0 rgba(15, 186, 165, 0.7);
-}
-
-.figmaTheme .singleStakeField {
-  background: rgba(17, 24, 25, 0.95);
-  border-color: rgba(249, 250, 251, 0.08);
-  color: #e3ece9;
-  font-family: Inter, var(--font-mono), sans-serif;
-}
-
-.figmaTheme .singleReturn {
-  color: #8e9d99;
-}
-
-.figmaTheme .accaLabel {
-  color: #9eb2ad;
-  font-size: 10px;
-  letter-spacing: 0.06em;
-}
-
-.figmaTheme .selRow {
-  padding: 0;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-}
-
-.figmaTheme .selRowSuspended {
-  opacity: 1;
-}
-
-.figmaTheme .selMatch,
-.figmaTheme .selMarket {
-  color: #8f9e99;
-  font-size: 11px;
-}
-
-.figmaTheme .selSelection {
-  color: #dae7e3;
-  font-family: Inter, var(--font-sans), sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.figmaTheme .oddsValue {
-  color: #1ed9be;
-  font-family: Inter, var(--font-mono), sans-serif;
-  font-size: 14px;
-}
-
-.figmaTheme .chips {
-  gap: 6px;
-}
-
-.figmaTheme .chip {
-  height: 23px;
-  padding: 0 9px;
-  background: transparent;
-  border-color: rgba(249, 250, 251, 0.08);
-  color: #8e9a97;
-  border-radius: 999px;
-  font-family: Inter, var(--font-sans), sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.figmaTheme .chipActive {
-  background: rgba(26, 33, 35, 0.96);
-  border-color: rgba(249, 250, 251, 0.14);
-  color: #d6e2df;
-}
-
-.figmaTheme .stakeField {
-  min-height: 42px;
-  padding: 9px 12px;
-  background: rgba(15, 22, 23, 0.95);
-  border-color: rgba(249, 250, 251, 0.1);
-  border-radius: 10px;
-}
-
-.figmaTheme .stakeLabel {
-  color: #8f9b98;
-  font-size: 12px;
-}
-
-.figmaTheme .stakeValue {
-  color: #e1ebe8;
-  font-family: Inter, var(--font-mono), sans-serif;
-  font-size: 15px;
-}
-
-.figmaTheme .numpad {
-  gap: 4px;
-}
-
-.figmaTheme .numpadGrid {
-  gap: 4px;
-}
-
-.figmaTheme .numpadKey {
-  height: 40px;
-  background: rgba(21, 27, 29, 0.95);
-  border-color: rgba(249, 250, 251, 0.08);
-  color: #dbe6e3;
-  border-radius: 10px;
-  font-size: 16px;
-}
-
-.figmaTheme .numpadDone {
-  height: 40px;
-  background: #17b89f;
-  color: #081112;
-  border-radius: 10px;
-  font-family: Inter, var(--font-sans), sans-serif;
-  font-size: 14px;
-}
-
-.figmaTheme .summary {
-  padding: 8px 10px;
-  background: rgba(17, 24, 25, 0.95);
-  border: 1px solid rgba(249, 250, 251, 0.07);
-  border-radius: 10px;
-}
-
-.figmaTheme .summaryLabel {
-  color: #8e9d99;
-  font-size: 11px;
-}
-
-.figmaTheme .summaryValue {
-  color: #d7e5e1;
-  font-size: 12px;
-}
-
-.figmaTheme .summaryWin {
-  color: #1ed9be;
-  font-size: 12px;
-}
-
-.figmaTheme .summaryBoosted {
-  color: #1ed9be;
-}
-
-.figmaTheme .cta {
-  height: 44px;
-  background: rgba(18, 31, 34, 0.95);
-  border: 1px solid rgba(249, 250, 251, 0.08);
-  color: #d3dfdc;
-  border-radius: 999px;
-  font-family: Inter, var(--font-sans), sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0;
-}
-
-.figmaTheme .cta:hover:not(:disabled) {
-  background: rgba(20, 36, 39, 0.98);
-  opacity: 1;
-}
-
-.figmaTheme .ctaDisabled {
-  background: rgba(17, 22, 23, 0.95);
-  color: #6f7f7b;
-  border-color: rgba(249, 250, 251, 0.06);
-}
