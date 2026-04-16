@@ -33,6 +33,14 @@ export function HomeHubPage() {
             Temporary destination page for post-placement navigation from the floating betslip summary.
           </p>
         </Link>
+
+        <Link className={styles.card} to="/casino">
+          <span className={styles.cardTag}>New</span>
+          <h2 className={styles.cardTitle}>Casino Lobby</h2>
+          <p className={styles.cardDescription}>
+            Mobile-first casino lobby with header, search, category filters, promotion cards, and scrollable game rows.
+          </p>
+        </Link>
       </section>
     </main>
   )
