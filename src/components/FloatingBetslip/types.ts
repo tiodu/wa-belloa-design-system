@@ -1,5 +1,10 @@
 export type OddsDirection = 'up' | 'down'
 
+export type VaixLeg = {
+  selection: string
+  market: string
+}
+
 export type BetEntry = {
   id: string
   match: string
@@ -15,6 +20,16 @@ export type BetEntry = {
   score?: string               // e.g. "1-0"
   minute?: number              // e.g. 67
   sparkline?: number[]         // 6 normalised values 0–1 (for full drawer graph)
+  /** Special bet types that cannot be combined with regular bets */
+  betType?: 'vaix' | 'boost'
+  /** VAIX: the individual legs shown inside the grouped entry card */
+  vaixLegs?: VaixLeg[]
+  /** Boost: sport label shown in the card header */
+  sportLabel?: string
+  /** Boost: sport icon shown in the card header */
+  sportIcon?: string
+  /** Boost: kickoff date/time shown in the card header */
+  kickoffTime?: string
 }
 
 export type BetslipState = 'mini' | 'open' | 'closed'

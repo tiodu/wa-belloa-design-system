@@ -1,35 +1,39 @@
 import { useMemo, useState } from 'react'
-import { Betslip } from '../../components/Betslip'
-import { BetslipV2 } from '../../components/BetslipV2'
-import { BetslipTR } from '../../components/BetslipTR'
 import { FloatingBetslip } from '../../components/FloatingBetslip'
 import { BetEntryCard } from '../../components/BetEntryCard'
-import type { BetEntry, Bonus } from '../../components/Betslip/types'
-import type { BetEntryV2 } from '../../components/BetslipV2/types'
-import type { BetEntryTR } from '../../components/BetslipTR'
 import type { BetEntry as FloatBetEntry } from '../../components/FloatingBetslip'
 import styles from './SportsbookVisualiser.module.css'
 
 /* ---- Sample data ---- */
 
-const V1_BETS: BetEntry[] = [
-  { id: '1', match: 'Arsenal - Manchester City', league: 'Premier League', market: '1x2', selection: '1', odds: 2.96 },
-  { id: '2', match: 'Liverpool - Chelsea', league: 'Premier League', market: '1x2', selection: 'X', odds: 3.45 },
-]
-const V1_BONUSES: Bonus[] = [
-  { id: 'b1', type: 'OddsBoost', label: 'Odds Boost', originalOdds: 7.5, boostedOdds: 8.75 },
-  { id: 'b2', type: 'FreeBet', label: 'Free Bet', amount: 10 },
-]
+const VAIX_BET: FloatBetEntry = {
+  id: 'vaix-1',
+  match: 'Vasco da Gama vs. Sao Paulo',
+  league: 'Brasileirão',
+  market: 'VAIX Multi',
+  selection: 'VAIX Pick',
+  odds: 4.75,
+  betType: 'vaix',
+  vaixLegs: [
+    { selection: 'No', market: 'Vasco Da Gama Clean Sheet' },
+    { selection: 'Vasco Da Gama', market: '1x2' },
+    { selection: 'Under 3.5', market: 'Sao Paulo Total' },
+  ],
+}
 
-const V2_BETS: BetEntryV2[] = [
-  { id: '1', match: 'FC Midtjylland vs Nottingham Forest', league: 'UEFA Champions League', market: 'Full Time', selection: 'FC Midtjylland', odds: 2.95, fractionalOdds: '39/20' },
-  { id: '2', match: 'Liverpool vs Real Madrid', league: 'UEFA Champions League', market: 'Full Time', selection: 'Liverpool', odds: 1.95, badges: ['2UP'] },
-]
-
-const TR_BETS: BetEntryTR[] = [
-  { id: '1', match: 'Galatasaray - Fenerbahçe', league: 'Süper Lig', market: 'Maç Sonucu', selection: 'Galatasaray', odds: 2.15 },
-  { id: '2', match: 'Beşiktaş - Trabzonspor', league: 'Süper Lig', market: 'Maç Sonucu', selection: 'Beşiktaş', odds: 1.85 },
-]
+const BOOST_BET: FloatBetEntry = {
+  id: 'boost-1',
+  match: 'Sao Paulo x Ceara',
+  league: 'Brasileirão',
+  market: 'Each Team 1+ Corners & 1+ Shots On Target In Each Half',
+  selection: 'YES',
+  odds: 1.90,
+  originalOdds: 1.70,
+  betType: 'boost',
+  sportIcon: '⚽',
+  sportLabel: 'Shots & Corners',
+  kickoffTime: '30/09 01:00',
+}
 
 const FLOAT_BETS_LIVE: FloatBetEntry[] = [
   {
@@ -829,9 +833,6 @@ type SportsbookVisualiserProps = {
 }
 
 export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiserProps) {
-  const [v1Bets, setV1Bets] = useState<BetEntry[]>(V1_BETS)
-  const [v2Bets, setV2Bets] = useState<BetEntryV2[]>(V2_BETS)
-  const [trBets, setTrBets] = useState<BetEntryTR[]>(TR_BETS)
   const [entryMode, setEntryMode] = useState<EntryMode>('live')
   const [floatBets, setFloatBets] = useState<FloatBetEntry[]>(FLOAT_BETS_BY_MODE.live)
   const [mobileView, setMobileView] = useState<MobileView>('sportsbook')
@@ -1064,6 +1065,38 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
           </div>
 
           <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>Special bets</span>
+            <div className={styles.chipRow}>
+              <button
+                className={`${styles.chip} ${floatBets.some((b) => b.betType === 'vaix') ? styles.chipActive : ''}`}
+                onClick={() =>
+                  setFloatBets((prev) =>
+                    prev.some((b) => b.betType === 'vaix')
+                      ? prev.filter((b) => b.betType !== 'vaix')
+                      : [...prev, VAIX_BET]
+                  )
+                }
+                type="button"
+              >
+                Toggle VAIX bet
+              </button>
+              <button
+                className={`${styles.chip} ${floatBets.some((b) => b.betType === 'boost') ? styles.chipActive : ''}`}
+                onClick={() =>
+                  setFloatBets((prev) =>
+                    prev.some((b) => b.betType === 'boost')
+                      ? prev.filter((b) => b.betType !== 'boost')
+                      : [...prev, BOOST_BET]
+                  )
+                }
+                type="button"
+              >
+                Toggle Boost bet
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.controlGroup}>
             <span className={styles.controlLabel}>Visualisation</span>
             <div className={styles.chipRow}>
               {(['mobile', 'desktop', 'both'] as const).map((v) => (
@@ -1230,36 +1263,6 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
         </div>
       </section>}
 
-      {isPlayground && <div className={styles.betslipComparison}>
-        <div className={styles.betslipColumn}>
-          <span className={styles.betslipLabel}>Betslip V1</span>
-          <Betslip
-            bets={v1Bets}
-            bonuses={V1_BONUSES}
-            onPlaceBet={async () => {}}
-            onRemoveBet={(id) => setV1Bets((prev) => prev.filter((b) => b.id !== id))}
-            onClearAll={() => setV1Bets([])}
-          />
-        </div>
-        <div className={styles.betslipColumn}>
-          <span className={styles.betslipLabel}>Betslip V2</span>
-          <BetslipV2
-            bets={v2Bets}
-            onPlaceBet={async () => {}}
-            onRemoveBet={(id) => setV2Bets((prev) => prev.filter((b) => b.id !== id))}
-            onClearAll={() => setV2Bets([])}
-          />
-        </div>
-        <div className={styles.betslipColumn}>
-          <span className={styles.betslipLabel}>Betslip TR 🇹🇷</span>
-          <BetslipTR
-            bets={trBets}
-            onPlaceBet={async () => {}}
-            onRemoveBet={(id) => setTrBets((prev) => prev.filter((b) => b.id !== id))}
-            onClearAll={() => setTrBets([])}
-          />
-        </div>
-      </div>}
     </div>
   )
 }

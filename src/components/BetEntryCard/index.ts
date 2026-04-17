@@ -1,1 +1,5 @@
 export { BetEntryCard } from './BetEntryCard'
+export { VaixBetEntryCard } from './VaixBetEntryCard'
+export { BoostBetEntryCard } from './BoostBetEntryCard'
+export type { VaixLeg, VaixBetEntryCardProps } from './VaixBetEntryCard'
+export type { BoostBetEntryCardProps } from './BoostBetEntryCard'

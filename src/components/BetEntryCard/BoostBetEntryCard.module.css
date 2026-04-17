@@ -1,0 +1,129 @@
+.card {
+  width: 353px;
+  min-width: 353px;
+  border: 1px solid var(--content-accent);
+  border-radius: var(--radius-lg);
+  background: var(--surface-layer-1);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  box-shadow: 0 0 16px rgba(11, 216, 182, 0.18), 0 0 4px rgba(11, 216, 182, 0.10);
+}
+
+/* ─── Header ─── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.sportIcon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.sportLabel {
+  color: var(--content-primary);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.clockIcon {
+  width: 12px;
+  height: 12px;
+  color: var(--content-subtle);
+}
+
+.kickoffTime {
+  color: var(--content-subtle);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.removeButton {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--action-neutral);
+  color: var(--content-subtle);
+  font-size: 9px;
+  line-height: 1;
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  margin-left: 2px;
+}
+
+/* ─── Description ─── */
+.description {
+  color: var(--content-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 0;
+  text-align: center;
+}
+
+/* ─── Odds row ─── */
+.oddsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--surface-layer-2);
+  border: 1px solid var(--content-accent);
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+}
+
+.outcome {
+  color: var(--content-accent);
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.originalOdds {
+  color: var(--content-subtle);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: line-through;
+}
+
+.arrow {
+  color: var(--content-secondary);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.odds {
+  color: var(--content-primary);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+}

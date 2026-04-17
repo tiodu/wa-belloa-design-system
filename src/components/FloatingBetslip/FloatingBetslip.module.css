@@ -1,5 +1,31 @@
 /* FloatingBetslip — full drawer + numpad + confirmation */
 
+/* ─── Mix-conflict error banner ─── */
+.mixConflictBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(255, 149, 146, 0.10);
+  border: 1px solid var(--status-critical-fg);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  margin: 4px 12px 0;
+}
+
+.mixConflictIcon {
+  color: var(--status-critical-fg);
+  font-size: 14px;
+  flex-shrink: 0;
+  line-height: 1.3;
+}
+
+.mixConflictText {
+  color: var(--status-critical-fg);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
 /* ─── Position helpers ─── */
 .posFixed    { position: fixed; }
 .posAbsolute { position: absolute; }

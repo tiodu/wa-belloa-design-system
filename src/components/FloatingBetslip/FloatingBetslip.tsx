@@ -4,7 +4,7 @@ import { Trash2, ClipboardList } from 'lucide-react'
 import { MiniStrip } from './MiniStrip'
 import type { BetEntry, BonusTrackerConfig } from './types'
 import { combinedOdds } from './types'
-import { BetEntryCard } from '../BetEntryCard'
+import { BetEntryCard, VaixBetEntryCard } from '../BetEntryCard'
 import styles from './FloatingBetslip.module.css'
 
 /* ─── SelectionRow ─── */
@@ -20,6 +20,20 @@ function SelectionRow({
   stakeSlot?: ReactNode
   onBannerDismiss?: (id: string) => void
 }) {
+  if (bet.betType === 'vaix') {
+    return (
+      <div className={styles.selRow}>
+        <VaixBetEntryCard
+          match={bet.match}
+          legs={bet.vaixLegs ?? []}
+          odds={bet.odds.toFixed(2)}
+          onRemove={() => onRemove(bet.id)}
+          removeAriaLabel={`Remove ${bet.match}`}
+        />
+      </div>
+    )
+  }
+
   const topMeta = bet.isLive && bet.score
     ? `${bet.score}${bet.minute !== undefined ? ` · ${bet.minute}'` : ''}`
     : undefined
@@ -201,6 +215,9 @@ export function FloatingBetslip({
       : null
   const hasSuspended = bets.some((b) => b.suspended)
   const hasOddsChanged = bets.some((b) => b.oddsDirection !== undefined && !dismissedOddsIds.has(b.id))
+  const hasSpecialBet = bets.some((b) => b.betType === 'vaix' || b.betType === 'boost')
+  const hasRegularBet = bets.some((b) => !b.betType)
+  const hasMixConflict = hasSpecialBet && hasRegularBet
   const activePercent = (() => {
     if (!bonusTracker) return 0
     const sorted = [...bonusTracker.thresholds].sort((a, b) => a.selections - b.selections)
@@ -366,6 +383,7 @@ export function FloatingBetslip({
   const ctaDisabled =
     !isLoggedIn ||
     isBetPlacementPending ||
+    hasMixConflict ||
     (!hasSuspended && (betMode === 'multiple' ? multipleStake <= 0 : singleStakeTotal <= 0))
 
   const stakeAmount = (betMode === 'multiple' ? multipleStake : singleStakeTotal).toFixed(2)
@@ -524,6 +542,16 @@ export function FloatingBetslip({
               </>
             ) : (
               <>
+            {/* Mix-conflict error banner */}
+            {hasMixConflict && (
+              <div className={styles.mixConflictBanner}>
+                <span className={styles.mixConflictIcon}>⚠</span>
+                <span className={styles.mixConflictText}>
+                  VAIX and Boost bets can't be combined with regular bets. Remove conflicting selections to continue.
+                </span>
+              </div>
+            )}
+
             {/* Selection rows */}
             {bets.map((bet) => {
               const entryStake = singleStakeById[bet.id]
