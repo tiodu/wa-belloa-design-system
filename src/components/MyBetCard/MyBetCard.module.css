@@ -1,0 +1,248 @@
+.card {
+  background: var(--surface-layer-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+/* ─── Header ─── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.statusBadge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border-radius: var(--radius-full);
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+
+.status_won     { color: var(--surface-layer-1); background: var(--status-success-fg); }
+.status_lost    { color: var(--surface-layer-1); background: var(--status-critical-fg); }
+.status_void    { color: var(--content-primary); background: var(--action-neutral); }
+.status_cashedout { color: var(--surface-layer-1); background: var(--status-warning-fg); }
+
+.liveBadge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--surface-layer-1);
+  background: var(--status-critical-fg);
+  border-radius: var(--radius-full);
+  padding: 2px 6px;
+  flex-shrink: 0;
+  animation: livePulse 1.6s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+.headerStake {
+  color: var(--content-accent);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.headerBetType {
+  color: var(--content-primary);
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.headerOdds {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.originalOdds {
+  color: var(--content-subtle);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: line-through;
+}
+
+.odds {
+  color: var(--content-accent);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ─── Single leg ─── */
+.singleLeg {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.legSelection {
+  color: var(--content-primary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.legMarket {
+  color: var(--content-subtle);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+/* ─── Multi-leg timeline ─── */
+.legsWrap {
+  display: flex;
+  gap: 10px;
+  background: var(--surface-layer-2);
+  border-radius: var(--radius-md);
+  padding: 10px;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 3px;
+}
+
+.timelineRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-default);
+  background: transparent;
+  flex-shrink: 0;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.circle_won  { border-color: var(--status-success-fg); background: var(--status-success-fg); }
+.circle_lost { border-color: var(--status-critical-fg); background: var(--status-critical-fg); }
+.circle_void { border-color: var(--content-subtle); }
+.circle_pending { border-color: var(--content-accent); }
+
+.connector {
+  width: 1.5px;
+  flex: 1;
+  min-height: 18px;
+  background: var(--border-default);
+  margin: 2px 0;
+}
+
+.legsContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.leg {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ─── Event row ─── */
+.eventRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.eventName {
+  color: var(--content-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.eventDate {
+  color: var(--content-subtle);
+  font-size: 11px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── Stake / Return ─── */
+.stakeReturnRow {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 10px;
+}
+
+.stakeReturnItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stakeReturnItem:last-child {
+  align-items: flex-end;
+}
+
+.stakeReturnLabel {
+  color: var(--content-subtle);
+  font-size: 11px;
+}
+
+.stakeReturnValue {
+  color: var(--content-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.returnWon {
+  color: var(--status-success-fg);
+}
+
+/* ─── Cash Out button ─── */
+.cashOutBtn {
+  width: 100%;
+  height: 40px;
+  background: var(--action-primary);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-md);
+  color: var(--content-on-action);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s ease;
+}
+
+.cashOutBtn:hover {
+  opacity: 0.85;
+}
+
+.cashOutBtn:active {
+  opacity: 0.7;
+}
