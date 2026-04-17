@@ -29,6 +29,25 @@ const ALL_BETS: MyBetCardProps[] = [
     ],
   },
   {
+    id: 'b1b',
+    betType: '4-Fold Acca',
+    stake: 12.00,
+    potentialReturn: 186.00,
+    currency: '₺',
+    status: 'open',
+    isLive: false,
+    event: 'Multi-sport',
+    kickoffDate: 'Tue 15 Apr',
+    odds: 15.50,
+    cashOutValue: 8.40,
+    legs: [
+      { event: 'Premier League · Arsenal vs Chelsea', selection: 'Arsenal', market: 'Full Time Result', kickoffTime: 'Tue 15 Apr · 21:00' },
+      { event: 'La Liga · Barcelona vs Atlético', selection: 'Over 2.5', market: 'Total Goals', kickoffTime: 'Tue 15 Apr · 21:00' },
+      { event: 'NBA · Lakers vs Celtics', selection: 'Lakers -4.5', market: 'Handicap', kickoffTime: 'Wed 16 Apr · 02:30' },
+      { event: 'ATP Madrid · Djokovic vs Alcaraz', selection: 'Alcaraz', market: 'Match Winner', kickoffTime: 'Thu 17 Apr · 14:00' },
+    ],
+  },
+  {
     id: 'b2',
     betType: 'Double',
     stake: 10.00,
@@ -179,24 +198,36 @@ function BottomNav() {
 
 /* ─── Main page ─── */
 
+const BET_PERMUTATIONS: { id: string; label: string }[] = [
+  { id: 'b1',  label: 'Bet Builder · live' },
+  { id: 'b1b', label: 'Multi-sport Acca' },
+  { id: 'b2',  label: 'Double · pre-match' },
+  { id: 'b3',  label: 'Single · live' },
+  { id: 'b4',  label: 'Won · single' },
+  { id: 'b5',  label: 'Lost · treble' },
+  { id: 'b6',  label: 'Boosted · single' },
+]
+
 export function MyBetsPage() {
   const [activeTab, setActiveTab] = useState<MyBetsTab>('open')
   const [bets, setBets] = useState<MyBetCardProps[]>(ALL_BETS)
-
-  // Controls state
-  const [controlBetFilter, setControlBetFilter] = useState<'all' | 'cashout' | 'live' | 'settled' | 'empty'>('all')
+  const [visibleIds, setVisibleIds] = useState<Set<string>>(
+    () => new Set(BET_PERMUTATIONS.map(p => p.id))
+  )
 
   const BALANCE = 1000
   const CURRENCY = '₺'
 
-  const visibleBets = (() => {
-    if (controlBetFilter === 'empty') return []
-    if (controlBetFilter === 'cashout') return ALL_BETS.filter(b => b.cashOutValue !== undefined && b.status === 'open')
-    if (controlBetFilter === 'live') return ALL_BETS.filter(b => b.isLive && b.status === 'open')
-    if (controlBetFilter === 'settled') return ALL_BETS.filter(b => b.status !== 'open')
-    return bets
-  })()
+  function toggleBet(id: string) {
+    setVisibleIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
+  const visibleBets = bets.filter(b => visibleIds.has(b.id))
   const tabBets = filterBets(visibleBets, activeTab)
 
   function handleCashOut(id: string) {
@@ -210,14 +241,6 @@ export function MyBetsPage() {
     { id: 'cashout', label: 'Cash Out' },
     { id: 'live',    label: 'Live' },
     { id: 'settled', label: 'Settled' },
-  ]
-
-  const CONTROL_FILTERS: { id: typeof controlBetFilter; label: string }[] = [
-    { id: 'all',      label: 'All bets' },
-    { id: 'cashout',  label: 'With cash out' },
-    { id: 'live',     label: 'Live only' },
-    { id: 'settled',  label: 'Settled only' },
-    { id: 'empty',    label: 'Empty' },
   ]
 
   return (
@@ -243,16 +266,16 @@ export function MyBetsPage() {
         </div>
 
         <div className={styles.controlGroup}>
-          <span className={styles.controlLabel}>Bet data</span>
+          <span className={styles.controlLabel}>Bet permutations</span>
           <div className={styles.chipRow}>
-            {CONTROL_FILTERS.map(f => (
+            {BET_PERMUTATIONS.map(p => (
               <button
-                key={f.id}
-                className={`${styles.chip} ${controlBetFilter === f.id ? styles.chipActive : ''}`}
-                onClick={() => setControlBetFilter(f.id)}
+                key={p.id}
+                className={`${styles.chip} ${visibleIds.has(p.id) ? styles.chipActive : ''}`}
+                onClick={() => toggleBet(p.id)}
                 type="button"
               >
-                {f.label}
+                {p.label}
               </button>
             ))}
           </div>

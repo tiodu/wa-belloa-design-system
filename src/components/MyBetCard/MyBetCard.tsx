@@ -3,6 +3,8 @@ import styles from './MyBetCard.module.css'
 export type MyBetLeg = {
   selection: string
   market: string
+  event?: string
+  kickoffTime?: string
   result?: 'pending' | 'won' | 'lost' | 'void'
 }
 
@@ -52,6 +54,8 @@ export function MyBetCard({
   const showCashOut = status === 'open' && cashOutValue !== undefined
   const returnValue = actualReturn !== undefined ? actualReturn : potentialReturn
   const returnLabel = status === 'won' || status === 'cashedout' ? 'Returned' : 'To Return'
+  const showTimeline = legs.some(l => l.result && l.result !== 'pending')
+  const isMultiEvent = legs.some(l => l.event)
 
   return (
     <div className={styles.card}>
@@ -85,30 +89,38 @@ export function MyBetCard({
         </div>
       ) : (
         <div className={styles.legsWrap}>
-          <div className={styles.timeline}>
-            {legs.map((_, i) => (
-              <div key={i} className={styles.timelineRow}>
-                <div className={`${styles.circle}${legs[i].result ? ` ${styles[`circle_${legs[i].result}`]}` : ''}`} />
-                {i < legs.length - 1 && <div className={styles.connector} />}
-              </div>
-            ))}
-          </div>
+          {showTimeline && (
+            <div className={styles.timeline}>
+              {legs.map((leg, i) => (
+                <div key={i} className={styles.timelineRow}>
+                  <div className={`${styles.circle} ${styles[`circle_${leg.result ?? 'pending'}`]}`} />
+                  {i < legs.length - 1 && <div className={styles.connector} />}
+                </div>
+              ))}
+            </div>
+          )}
           <div className={styles.legsContent}>
             {legs.map((leg, i) => (
               <div key={i} className={styles.leg}>
+                {leg.event && <span className={styles.legEvent}>{leg.event}</span>}
                 <span className={styles.legSelection}>{leg.selection}</span>
-                <span className={styles.legMarket}>{leg.market}</span>
+                <div className={styles.legMeta}>
+                  <span className={styles.legMarket}>{leg.market}</span>
+                  {leg.kickoffTime && <span className={styles.legKickoff}>{leg.kickoffTime}</span>}
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Event + date */}
-      <div className={styles.eventRow}>
-        <span className={styles.eventName}>{event}</span>
-        <span className={styles.eventDate}>{kickoffDate}</span>
-      </div>
+      {/* Event + date — hidden for multi-event bets (dates are per-leg) */}
+      {!isMultiEvent && (
+        <div className={styles.eventRow}>
+          <span className={styles.eventName}>{event}</span>
+          <span className={styles.eventDate}>{kickoffDate}</span>
+        </div>
+      )}
 
       {/* Stake / Return */}
       <div className={styles.stakeReturnRow}>
