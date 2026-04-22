@@ -12,6 +12,7 @@ type BetEntryCardProps = {
   selection?: string
   market: string
   suspendedLabel?: string
+  unavailableLabel?: string
   oddsDirection?: OddsDirection
   oddsChangeSignal?: number
   isLive?: boolean
@@ -33,6 +34,7 @@ export function BetEntryCard({
   selection,
   market,
   suspendedLabel,
+  unavailableLabel,
   oddsDirection,
   oddsChangeSignal,
   isLive = false,
@@ -89,7 +91,9 @@ export function BetEntryCard({
       </div>
 
       <div className={styles.mid}>
-        {suspendedLabel ? (
+        {unavailableLabel ? (
+          <span className={styles.unavailable}>{unavailableLabel}</span>
+        ) : suspendedLabel ? (
           <span className={styles.suspended}>{suspendedLabel}</span>
         ) : (
           <>

@@ -368,6 +368,44 @@ export const DesktopWithBets: Story = {
 
 /* ── Placement flow ─────────────────────────────────────────────── */
 
+export const PlacementError: Story = {
+  name: 'Placement — error state (interactive)',
+  parameters: {
+    docs: {
+      description: {
+        story: `
+**Steps to trigger the error overlay:**
+1. Tap the mini strip to open the drawer
+2. Tap **₺50** chip to set a stake
+3. Tap **Place Bet** — after the 1s loading spinner, the error overlay appears
+
+Use the \`simulatedErrorCode\` control to switch between different error types.
+The **Try again** button dismisses the overlay and keeps the selections.
+        `,
+      },
+    },
+  },
+  render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [bets, setBets] = useState<BetEntry[]>([BET_LIVE_1, BET_LIVE_2, BET_PREMATCH])
+    return (
+      <MemoryRouter>
+        <FloatingBetslip
+          {...args}
+          bets={bets}
+          onRemoveBet={(id) => setBets((prev) => prev.filter((b) => b.id !== id))}
+          onClearAll={() => setBets([])}
+        />
+      </MemoryRouter>
+    )
+  },
+  args: {
+    bets: [],
+    simulatedErrorCode: 109,
+    openSignal: 1,
+  },
+}
+
 export const PlacementFlow: Story = {
   name: 'Placement — loading → summary (interactive)',
   parameters: {

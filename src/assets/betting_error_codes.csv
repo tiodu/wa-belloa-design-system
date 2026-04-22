@@ -1,0 +1,65 @@
+Error Code,Description,Extended Info
+50,place_bet has some missing parameters,N/A
+102,Aut service not activated for this user,N/A
+103,invalid stake value,N/A
+104,at least one selection has changed,N/A
+106,max combination limit not satisfied,returns max combinations allowed
+107,min combination limit not satisfied,returns min combinations allowed
+108,could not save slip,N/A
+109,not enough funds,N/A
+110,max combinations per systenm ticket exceeded,N/A
+111,max win exceeded,returns max win allowed
+113,selezione sotto controllo,N/A
+114,betting not allowed for this account,"returns a range of codes, error need to be checked thoroughly"
+115,"ticket needs to go on autorizzata, but user is not allowed to do so",N/A
+116,the user has gone over the wager limit,N/A
+117,wager limit exceeded,N/A
+120,min stake per fold not satisfied,returns stake per line/fold (system slips)
+121,user cannot ask for autorizzate for events under control,N/A
+122,betting is currently suspended,N/A
+123,user or agency has already played ticket,N/A
+124,min stake error,returns stake per slip (total stake for single and system slips)
+125,max stake error,N/A
+126,problem with giroconto auto,N/A
+127,problem loading user information,N/A
+128,".IT & trying to play schedina with cents (like 2.3Eur, 3.5Eur etc...)",N/A
+129,Total number of daily bslips has been exceeded,N/A
+130,.IT Slip no accepted by AAMS,N/A
+132,.IT fold stake must be multiple of 0.25,N/A
+134,Fold stake does not match total stake,N/A
+135,.IT Totalizzatore massimo di 5000 superato per alcune colonne generate dalla schedine,N/A
+136,Generic error,N/A
+137,Uno degli importi sistemi e' invalido,N/A
+139,.IT aams bonus info saving,N/A
+140,.IT system slip must have more than 1 total lines,N/A
+141,stake cannot be 0,N/A
+142,Lines cannot be zero,N/A
+143,This user is not allowed to play,N/A
+145,Massimo num colonne 1000,N/A
+146,Live Betting user service is not active,N/A
+147,stake lower than the minimum stake per line,N/A
+148,invalid mode,N/A
+149,slip has no selections,N/A
+150,error saving slip transaction id,N/A
+151,odds changed,N/A
+152,could not save bonus record for slip,N/A
+153,could not save risk record,N/A
+154,hacker tried to place bet without the wait,N/A
+155,max win + bonus > allowed limit for aut,returns slip max win allowed without bet acceptance. slip sent to bet acceptance
+156,"on the .it, a system slip needs to have at least 2 lines",N/A
+157,event or bet type not available,N/A
+158,system bet and win of at least one line went over max win for single slip,returns slip max win allowed
+159,pvr does not have enough balance,N/A
+160,live selections cannot be added to booked slip,N/A
+161,Autorizzate service not available at this time,N/A
+162,subaccount autolimits not set,N/A
+163,error with transfer to subaccount,"returns a range of codes, error need to be checked thoroughly"
+167,MTS issue,N/A
+168,MTS slip rejected,404-Outcome is not active; 405-Market not found; 421-Odds too high; 423-Expired; 431-Higher than bookmaker; 432-Higher than global fair; 506-Market not active; 511-Brand payout limit; 512-Aggregated payout limit; 701-Bookmaker liability; 703-Customer liability
+169,error in initialising MTS object,N/A
+170,event under control,N/A
+171,LINE_WIN_LIMIT_EXCEEDED,returns aslip amx win allowed per line/fold
+172,Tain bet validator error,returns a bslip code used to check with SL > Crew > bslip checks
+180,error saving cashout info on place bet,N/A
+190,autolimits exceeded,N/A
+195,Error retrieving betting brand limits (sport/league),N/A

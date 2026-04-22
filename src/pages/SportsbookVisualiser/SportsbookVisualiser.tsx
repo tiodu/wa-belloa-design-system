@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { FloatingBetslip } from '../../components/FloatingBetslip'
+import { DEMO_ERROR_OPTIONS } from '../../constants/bettingErrors'
 import { BetEntryCard } from '../../components/BetEntryCard'
 import type { BetEntry as FloatBetEntry } from '../../components/FloatingBetslip'
 import styles from './SportsbookVisualiser.module.css'
@@ -839,7 +840,11 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
   const [viewLayout, setViewLayout] = useState<'mobile' | 'desktop' | 'both'>('both')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [theme, setTheme] = useState<'belloa' | 'superbetin'>('belloa')
-  const BALANCE = 1000
+  const [simulatedErrorCode, setSimulatedErrorCode] = useState<number | undefined>(undefined)
+  const [balance, setBalance] = useState(1000)
+  const [bettingSuspended, setBettingSuspended] = useState(false)
+  const [maxWin, setMaxWin] = useState<number | undefined>(undefined)
+  const BALANCE = balance
   const sourceFloatBets = FLOAT_BETS_BY_MODE[entryMode]
   const currentMobileMatches = MOBILE_MATCHES_BY_MODE[entryMode]
 
@@ -931,6 +936,19 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
           </div>
 
           <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>Error simulation</span>
+            <select
+              className={styles.themeSelect}
+              value={simulatedErrorCode ?? ''}
+              onChange={(e) => setSimulatedErrorCode(e.target.value ? Number(e.target.value) : undefined)}
+            >
+              {DEMO_ERROR_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.controlGroup}>
             <span className={styles.controlLabel}>User</span>
             <div className={styles.chipRow}>
               <button
@@ -945,8 +963,41 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                 onClick={() => setIsLoggedIn(true)}
                 type="button"
               >
-                Logged in · ₺{BALANCE}
+                Logged in
               </button>
+            </div>
+          </div>
+
+          <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>Balance</span>
+            <div className={styles.chipRow}>
+              {([1000, 50, 10] as const).map((b) => (
+                <button
+                  key={b}
+                  className={`${styles.chip} ${balance === b ? styles.chipActive : ''}`}
+                  onClick={() => setBalance(b)}
+                  type="button"
+                >
+                  ₺{b}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>Max win limit (err 111)</span>
+            <div className={styles.chipRow}>
+              <button className={`${styles.chip} ${maxWin === undefined ? styles.chipActive : ''}`} onClick={() => setMaxWin(undefined)} type="button">None</button>
+              <button className={`${styles.chip} ${maxWin === 100 ? styles.chipActive : ''}`} onClick={() => setMaxWin(100)} type="button">₺100</button>
+              <button className={`${styles.chip} ${maxWin === 500 ? styles.chipActive : ''}`} onClick={() => setMaxWin(500)} type="button">₺500</button>
+            </div>
+          </div>
+
+          <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>Betting suspended (err 122)</span>
+            <div className={styles.chipRow}>
+              <button className={`${styles.chip} ${!bettingSuspended ? styles.chipActive : ''}`} onClick={() => setBettingSuspended(false)} type="button">Off</button>
+              <button className={`${styles.chip} ${bettingSuspended ? styles.chipActive : ''}`} onClick={() => setBettingSuspended(true)} type="button">Suspended</button>
             </div>
           </div>
 
@@ -1039,7 +1090,7 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
           </div>
 
           <div className={styles.controlGroup}>
-            <span className={styles.controlLabel}>Suspended</span>
+            <span className={styles.controlLabel}>Suspended / unavailable</span>
             <div className={styles.chipRow}>
               <button
                 className={styles.chip}
@@ -1050,7 +1101,18 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                 }
                 type="button"
               >
-                Toggle sel. 2
+                Toggle suspended sel. 2
+              </button>
+              <button
+                className={styles.chip}
+                onClick={() =>
+                  setFloatBets((prev) =>
+                    prev.map((b, i) => (i === 0 ? { ...b, unavailable: !b.unavailable } : b))
+                  )
+                }
+                type="button"
+              >
+                Toggle unavailable sel. 1
               </button>
               <button
                 className={styles.chip}
@@ -1138,6 +1200,9 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                 onClearAll={() => setFloatBets([])}
                 isLoggedIn={isLoggedIn}
                 balance={BALANCE}
+                simulatedErrorCode={simulatedErrorCode}
+                bettingSuspended={bettingSuspended}
+                maxWin={maxWin}
                 bonusTracker={{
                   label: 'Acca Boost',
                   thresholds: [
@@ -1171,6 +1236,9 @@ export function SportsbookVisualiser({ mode = 'official' }: SportsbookVisualiser
                       onClearAll={() => setFloatBets([])}
                       isLoggedIn={isLoggedIn}
                       balance={BALANCE}
+                      simulatedErrorCode={simulatedErrorCode}
+                      bettingSuspended={bettingSuspended}
+                      maxWin={maxWin}
                       bonusTracker={{
                         label: 'Acca Boost',
                         thresholds: [

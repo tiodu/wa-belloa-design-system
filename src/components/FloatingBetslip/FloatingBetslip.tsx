@@ -2,8 +2,10 @@ import { useState, useRef, useEffect, type MouseEvent, type ReactNode } from 're
 import { Link } from 'react-router-dom'
 import { Trash2, ClipboardList } from 'lucide-react'
 import { MiniStrip } from './MiniStrip'
-import type { BetEntry, BonusTrackerConfig } from './types'
+import type { BetEntry, BonusTrackerConfig, BetPlacementStage } from './types'
 import { combinedOdds } from './types'
+import { getBettingError } from '../../constants/bettingErrors'
+import type { BettingError } from '../../constants/bettingErrors'
 import { BetEntryCard, VaixBetEntryCard } from '../BetEntryCard'
 import styles from './FloatingBetslip.module.css'
 
@@ -38,8 +40,14 @@ function SelectionRow({
     ? `${bet.score}${bet.minute !== undefined ? ` · ${bet.minute}'` : ''}`
     : undefined
 
+  const rowStateClass = bet.unavailable
+    ? ` ${styles.selRowUnavailable}`
+    : bet.suspended
+    ? ` ${styles.selRowSuspended}`
+    : ''
+
   return (
-    <div className={`${styles.selRow}${bet.suspended ? ` ${styles.selRowSuspended}` : ''}`}>
+    <div className={`${styles.selRow}${rowStateClass}`}>
       <BetEntryCard
         topMeta={topMeta}
         topPrimary={bet.match}
@@ -49,6 +57,7 @@ function SelectionRow({
         selection={bet.selection}
         market={bet.market}
         suspendedLabel={bet.suspended ? '⏸ Suspended' : undefined}
+        unavailableLabel={bet.unavailable ? '✕ Not available' : undefined}
         isLive={bet.isLive}
         footer={stakeSlot}
         onRemove={() => onRemove(bet.id)}
@@ -64,8 +73,6 @@ function SelectionRow({
 const NUMPAD_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', '⌫'] as const
 const PLACE_BET_LOADING_MS = 1000
 const BET_SUMMARY_VISIBLE_MS = 5000
-
-type BetPlacementStage = 'idle' | 'loading' | 'summary'
 
 type BetPlacementSummary = {
   ref: string
@@ -170,6 +177,12 @@ export type FloatingBetslipProps = {
   isLoggedIn?: boolean
   /** User balance used for the Max Bet button. When provided, a Max Bet chip appears alongside preset stakes. */
   balance?: number
+  /** When set, Place Bet simulates a failed placement with this error code instead of succeeding. */
+  simulatedErrorCode?: number
+  /** Error 122 — betting is globally suspended. Shows a slip-level banner and locks the CTA. */
+  bettingSuspended?: boolean
+  /** Error 111 — maximum allowed payout. Shows an inline warning in the summary when exceeded. */
+  maxWin?: number
 }
 
 export function FloatingBetslip({
@@ -185,6 +198,9 @@ export function FloatingBetslip({
   bonusTracker,
   isLoggedIn = true,
   balance,
+  simulatedErrorCode,
+  bettingSuspended = false,
+  maxWin,
 }: FloatingBetslipProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [numpadOpen, setNumpadOpen] = useState(false)
@@ -194,6 +210,7 @@ export function FloatingBetslip({
   const [betMode, setBetMode] = useState<'single' | 'multiple'>('single')
   const [betPlacementStage, setBetPlacementStage] = useState<BetPlacementStage>('idle')
   const [betPlacementSummary, setBetPlacementSummary] = useState<BetPlacementSummary | null>(null)
+  const [betPlacementError, setBetPlacementError] = useState<BettingError | null>(null)
   const [dismissedOddsIds, setDismissedOddsIds] = useState<Set<string>>(new Set())
   const loadingTimer = useRef<ReturnType<typeof setTimeout>>()
   const summaryTimer = useRef<ReturnType<typeof setTimeout>>()
@@ -218,6 +235,9 @@ export function FloatingBetslip({
   const hasSpecialBet = bets.some((b) => b.betType === 'vaix' || b.betType === 'boost')
   const hasRegularBet = bets.some((b) => !b.betType)
   const hasMixConflict = hasSpecialBet && hasRegularBet
+  const hasUnavailable = bets.some((b) => b.unavailable)
+  const hasInsufficientFunds = isLoggedIn && balance !== undefined && stake > 0 && stake > balance
+  const maxWinExceeded = maxWin !== undefined && potentialWin !== null && parseFloat(potentialWin) > maxWin
   const activePercent = (() => {
     if (!bonusTracker) return 0
     const sorted = [...bonusTracker.thresholds].sort((a, b) => a.selections - b.selections)
@@ -249,9 +269,16 @@ export function FloatingBetslip({
     clearPlacementTimers()
     setBetPlacementStage('idle')
     setBetPlacementSummary(null)
+    setBetPlacementError(null)
     setStakeStr('')
     setSingleStakeById({})
     onClearAll()
+  }
+
+  function dismissError() {
+    clearPlacementTimers()
+    setBetPlacementStage('idle')
+    setBetPlacementError(null)
   }
 
   // Drawer open/close based on bet count changes
@@ -266,6 +293,7 @@ export function FloatingBetslip({
       setActiveStakeTarget('multiple')
       setBetPlacementStage('idle')
       setBetPlacementSummary(null)
+      setBetPlacementError(null)
       userDismissed.current = false
       clearPlacementTimers()
       return
@@ -354,6 +382,10 @@ export function FloatingBetslip({
       bets.filter((b) => b.suspended).forEach((b) => onRemoveBet(b.id))
       return
     }
+    if (hasUnavailable) {
+      bets.filter((b) => b.unavailable).forEach((b) => onRemoveBet(b.id))
+      return
+    }
     const placedStake = betMode === 'multiple' ? multipleStake : singleStakeTotal
     if (placedStake <= 0) return
     setNumpadOpen(false)
@@ -368,31 +400,47 @@ export function FloatingBetslip({
     clearPlacementTimers()
     setBetPlacementStage('loading')
     loadingTimer.current = setTimeout(() => {
-      setBetPlacementStage('summary')
-      summaryTimer.current = setTimeout(() => {
-        setIsOpen(false)
-        finalizePlacedBet()
-      }, BET_SUMMARY_VISIBLE_MS)
+      if (simulatedErrorCode) {
+        setBetPlacementError(getBettingError(simulatedErrorCode))
+        setBetPlacementStage('error')
+      } else {
+        setBetPlacementStage('summary')
+        summaryTimer.current = setTimeout(() => {
+          setIsOpen(false)
+          finalizePlacedBet()
+        }, BET_SUMMARY_VISIBLE_MS)
+      }
     }, PLACE_BET_LOADING_MS)
   }
 
   if (bets.length === 0 && !isDesktop) return null
 
   const posClass = contained ? styles.posAbsolute : styles.posFixed
-  const isBetPlacementPending = betPlacementStage === 'loading' || betPlacementStage === 'summary'
+  const isBetPlacementPending = betPlacementStage === 'loading' || betPlacementStage === 'summary' || betPlacementStage === 'error'
   const ctaDisabled =
     !isLoggedIn ||
     isBetPlacementPending ||
+    bettingSuspended ||
     hasMixConflict ||
-    (!hasSuspended && (betMode === 'multiple' ? multipleStake <= 0 : singleStakeTotal <= 0))
+    hasInsufficientFunds ||
+    maxWinExceeded ||
+    (!hasSuspended && !hasUnavailable && (betMode === 'multiple' ? multipleStake <= 0 : singleStakeTotal <= 0))
 
   const stakeAmount = (betMode === 'multiple' ? multipleStake : singleStakeTotal).toFixed(2)
   const ctaLabel = !isLoggedIn
     ? 'Please log in to bet'
     : betPlacementStage === 'loading'
     ? 'Placing bet...'
+    : bettingSuspended
+    ? '⚠ Betting currently unavailable'
     : hasSuspended
     ? '⏸ Remove suspended selections'
+    : hasUnavailable
+    ? '✕ Remove unavailable selections'
+    : hasInsufficientFunds
+    ? 'Insufficient funds'
+    : maxWinExceeded
+    ? `Max win ${currency}${maxWin!.toFixed(2)}`
     : hasOddsChanged && stake > 0
     ? `Accept odds & place bet ${currency}${stakeAmount}`
     : hasOddsChanged
@@ -542,6 +590,16 @@ export function FloatingBetslip({
               </>
             ) : (
               <>
+            {/* Betting suspended slip banner — error 122 */}
+            {bettingSuspended && (
+              <div className={styles.slipBanner}>
+                <span className={styles.slipBannerIcon}>⚠</span>
+                <span className={styles.slipBannerText}>
+                  Betting is currently unavailable. Please try again shortly.
+                </span>
+              </div>
+            )}
+
             {/* Mix-conflict error banner */}
             {hasMixConflict && (
               <div className={styles.mixConflictBanner}>
@@ -646,7 +704,7 @@ export function FloatingBetslip({
                 <button
                   className={[
                     styles.cta,
-                    hasSuspended ? styles.ctaSuspended : ctaDisabled ? styles.ctaDisabled : '',
+                    bettingSuspended || hasSuspended ? styles.ctaSuspended : hasInsufficientFunds || maxWinExceeded ? styles.ctaWarning : ctaDisabled ? styles.ctaDisabled : '',
                   ]
                     .filter(Boolean)
                     .join(' ')}
@@ -709,10 +767,16 @@ export function FloatingBetslip({
                     <span className={styles.summaryLabel}>
                       {betMode === 'multiple' ? 'Potential Win' : 'Total Return'}
                     </span>
-                    <span className={styles.summaryWin}>
+                    <span className={`${styles.summaryWin}${maxWinExceeded ? ` ${styles.summaryWinExceeded}` : ''}`}>
                       {potentialWin ? `${currency}${potentialWin}` : '—'}
                     </span>
                   </div>
+                  {maxWinExceeded && (
+                    <div className={styles.maxWinWarning}>
+                      <span className={styles.maxWinWarningIcon}>⚠</span>
+                      <span>Max win is {currency}{maxWin!.toFixed(2)} — reduce your stake</span>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -721,7 +785,7 @@ export function FloatingBetslip({
                 <button
                   className={[
                     styles.cta,
-                    hasSuspended ? styles.ctaSuspended : ctaDisabled ? styles.ctaDisabled : '',
+                    bettingSuspended || hasSuspended ? styles.ctaSuspended : hasInsufficientFunds || maxWinExceeded ? styles.ctaWarning : ctaDisabled ? styles.ctaDisabled : '',
                   ]
                     .filter(Boolean)
                     .join(' ')}
@@ -739,6 +803,27 @@ export function FloatingBetslip({
                   )}
                 </button>
               )}
+            </div>
+          )}
+
+          {/* Bet placement error stage */}
+          {betPlacementStage === 'error' && betPlacementError && (
+            <div className={styles.betErrorOverlay}>
+              <div className={styles.betErrorContent}>
+                <div className={styles.betErrorIcon}>✕</div>
+                <div className={styles.betErrorTitle}>Bet not placed</div>
+                <div className={styles.betErrorCode}>Error {betPlacementError.code}</div>
+                <div className={styles.betErrorMessage}>{betPlacementError.message}</div>
+                <div className={styles.betErrorDetail}>{betPlacementError.detail}</div>
+                <div className={styles.betErrorActions}>
+                  <button className={styles.betErrorRetry} onClick={dismissError} type="button">
+                    Try again
+                  </button>
+                  <button className={styles.betErrorDismiss} onClick={() => { dismissError(); handleClose() }} type="button">
+                    Dismiss
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 

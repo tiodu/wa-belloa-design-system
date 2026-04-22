@@ -196,6 +196,12 @@
   font-weight: 600;
 }
 
+.unavailable {
+  color: var(--status-critical-fg);
+  font-size: 11px;
+  font-weight: 600;
+}
+
 /* ─── Odds changed banner ─── */
 .oddsChangedBanner {
   display: flex;

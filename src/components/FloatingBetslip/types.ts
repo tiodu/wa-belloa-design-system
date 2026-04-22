@@ -30,9 +30,13 @@ export type BetEntry = {
   sportIcon?: string
   /** Boost: kickoff date/time shown in the card header */
   kickoffTime?: string
+  /** Event or market is no longer available for betting (error 157) */
+  unavailable?: boolean
 }
 
 export type BetslipState = 'mini' | 'open' | 'closed'
+
+export type BetPlacementStage = 'idle' | 'loading' | 'summary' | 'error'
 
 export type BonusThreshold = {
   selections: number   // qualifying selections needed
