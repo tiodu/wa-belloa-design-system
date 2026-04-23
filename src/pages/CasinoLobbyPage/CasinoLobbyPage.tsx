@@ -17,6 +17,7 @@ import {
   ClipboardList,
 } from 'lucide-react'
 import styles from './CasinoLobbyPage.module.css'
+import { MobileSideMenu } from '../../components/MobileSideMenu'
 
 // ─── Data types ───────────────────────────────────────────────
 
@@ -105,11 +106,11 @@ const POPULAR_GAMES: GameItem[] = [
 
 // ─── Sub-components ───────────────────────────────────────────
 
-function CasinoHeader() {
+function CasinoHeader({ onMenuOpen }: { onMenuOpen: () => void }) {
   return (
     <header className={styles.header}>
       <div className={styles.headerLeft}>
-        <button className={styles.headerMenuBtn} aria-label="Menu">
+        <button className={styles.headerMenuBtn} aria-label="Menu" onClick={onMenuOpen}>
           <Menu size={20} />
         </button>
         <div className={styles.headerLogo}>B</div>
@@ -263,13 +264,21 @@ function BottomNav() {
 export function CasinoLobbyPage() {
   const [activeCategory, setActiveCategory] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(true)
 
   return (
     <main className={styles.page}>
       <span className={styles.frameLabel}>Mobile Preview · Casino Lobby</span>
       <div className={styles.phoneFrame}>
+        <MobileSideMenu
+          isOpen={isMenuOpen}
+          onClose={() => setIsMenuOpen(false)}
+          isLoggedIn={isLoggedIn}
+          onToggleAuth={() => setIsLoggedIn(prev => !prev)}
+        />
         <div className={styles.mobileBook}>
-          <CasinoHeader />
+          <CasinoHeader onMenuOpen={() => setIsMenuOpen(true)} />
           <SearchAndCategories
             activeCategory={activeCategory}
             onCategoryChange={setActiveCategory}

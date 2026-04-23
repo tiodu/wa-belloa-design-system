@@ -1,0 +1,533 @@
+/* ─── Slide-in animation ─────────────────────────────────── */
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+/* ─── Overlay — sits above the entire phone frame ────────── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+}
+
+/* ─── Drawer ─────────────────────────────────────────────── */
+
+/*
+ * CSS variables scoped to the drawer so all child elements automatically
+ * pick up the right values in solid vs. glass mode.
+ */
+.drawer {
+  --menu-bg:      var(--surface-page);
+  --menu-layer:   var(--surface-layer-1);
+  --menu-elevate: rgba(32, 34, 33, 1);
+
+  width: 100%;
+  height: 100%;
+  background: var(--menu-bg);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  animation: slideInLeft 280ms ease forwards;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
+.drawer::-webkit-scrollbar { width: 4px; }
+.drawer::-webkit-scrollbar-track { background: transparent; }
+.drawer::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+/* Glass mode — overrides the scoped variables so every child updates */
+.drawerGlass {
+  --menu-bg:      rgba(16, 18, 17, 0.76);
+  --menu-layer:   rgba(23, 25, 24, 0.58);
+  --menu-elevate: rgba(32, 34, 33, 0.48);
+
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 56px;
+  padding: 0 14px;
+  background: var(--menu-layer);
+  border-bottom: 1px solid var(--border-default);
+  flex-shrink: 0;
+}
+
+.headerLogo {
+  width: 36px;
+  height: 36px;
+  background: var(--action-primary);
+  color: var(--content-primary);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-family);
+  flex-shrink: 0;
+}
+
+/* Logged-in: username + balance in header */
+.headerUser {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.headerUsername {
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: 600;
+  color: var(--content-primary);
+  line-height: 1;
+}
+
+.headerBalance {
+  font-family: var(--font-family);
+  font-size: var(--text-xs-size);
+  color: var(--content-accent);
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* Logged-out: Log in + Register text links */
+.headerAuthLinks {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.headerAuthBtn {
+  padding: 7px 10px;
+  background: transparent;
+  border: none;
+  color: var(--content-primary);
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 150ms;
+}
+
+.headerAuthBtn:hover {
+  background: var(--action-neutral);
+}
+
+.closeBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--content-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 150ms, background 150ms;
+}
+
+.closeBtn:hover {
+  color: var(--content-primary);
+  background: var(--action-neutral);
+}
+
+/* ─── Search bar ─────────────────────────────────────────── */
+.searchSection {
+  padding: 12px 14px;
+  background: var(--menu-bg);
+  border-bottom: 1px solid var(--border-default);
+  flex-shrink: 0;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  height: 46px;
+  background: var(--menu-layer);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.searchCategory {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 12px;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: var(--content-primary);
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.searchDivider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-default);
+  flex-shrink: 0;
+}
+
+.searchInputWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  min-width: 0;
+}
+
+.searchIcon {
+  color: var(--content-subtle);
+  flex-shrink: 0;
+}
+
+.searchInputWrap input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--content-primary);
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  min-width: 0;
+}
+
+.searchInputWrap input::placeholder {
+  color: var(--content-subtle);
+}
+
+.searchClear {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--content-subtle);
+  cursor: pointer;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+/* ─── Generic section wrapper ────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--menu-bg);
+  flex-shrink: 0;
+}
+
+/* The "Browse all sports" block sits on a slightly raised surface */
+.sectionElevated {
+  background: var(--menu-elevate);
+}
+
+.sectionTitle {
+  font-family: var(--font-family);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--content-primary);
+  padding: 14px 14px 10px;
+  margin: 0;
+  line-height: 1;
+}
+
+/* ─── Most Popular quick-link tiles ──────────────────────── */
+/*
+ * B2B scalability: add `imageUrl` to any QUICK_LINKS entry and the tile
+ * swaps the fallback Lucide icon for a custom branded image automatically.
+ * The `accentColor` tints the icon container — override per-client.
+ */
+
+.quickLinks {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 4px 4px 16px;
+  gap: 2px;
+}
+
+.quickLinks::-webkit-scrollbar { display: none; }
+
+.quickTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: 0 8px;
+  min-width: 92px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* The icon container — colored by --accent CSS variable */
+.quickTileIconWrap {
+  width: 62px;
+  height: 62px;
+  border-radius: 14px;
+  background: var(--accent, var(--menu-layer));
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.quickTile:hover .quickTileIconWrap {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+}
+
+/* Active state: teal ring instead of removing the accent */
+.quickTileActive .quickTileIconWrap {
+  border-color: var(--content-accent);
+  box-shadow: 0 0 0 1.5px var(--content-accent);
+}
+
+.quickTileImg {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.quickTileIcon {
+  color: rgba(255, 255, 255, 0.88);
+  display: flex;
+}
+
+.quickTileLabel {
+  font-family: var(--font-family);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--content-secondary);
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.quickTileActive .quickTileLabel {
+  color: var(--content-primary);
+}
+
+/* ─── Casino category pills ──────────────────────────────── */
+.casinoCats {
+  display: flex;
+  gap: 6px;
+  padding: 0 14px 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.casinoCats::-webkit-scrollbar { display: none; }
+
+.casinoCat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  background: var(--menu-layer);
+  border: 1px solid var(--border-subtle);
+  border-radius: 100px;
+  color: var(--content-secondary);
+  font-family: var(--font-family);
+  font-size: var(--text-xs-size);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 150ms, color 150ms, border-color 150ms;
+  flex-shrink: 0;
+}
+
+.casinoCat:hover {
+  color: var(--content-primary);
+}
+
+.casinoCatActive {
+  background: var(--action-primary) !important;
+  border-color: transparent !important;
+  color: var(--content-primary) !important;
+}
+
+/* ─── For You items ──────────────────────────────────────── */
+/*
+ * Same imageUrl + accentColor pattern as quick tiles — B2B clients drop in
+ * their own icon images (e.g., a Polygon super-app logo) without code changes.
+ */
+
+.forYouList {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 4px;
+}
+
+.forYouItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 64px;
+  padding: 0 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  text-align: left;
+  transition: background 150ms;
+}
+
+.forYouItem:last-child { border-bottom: none; }
+.forYouItem:hover { background: var(--action-neutral); }
+
+.forYouIconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--accent, var(--menu-layer));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.forYouIcon {
+  color: rgba(255, 255, 255, 0.88);
+  display: flex;
+}
+
+.forYouImg {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.forYouLabel {
+  flex: 1;
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: 500;
+  color: var(--content-primary);
+  line-height: 1;
+}
+
+/* ─── Sports list ────────────────────────────────────────── */
+.sportsList {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 4px;
+}
+
+.sportItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 50px;
+  padding: 0 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  text-align: left;
+  transition: background 150ms;
+}
+
+.sportItem:last-child { border-bottom: none; }
+.sportItem:hover { background: var(--action-neutral); }
+
+.sportIcon {
+  color: var(--content-subtle);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sportLabel {
+  flex: 1;
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: 400;
+  color: var(--content-secondary);
+  line-height: 1;
+}
+
+/* Shared chevron arrow */
+.rowArrow {
+  color: var(--content-subtle);
+  flex-shrink: 0;
+}
+
+/* ─── Demo controls ──────────────────────────────────────── */
+.demoControls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px 14px;
+  background: var(--menu-layer);
+  border-top: 1px solid var(--border-default);
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.demoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.demoLabel {
+  font-family: var(--font-family);
+  font-size: var(--text-xs-size);
+  font-weight: 600;
+  color: var(--content-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.demoBtns {
+  display: flex;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.demoBtn {
+  padding: 5px 10px;
+  background: transparent;
+  border: none;
+  color: var(--content-subtle);
+  font-family: var(--font-family);
+  font-size: var(--text-xs-size);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+}
+
+.demoBtn + .demoBtn {
+  border-left: 1px solid var(--border-default);
+}
+
+.demoBtnActive {
+  background: var(--action-primary);
+  color: var(--content-primary);
+}
