@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import styles from './CasinoLobbyPage.module.css'
 import { MobileSideMenu } from '../../components/MobileSideMenu'
+import { MobileSideMenuV2 } from '../../components/MobileSideMenuV2'
 
 // ─── Data types ───────────────────────────────────────────────
 
@@ -266,17 +267,42 @@ export function CasinoLobbyPage() {
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(true)
+  const [menuVariant, setMenuVariant] = useState<'v1' | 'v2'>('v1')
 
   return (
     <main className={styles.page}>
-      <span className={styles.frameLabel}>Mobile Preview · Casino Lobby</span>
+      <div className={styles.frameLabel}>
+        <span>Mobile Preview · Casino Lobby</span>
+        <div className={styles.menuToggle}>
+          <button
+            className={`${styles.menuToggleBtn}${menuVariant === 'v1' ? ` ${styles.menuToggleBtnActive}` : ''}`}
+            onClick={() => setMenuVariant('v1')}
+          >
+            Menu V1
+          </button>
+          <button
+            className={`${styles.menuToggleBtn}${menuVariant === 'v2' ? ` ${styles.menuToggleBtnActive}` : ''}`}
+            onClick={() => setMenuVariant('v2')}
+          >
+            Menu V2
+          </button>
+        </div>
+      </div>
       <div className={styles.phoneFrame}>
-        <MobileSideMenu
-          isOpen={isMenuOpen}
-          onClose={() => setIsMenuOpen(false)}
-          isLoggedIn={isLoggedIn}
-          onToggleAuth={() => setIsLoggedIn(prev => !prev)}
-        />
+        {menuVariant === 'v1' ? (
+          <MobileSideMenu
+            isOpen={isMenuOpen}
+            onClose={() => setIsMenuOpen(false)}
+            isLoggedIn={isLoggedIn}
+            onToggleAuth={() => setIsLoggedIn(prev => !prev)}
+          />
+        ) : (
+          <MobileSideMenuV2
+            isOpen={isMenuOpen}
+            onClose={() => setIsMenuOpen(false)}
+            isLoggedIn={isLoggedIn}
+          />
+        )}
         <div className={styles.mobileBook}>
           <CasinoHeader onMenuOpen={() => setIsMenuOpen(true)} />
           <SearchAndCategories

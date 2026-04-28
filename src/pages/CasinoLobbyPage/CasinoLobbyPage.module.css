@@ -10,11 +10,44 @@
 }
 
 .frameLabel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   font-size: var(--text-xs-size);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--content-subtle);
+}
+
+.menuToggle {
+  display: flex;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.menuToggleBtn {
+  padding: 5px 12px;
+  background: transparent;
+  border: none;
+  color: var(--content-subtle);
+  font-family: var(--font-family);
+  font-size: var(--text-xs-size);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background 140ms, color 140ms;
+}
+
+.menuToggleBtn + .menuToggleBtn {
+  border-left: 1px solid var(--border-default);
+}
+
+.menuToggleBtnActive {
+  background: var(--action-primary);
+  color: var(--content-primary);
 }
 
 .phoneFrame {

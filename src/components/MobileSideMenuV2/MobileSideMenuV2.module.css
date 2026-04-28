@@ -1,0 +1,436 @@
+/* ─── Slide-in animation ─────────────────────────────────── */
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+/* ─── Overlay ────────────────────────────────────────────── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+}
+
+/* ─── Drawer ─────────────────────────────────────────────── */
+.drawer {
+  width: 100%;
+  height: 100%;
+  background: var(--surface-page);
+  display: flex;
+  flex-direction: column;
+  animation: slideInLeft 260ms ease forwards;
+  overflow: hidden;
+}
+
+/* ─── Zone 1 — Identity + Money ──────────────────────────── */
+.zone1 {
+  flex-shrink: 0;
+  background: var(--surface-layer-1);
+  border-bottom: 1px solid var(--border-default);
+  padding: 14px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.identityRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--action-primary);
+  color: var(--content-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.username {
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: 600;
+  color: var(--content-primary);
+  line-height: 1;
+}
+
+.balance {
+  font-family: var(--font-family);
+  font-size: var(--text-xs-size);
+  font-weight: 500;
+  color: var(--content-accent);
+  line-height: 1;
+}
+
+.authLinks {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.authBtn {
+  padding: 7px 12px;
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  color: var(--content-primary);
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms;
+}
+
+.authBtn:hover { background: var(--surface-layer-2); }
+
+.authBtnPrimary {
+  background: var(--action-primary);
+  border-color: transparent;
+  color: var(--content-primary);
+}
+
+.authBtnPrimary:hover { opacity: 0.88; }
+
+.closeBtn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--content-secondary);
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 140ms, background 140ms;
+}
+
+.closeBtn:hover {
+  color: var(--content-primary);
+  background: var(--surface-layer-2);
+}
+
+.moneyRow {
+  display: flex;
+  gap: 8px;
+}
+
+.moneyBtn {
+  flex: 1;
+  height: 36px;
+  background: var(--surface-layer-2);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  color: var(--content-primary);
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms;
+}
+
+.moneyBtn:hover { background: rgba(255,255,255,0.06); }
+
+.moneyBtnDeposit {
+  background: var(--action-primary);
+  border-color: transparent;
+  color: var(--content-primary);
+}
+
+.moneyBtnDeposit:hover { opacity: 0.88; }
+
+/* ─── Zone 2 — Search ────────────────────────────────────── */
+.zone2 {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  background: var(--surface-page);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  background: var(--surface-layer-1);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  padding: 0 12px;
+}
+
+.searchIcon {
+  color: var(--content-subtle);
+  flex-shrink: 0;
+}
+
+.searchBar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--content-primary);
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  min-width: 0;
+}
+
+.searchBar input::placeholder {
+  color: var(--content-subtle);
+}
+
+.searchClear {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--content-subtle);
+  cursor: pointer;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+/* ─── Zone 3 — Mode Tabs ─────────────────────────────────── */
+.zone3 {
+  flex-shrink: 0;
+  display: flex;
+  background: var(--surface-layer-1);
+  border-bottom: 2px solid var(--border-default);
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  color: var(--content-secondary);
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 140ms, border-color 140ms;
+  white-space: nowrap;
+}
+
+.tab:hover { color: var(--content-primary); }
+
+.tabActive {
+  color: var(--content-accent);
+  border-bottom-color: var(--content-accent);
+}
+
+.liveBadge {
+  background: #c0392b;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Zone 4 — Deep Nav (scrollable) ────────────────────── */
+.zone4 {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.07) transparent;
+}
+
+.zone4::-webkit-scrollbar { width: 3px; }
+.zone4::-webkit-scrollbar-track { background: transparent; }
+.zone4::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
+
+/* Panel wrapper */
+.panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.panelHeader {
+  font-family: var(--font-family);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--content-subtle);
+  padding: 14px 14px 8px;
+  margin: 0;
+}
+
+.panelSubHeader {
+  font-family: var(--font-family);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--content-subtle);
+  padding: 14px 14px 8px;
+  margin: 0;
+  border-top: 1px solid var(--border-default);
+}
+
+/* Nav rows */
+.navRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 50px;
+  padding: 0 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-default);
+  cursor: pointer;
+  transition: background 130ms;
+  text-align: left;
+  width: 100%;
+}
+
+.navRow:last-of-type { border-bottom: none; }
+.navRow:hover { background: var(--surface-layer-1); }
+
+.navRowIcon {
+  color: var(--content-subtle);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.navRowLabel {
+  flex: 1;
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: 500;
+  color: var(--content-primary);
+  line-height: 1;
+}
+
+.navRowChevron {
+  color: var(--content-subtle);
+  flex-shrink: 0;
+}
+
+/* Live count badge on live rows */
+.liveCount {
+  background: rgba(192, 57, 43, 0.18);
+  color: #e05a4a;
+  font-family: var(--font-family);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* Casino pills */
+.pillsRow {
+  display: flex;
+  gap: 6px;
+  padding: 4px 14px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pillsRow::-webkit-scrollbar { display: none; }
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 11px;
+  background: var(--surface-layer-1);
+  border: 1px solid var(--border-default);
+  border-radius: 100px;
+  color: var(--content-secondary);
+  font-family: var(--font-family);
+  font-size: var(--text-xs-size);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 130ms, color 130ms, border-color 130ms;
+}
+
+.pill:hover { color: var(--content-primary); }
+
+.pillActive {
+  background: var(--action-primary);
+  border-color: transparent;
+  color: var(--content-primary);
+}
+
+/* Footer link */
+.footerLink {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 14px;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--border-default);
+  color: var(--content-accent);
+  font-family: var(--font-family);
+  font-size: var(--text-sm-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 130ms;
+}
+
+.footerLink:hover { opacity: 0.75; }
+
+/* ─── Zone 5 — Utility Strip ─────────────────────────────── */
+.zone5 {
+  flex-shrink: 0;
+  display: flex;
+  background: var(--surface-layer-1);
+  border-top: 1px solid var(--border-default);
+}
+
+.utilityItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 58px;
+  background: transparent;
+  border: none;
+  color: var(--content-subtle);
+  font-family: var(--font-family);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-align: center;
+  cursor: pointer;
+  transition: color 130ms;
+  padding: 0 4px;
+}
+
+.utilityItem:hover { color: var(--content-secondary); }
