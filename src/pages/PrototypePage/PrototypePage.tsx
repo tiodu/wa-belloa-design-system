@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { Menu, Gift, Home, Radio, ClipboardList, Gamepad2 } from 'lucide-react'
+import { Menu, Gift, Home, Radio, ClipboardList, Gamepad2, Search } from 'lucide-react'
 import { MobileSideMenuV2 } from '../../components/MobileSideMenuV2'
+import { FloatingBetslip } from '../../components/FloatingBetslip'
+import type { BetEntry } from '../../components/FloatingBetslip'
 import { CasinoLobbyPage } from '../CasinoLobbyPage'
 import { MyBetsPage } from '../MyBetsPage'
 import { SportsbookHomeView } from './views/SportsbookHomeView'
 import styles from './PrototypePage.module.css'
 
 type View = 'sportsbook' | 'casino' | 'my-bets'
-
 
 // ─── TopBar ───────────────────────────────────────────────────
 
@@ -48,16 +49,14 @@ function BottomNav({ activeView, onChange }: { activeView: View; onChange: (v: V
         <Home size={22} />
         Sports
       </button>
-      <button
-        className={styles.navItem}
-        type="button"
-      >
+      <button className={styles.navItem} type="button">
         <Radio size={22} />
         Live
       </button>
-      <div className={styles.navBetslipCell}>
-        <div className={styles.navBetslipIndicator}>Betslip</div>
-      </div>
+      <button className={styles.navItem} type="button">
+        <Search size={22} />
+        Search
+      </button>
       <button
         className={`${styles.navItem} ${activeView === 'my-bets' ? styles.navItemActive : ''}`}
         onClick={() => onChange('my-bets')}
@@ -84,6 +83,22 @@ export function PrototypePage() {
   const [activeView, setActiveView] = useState<View>('sportsbook')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLoggedIn] = useState(true)
+  const [bets, setBets] = useState<BetEntry[]>([])
+  const [openSignal, setOpenSignal] = useState(0)
+
+  const selectedBetIds = new Set(bets.map(b => b.id))
+
+  function handleAddBet(bet: BetEntry) {
+    setBets(prev => {
+      if (prev.some(b => b.id === bet.id)) return prev
+      return [...prev, bet]
+    })
+    setOpenSignal(s => s + 1)
+  }
+
+  function handleRemoveBet(id: string) {
+    setBets(prev => prev.filter(b => b.id !== id))
+  }
 
   return (
     <main className={styles.page}>
@@ -99,13 +114,30 @@ export function PrototypePage() {
           <TopBar onMenuOpen={() => setIsMenuOpen(true)} />
 
           <div className={styles.content}>
-            {activeView === 'sportsbook' && <SportsbookHomeView />}
-            {activeView === 'casino'     && <CasinoLobbyPage noShell />}
-            {activeView === 'my-bets'    && <MyBetsPage noShell />}
+            {activeView === 'sportsbook' && (
+              <SportsbookHomeView
+                selectedBetIds={selectedBetIds}
+                onAddBet={handleAddBet}
+                onRemoveBet={handleRemoveBet}
+              />
+            )}
+            {activeView === 'casino'  && <CasinoLobbyPage noShell />}
+            {activeView === 'my-bets' && <MyBetsPage noShell />}
           </div>
 
           <BottomNav activeView={activeView} onChange={setActiveView} />
         </div>
+
+        <FloatingBetslip
+          contained
+          bets={bets}
+          onRemoveBet={handleRemoveBet}
+          onClearAll={() => setBets([])}
+          openSignal={openSignal}
+          onOpenMyBets={() => setActiveView('my-bets')}
+          isLoggedIn={isLoggedIn}
+          currency="€"
+        />
       </div>
     </main>
   )

@@ -87,6 +87,11 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
+.oddsBtnSelected {
+  background: #145750;
+  border-color: #207e73;
+}
+
 .oddsBtnLabel {
   font-size: 9px;
   font-weight: 600;

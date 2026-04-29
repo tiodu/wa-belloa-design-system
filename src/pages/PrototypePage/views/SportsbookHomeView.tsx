@@ -1,7 +1,16 @@
 import { ChevronRight } from 'lucide-react'
 import { SportCategoryTabs } from '../../../components/SportCategoryTabs/SportCategoryTabs'
 import { LiveMatchesSection } from '../../../components/LiveMatchesSection/LiveMatchesSection'
+import type { BetEntry } from '../../../components/FloatingBetslip'
 import styles from './SportsbookHomeView.module.css'
+
+// ─── Shared bet props ─────────────────────────────────────────
+
+interface BetProps {
+  selectedBetIds: Set<string>
+  onAddBet: (bet: BetEntry) => void
+  onRemoveBet: (id: string) => void
+}
 
 // ─── Mock data ────────────────────────────────────────────────
 
@@ -60,17 +69,37 @@ const COMING_SOON: MatchRow[] = [
   { id: 'c4', competition: 'Bundesliga',     teamHome: 'Stuttgart',   teamAway: 'Wolfsburg',    time: 'Fri 02 May · 18:30', b1: '2.00', bX: '3.40', b2: '3.50' },
 ]
 
-// ─── Sub-components ───────────────────────────────────────────
+// ─── Odds button ──────────────────────────────────────────────
 
-function OddsBtn({ label, odds }: { label: string; odds: string }) {
+function OddsBtn({
+  id, label, odds, selected, onAddBet, onRemoveBet,
+}: {
+  id: string
+  label: string
+  odds: string
+  selected: boolean
+  onAddBet: (bet: BetEntry) => void
+  onRemoveBet: (id: string) => void
+}) {
+  function handleClick() {
+    if (selected) {
+      onRemoveBet(id)
+    } else {
+      onAddBet({ id, match: '', market: 'Match Result', selection: label, odds: parseFloat(odds) })
+    }
+  }
+
   return (
-    <button className={styles.oddsBtn} type="button">
+    <button
+      className={`${styles.oddsBtn} ${selected ? styles.oddsBtnSelected : ''}`}
+      type="button"
+      onClick={handleClick}
+    >
       <span className={styles.oddsBtnLabel}>{label}</span>
       <span className={styles.oddsBtnOdds}>{odds}</span>
     </button>
   )
 }
-
 
 function SectionHeader({ title, count, showSeeAll = true }: { title: string; count?: number; showSeeAll?: boolean }) {
   return (
@@ -90,7 +119,25 @@ function SectionHeader({ title, count, showSeeAll = true }: { title: string; cou
   )
 }
 
-function MatchRowItem({ match }: { match: MatchRow }) {
+function MatchRowItem({ match, betProps }: { match: MatchRow; betProps: BetProps }) {
+  const { selectedBetIds, onAddBet, onRemoveBet } = betProps
+  const matchLabel = `${match.teamHome} v ${match.teamAway}`
+
+  function makeOddsBtn(label: string, oddsVal: string) {
+    const id = `${match.id}-${label}`
+    return (
+      <OddsBtn
+        key={id}
+        id={id}
+        label={label}
+        odds={oddsVal}
+        selected={selectedBetIds.has(id)}
+        onAddBet={(bet) => onAddBet({ ...bet, match: matchLabel, league: match.competition })}
+        onRemoveBet={onRemoveBet}
+      />
+    )
+  }
+
   return (
     <div className={styles.matchRow}>
       <div className={styles.matchRowLeft}>
@@ -103,9 +150,9 @@ function MatchRowItem({ match }: { match: MatchRow }) {
         <span className={styles.matchTime}>{match.time}</span>
       </div>
       <div className={styles.matchOdds}>
-        <OddsBtn label="1" odds={match.b1} />
-        <OddsBtn label="X" odds={match.bX} />
-        <OddsBtn label="2" odds={match.b2} />
+        {makeOddsBtn('1', match.b1)}
+        {makeOddsBtn('X', match.bX)}
+        {makeOddsBtn('2', match.b2)}
       </div>
     </div>
   )
@@ -113,7 +160,10 @@ function MatchRowItem({ match }: { match: MatchRow }) {
 
 // ─── Sections ─────────────────────────────────────────────────
 
-function HeroCarousel() {
+function HeroCarousel({ betProps }: { betProps: BetProps }) {
+  const { selectedBetIds, onAddBet, onRemoveBet } = betProps
+  const matchLabel = `${HERO.teamHome} v ${HERO.teamAway}`
+
   return (
     <div className={styles.heroWrap}>
       <div className={styles.heroCard}>
@@ -131,9 +181,20 @@ function HeroCarousel() {
           </div>
           <div className={styles.heroTime}>{HERO.time}</div>
           <div className={styles.heroOdds}>
-            {HERO.buttons.map(b => (
-              <OddsBtn key={b.label} label={b.label} odds={b.odds} />
-            ))}
+            {HERO.buttons.map(b => {
+              const id = `hero-${b.label}`
+              return (
+                <OddsBtn
+                  key={id}
+                  id={id}
+                  label={b.label}
+                  odds={b.odds}
+                  selected={selectedBetIds.has(id)}
+                  onAddBet={(bet) => onAddBet({ ...bet, match: matchLabel, league: HERO.competition })}
+                  onRemoveBet={onRemoveBet}
+                />
+              )
+            })}
           </div>
         </div>
         <div className={styles.heroSilhouetteHome} />
@@ -148,35 +209,34 @@ function HeroCarousel() {
   )
 }
 
-
-function FeaturedMatchesSection() {
+function FeaturedMatchesSection({ betProps }: { betProps: BetProps }) {
   return (
     <div className={styles.section}>
       <SectionHeader title="Featured matches today" />
       {FEATURED_MATCHES.map(m => (
-        <MatchRowItem key={m.id} match={m} />
+        <MatchRowItem key={m.id} match={m} betProps={betProps} />
       ))}
     </div>
   )
 }
 
-function TopBetSection() {
+function TopBetSection({ betProps }: { betProps: BetProps }) {
   return (
     <div className={styles.section}>
       <SectionHeader title="Top bet" />
       {TOP_BET_MATCHES.map(m => (
-        <MatchRowItem key={m.id} match={m} />
+        <MatchRowItem key={m.id} match={m} betProps={betProps} />
       ))}
     </div>
   )
 }
 
-function ComingSoonSection() {
+function ComingSoonSection({ betProps }: { betProps: BetProps }) {
   return (
     <div className={styles.section}>
       <SectionHeader title="Coming soon" showSeeAll={false} />
       {COMING_SOON.map(m => (
-        <MatchRowItem key={m.id} match={m} />
+        <MatchRowItem key={m.id} match={m} betProps={betProps} />
       ))}
     </div>
   )
@@ -184,18 +244,30 @@ function ComingSoonSection() {
 
 // ─── View ─────────────────────────────────────────────────────
 
-export function SportsbookHomeView() {
+interface SportsbookHomeViewProps {
+  selectedBetIds: Set<string>
+  onAddBet: (bet: BetEntry) => void
+  onRemoveBet: (id: string) => void
+}
+
+export function SportsbookHomeView({ selectedBetIds, onAddBet, onRemoveBet }: SportsbookHomeViewProps) {
+  const betProps: BetProps = { selectedBetIds, onAddBet, onRemoveBet }
+
   return (
     <div className={styles.view}>
       <SportCategoryTabs />
-      <HeroCarousel />
-      <LiveMatchesSection />
+      <HeroCarousel betProps={betProps} />
+      <LiveMatchesSection
+        selectedBetIds={selectedBetIds}
+        onAddBet={onAddBet}
+        onRemoveBet={onRemoveBet}
+      />
       <div className={styles.divider} />
-      <FeaturedMatchesSection />
+      <FeaturedMatchesSection betProps={betProps} />
       <div className={styles.divider} />
-      <TopBetSection />
+      <TopBetSection betProps={betProps} />
       <div className={styles.divider} />
-      <ComingSoonSection />
+      <ComingSoonSection betProps={betProps} />
       <div className={styles.bottomPad} />
     </div>
   )

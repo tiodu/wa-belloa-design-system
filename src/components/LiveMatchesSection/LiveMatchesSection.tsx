@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Info, BarChart2, Play } from 'lucide-react'
+import type { BetEntry } from '../FloatingBetslip'
 import styles from './LiveMatchesSection.module.css'
 
 // ─── Types ────────────────────────────────────────────────────
@@ -200,56 +201,96 @@ function LiveBadge() {
   )
 }
 
-function FootballOdds({ odds }: { odds: OddsEntry[] }) {
+interface OddsBtnProps {
+  entry: OddsEntry
+  betId: string
+  className: string
+  isSelected: boolean
+  onAddBet: (bet: BetEntry) => void
+  onRemoveBet: (id: string) => void
+  matchLabel: string
+  market: string
+  isLive: boolean
+}
+
+function LiveOddsBtn({ entry, betId, className, isSelected, onAddBet, onRemoveBet, matchLabel, market, isLive }: OddsBtnProps) {
+  function handleClick() {
+    if (isSelected) {
+      onRemoveBet(betId)
+    } else {
+      onAddBet({
+        id: betId,
+        match: matchLabel,
+        market,
+        selection: entry.label,
+        odds: parseFloat(entry.value),
+        isLive,
+      })
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      className={`${styles.oddsBtn} ${className} ${isSelected ? styles.oddsBtnSelected : ''}`}
+      onClick={handleClick}
+    >
+      <div className={styles.oddsBtnInner}>
+        {entry.trendDown && <span className={`${styles.trendArrow} ${styles.trendDown}`}>▼</span>}
+        {entry.trendUp && <span className={`${styles.trendArrow} ${styles.trendUp}`}>▲</span>}
+        <span className={styles.oddsBtnLabel}>{entry.label}</span>
+        <span className={`${styles.oddsBtnValue} ${entry.trendDown ? styles.oddsBtnValueDown : ''}`}>{entry.value}</span>
+      </div>
+    </button>
+  )
+}
+
+interface OddsGroupProps {
+  odds: OddsEntry[]
+  matchId: string
+  matchLabel: string
+  market: string
+  isLive: boolean
+  selectedBetIds: Set<string>
+  onAddBet: (bet: BetEntry) => void
+  onRemoveBet: (id: string) => void
+}
+
+function FootballOdds({ odds, matchId, matchLabel, market, isLive, selectedBetIds, onAddBet, onRemoveBet }: OddsGroupProps) {
   const [left, mid, right] = odds
+  const sharedProps = { matchLabel, market, isLive, onAddBet, onRemoveBet }
   return (
     <div className={styles.oddsGroup}>
-      <button type="button" className={`${styles.oddsBtn} ${styles.oddsBtnLeft} ${left?.selected ? styles.oddsBtnSelected : ''}`}>
-        <div className={styles.oddsBtnInner}>
-          {left?.trendDown && <span className={`${styles.trendArrow} ${styles.trendDown}`}>▼</span>}
-          <span className={styles.oddsBtnLabel}>{left?.label}</span>
-          <span className={`${styles.oddsBtnValue} ${left?.trendDown ? styles.oddsBtnValueDown : ''}`}>{left?.value}</span>
-        </div>
-      </button>
-      <button type="button" className={`${styles.oddsBtn} ${styles.oddsBtnMiddle} ${mid?.selected ? styles.oddsBtnSelected : ''}`}>
-        <div className={styles.oddsBtnInner}>
-          <span className={styles.oddsBtnLabel}>{mid?.label}</span>
-          <span className={styles.oddsBtnValue}>{mid?.value}</span>
-        </div>
-      </button>
-      <button type="button" className={`${styles.oddsBtn} ${styles.oddsBtnRight} ${right?.selected ? styles.oddsBtnSelected : ''}`}>
-        <div className={styles.oddsBtnInner}>
-          {right?.trendUp && <span className={`${styles.trendArrow} ${styles.trendUp}`}>▲</span>}
-          <span className={styles.oddsBtnLabel}>{right?.label}</span>
-          <span className={styles.oddsBtnValue}>{right?.value}</span>
-        </div>
-      </button>
+      <LiveOddsBtn entry={left} betId={`${matchId}-0`} className={styles.oddsBtnLeft}   isSelected={selectedBetIds.has(`${matchId}-0`)} {...sharedProps} />
+      <LiveOddsBtn entry={mid}  betId={`${matchId}-1`} className={styles.oddsBtnMiddle} isSelected={selectedBetIds.has(`${matchId}-1`)} {...sharedProps} />
+      <LiveOddsBtn entry={right} betId={`${matchId}-2`} className={styles.oddsBtnRight} isSelected={selectedBetIds.has(`${matchId}-2`)} {...sharedProps} />
     </div>
   )
 }
 
-function TwoWayOdds({ odds }: { odds: OddsEntry[] }) {
+function TwoWayOdds({ odds, matchId, matchLabel, market, isLive, selectedBetIds, onAddBet, onRemoveBet }: OddsGroupProps) {
   const [left, right] = odds
+  const sharedProps = { matchLabel, market, isLive, onAddBet, onRemoveBet }
   return (
     <div className={styles.oddsGroup}>
-      <button type="button" className={`${styles.oddsBtn} ${styles.oddsBtnOLeft} ${left?.selected ? styles.oddsBtnSelected : ''}`}>
-        <div className={styles.oddsBtnInner}>
-          <span className={styles.oddsBtnLabel}>{left?.label}</span>
-          <span className={styles.oddsBtnValue}>{left?.value}</span>
-        </div>
-      </button>
-      <button type="button" className={`${styles.oddsBtn} ${styles.oddsBtnORight} ${right?.selected ? styles.oddsBtnSelected : ''}`}>
-        <div className={styles.oddsBtnInner}>
-          <span className={styles.oddsBtnLabel}>{right?.label}</span>
-          <span className={styles.oddsBtnValue}>{right?.value}</span>
-        </div>
-      </button>
+      <LiveOddsBtn entry={left}  betId={`${matchId}-0`} className={styles.oddsBtnOLeft}  isSelected={selectedBetIds.has(`${matchId}-0`)} {...sharedProps} />
+      <LiveOddsBtn entry={right} betId={`${matchId}-1`} className={styles.oddsBtnORight} isSelected={selectedBetIds.has(`${matchId}-1`)} {...sharedProps} />
     </div>
   )
 }
 
-function MatchCard({ match, showSportHeader }: { match: LiveMatch; showSportHeader: boolean }) {
+interface MatchCardProps {
+  match: LiveMatch
+  showSportHeader: boolean
+  selectedBetIds: Set<string>
+  onAddBet: (bet: BetEntry) => void
+  onRemoveBet: (id: string) => void
+}
+
+function MatchCard({ match, showSportHeader, selectedBetIds, onAddBet, onRemoveBet }: MatchCardProps) {
   const isTennis = match.sport === 'tennis'
+  const matchLabel = `${match.teamHome} v ${match.teamAway}`
+  const oddsGroupProps = { matchId: match.id, matchLabel, market: match.market, isLive: true, selectedBetIds, onAddBet, onRemoveBet }
 
   return (
     <div className={styles.card}>
@@ -296,9 +337,9 @@ function MatchCard({ match, showSportHeader }: { match: LiveMatch; showSportHead
           </div>
 
           {match.sport === 'football' ? (
-            <FootballOdds odds={match.odds} />
+            <FootballOdds odds={match.odds} {...oddsGroupProps} />
           ) : (
-            <TwoWayOdds odds={match.odds} />
+            <TwoWayOdds odds={match.odds} {...oddsGroupProps} />
           )}
         </div>
       </div>
@@ -326,9 +367,18 @@ function MatchCard({ match, showSportHeader }: { match: LiveMatch; showSportHead
 interface LiveMatchesSectionProps {
   totalCount?: number
   matches?: LiveMatch[]
+  selectedBetIds?: Set<string>
+  onAddBet?: (bet: BetEntry) => void
+  onRemoveBet?: (id: string) => void
 }
 
-export function LiveMatchesSection({ totalCount = 48, matches = LIVE_MATCHES }: LiveMatchesSectionProps) {
+export function LiveMatchesSection({
+  totalCount = 48,
+  matches = LIVE_MATCHES,
+  selectedBetIds = new Set(),
+  onAddBet = () => {},
+  onRemoveBet = () => {},
+}: LiveMatchesSectionProps) {
   const [activeFilter, setActiveFilter] = useState('all')
 
   const filtered = activeFilter === 'all'
@@ -367,7 +417,7 @@ export function LiveMatchesSection({ totalCount = 48, matches = LIVE_MATCHES }: 
 
       <div className={styles.cardsList}>
         {filtered.map(match => (
-          <MatchCard key={match.id} match={match} showSportHeader={showSportHeader} />
+          <MatchCard key={match.id} match={match} showSportHeader={showSportHeader} selectedBetIds={selectedBetIds} onAddBet={onAddBet} onRemoveBet={onRemoveBet} />
         ))}
       </div>
     </div>
