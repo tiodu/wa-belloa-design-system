@@ -1,14 +1,17 @@
 import { useState } from 'react'
-import { Menu, Gift, Home, Radio, ClipboardList, Gamepad2, Search } from 'lucide-react'
+import { Menu, Gift } from 'lucide-react'
+import { MobileSideMenu } from '../../components/MobileSideMenu'
 import { MobileSideMenuV2 } from '../../components/MobileSideMenuV2'
 import { FloatingBetslip } from '../../components/FloatingBetslip'
 import type { BetEntry } from '../../components/FloatingBetslip'
+import { BottomNav } from '../../components/BottomNav'
+import type { View } from '../../components/BottomNav'
 import { CasinoLobbyPage } from '../CasinoLobbyPage'
 import { MyBetsPage } from '../MyBetsPage'
 import { SportsbookHomeView } from './views/SportsbookHomeView'
 import styles from './PrototypePage.module.css'
 
-type View = 'sportsbook' | 'casino' | 'my-bets'
+type MenuVariant = 'v1' | 'v2'
 
 // ─── TopBar ───────────────────────────────────────────────────
 
@@ -36,53 +39,13 @@ function TopBar({ onMenuOpen }: { onMenuOpen: () => void }) {
   )
 }
 
-// ─── BottomNav ────────────────────────────────────────────────
-
-function BottomNav({ activeView, onChange }: { activeView: View; onChange: (v: View) => void }) {
-  return (
-    <nav className={styles.bottomNav}>
-      <button
-        className={`${styles.navItem} ${activeView === 'sportsbook' ? styles.navItemActive : ''}`}
-        onClick={() => onChange('sportsbook')}
-        type="button"
-      >
-        <Home size={22} />
-        Sports
-      </button>
-      <button className={styles.navItem} type="button">
-        <Radio size={22} />
-        Live
-      </button>
-      <button className={styles.navItem} type="button">
-        <Search size={22} />
-        Search
-      </button>
-      <button
-        className={`${styles.navItem} ${activeView === 'my-bets' ? styles.navItemActive : ''}`}
-        onClick={() => onChange('my-bets')}
-        type="button"
-      >
-        <ClipboardList size={22} />
-        My Bets
-      </button>
-      <button
-        className={`${styles.navItem} ${activeView === 'casino' ? styles.navItemActive : ''}`}
-        onClick={() => onChange('casino')}
-        type="button"
-      >
-        <Gamepad2 size={22} />
-        Casino
-      </button>
-    </nav>
-  )
-}
-
 // ─── Page ─────────────────────────────────────────────────────
 
 export function PrototypePage() {
   const [activeView, setActiveView] = useState<View>('sportsbook')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isLoggedIn] = useState(true)
+  const [isLoggedIn, setIsLoggedIn] = useState(true)
+  const [menuVariant, setMenuVariant] = useState<MenuVariant>('v2')
   const [bets, setBets] = useState<BetEntry[]>([])
   const [openSignal, setOpenSignal] = useState(0)
 
@@ -102,13 +65,40 @@ export function PrototypePage() {
 
   return (
     <main className={styles.page}>
-      <div className={styles.frameLabel}>Mobile Prototype · Full App</div>
+      <div className={styles.frameLabel}>
+        <span>Mobile Prototype · Full App</span>
+        <div className={styles.menuToggle}>
+          <button
+            className={`${styles.menuToggleBtn}${menuVariant === 'v1' ? ` ${styles.menuToggleBtnActive}` : ''}`}
+            onClick={() => setMenuVariant('v1')}
+            type="button"
+          >
+            Menu V1
+          </button>
+          <button
+            className={`${styles.menuToggleBtn}${menuVariant === 'v2' ? ` ${styles.menuToggleBtnActive}` : ''}`}
+            onClick={() => setMenuVariant('v2')}
+            type="button"
+          >
+            Menu V2
+          </button>
+        </div>
+      </div>
       <div className={styles.phoneFrame}>
-        <MobileSideMenuV2
-          isOpen={isMenuOpen}
-          onClose={() => setIsMenuOpen(false)}
-          isLoggedIn={isLoggedIn}
-        />
+        {menuVariant === 'v1' ? (
+          <MobileSideMenu
+            isOpen={isMenuOpen}
+            onClose={() => setIsMenuOpen(false)}
+            isLoggedIn={isLoggedIn}
+            onToggleAuth={() => setIsLoggedIn(p => !p)}
+          />
+        ) : (
+          <MobileSideMenuV2
+            isOpen={isMenuOpen}
+            onClose={() => setIsMenuOpen(false)}
+            isLoggedIn={isLoggedIn}
+          />
+        )}
 
         <div className={styles.shell}>
           <TopBar onMenuOpen={() => setIsMenuOpen(true)} />
@@ -121,7 +111,7 @@ export function PrototypePage() {
                 onRemoveBet={handleRemoveBet}
               />
             )}
-            {activeView === 'casino'  && <CasinoLobbyPage noShell />}
+            {activeView === 'casino'  && <CasinoLobbyPage />}
             {activeView === 'my-bets' && <MyBetsPage noShell />}
           </div>
 
@@ -137,6 +127,16 @@ export function PrototypePage() {
           onOpenMyBets={() => setActiveView('my-bets')}
           isLoggedIn={isLoggedIn}
           currency="€"
+          balance={10000}
+          bonusTracker={{
+            label: 'Acca Boost',
+            thresholds: [
+              { selections: 3, percent: 5 },
+              { selections: 5, percent: 10 },
+              { selections: 7, percent: 15 },
+            ],
+            minOdds: 1.3,
+          }}
         />
       </div>
     </main>

@@ -69,3 +69,12 @@
   font-size: var(--text-sm-size);
   line-height: 1.45;
 }
+
+.cardHighlight {
+  border-color: var(--border-accent);
+  background: linear-gradient(135deg, var(--surface-layer-1) 60%, rgba(var(--action-primary-rgb, 80, 60, 180), 0.12) 100%);
+}
+
+.cardHighlight .cardTag {
+  color: var(--content-accent);
+}

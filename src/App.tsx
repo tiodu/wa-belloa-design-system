@@ -1,8 +1,6 @@
 import './tokens/belloa.css'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { BelloaBetslipPage } from './pages/BelloaBetslipPage'
-import { CasinoCategoryPage } from './pages/CasinoCategoryPage'
-import { CasinoLobbyPage } from './pages/CasinoLobbyPage'
 import { HomeHubPage } from './pages/HomeHubPage'
 import { MyBetsPage } from './pages/MyBetsPage'
 import { PrototypePage } from './pages/PrototypePage'
@@ -16,8 +14,6 @@ function App() {
         <Route path="/betslip" element={<BelloaBetslipPage />} />
         <Route path="/my-bets" element={<MyBetsPage />} />
         <Route path="/sportsbook" element={<SportsbookPlaygroundPage />} />
-        <Route path="/casino" element={<CasinoLobbyPage />} />
-        <Route path="/casino/:category" element={<CasinoCategoryPage />} />
         <Route path="/prototype" element={<PrototypePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

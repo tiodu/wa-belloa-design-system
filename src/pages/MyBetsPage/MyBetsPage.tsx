@@ -208,7 +208,7 @@ const BET_PERMUTATIONS: { id: string; label: string }[] = [
   { id: 'b6',  label: 'Boosted · single' },
 ]
 
-export function MyBetsPage() {
+export function MyBetsPage({ noShell }: { noShell?: boolean } = {}) {
   const [activeTab, setActiveTab] = useState<MyBetsTab>('open')
   const [bets, setBets] = useState<MyBetCardProps[]>(ALL_BETS)
   const [visibleIds, setVisibleIds] = useState<Set<string>>(
@@ -242,6 +242,68 @@ export function MyBetsPage() {
     { id: 'live',    label: 'Live' },
     { id: 'settled', label: 'Settled' },
   ]
+
+  const betsContent = (
+    <>
+      {!noShell && <MyBetsHeader balance={BALANCE} currency={CURRENCY} />}
+
+      {/* Tabs */}
+      <div className={styles.tabBar}>
+        {TABS.map(t => (
+          <button
+            key={t.id}
+            className={`${styles.tab} ${activeTab === t.id ? styles.tabActive : ''}`}
+            onClick={() => setActiveTab(t.id)}
+            type="button"
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Bet list */}
+      <div className={styles.betList}>
+        {tabBets.length === 0 ? (
+          <div className={styles.emptyState}>
+            <ClipboardList size={32} strokeWidth={1.2} className={styles.emptyIcon} />
+            <span className={styles.emptyTitle}>No bets here</span>
+            <span className={styles.emptySubtitle}>
+              {activeTab === 'cashout' && 'No bets available for cash out.'}
+              {activeTab === 'live' && 'No live bets at the moment.'}
+              {activeTab === 'open' && 'You have no open bets.'}
+              {activeTab === 'settled' && 'No settled bets in the last 7 days.'}
+            </span>
+            {activeTab === 'settled' && (
+              <button className={styles.historyBtn} type="button">
+                View Bet History
+              </button>
+            )}
+          </div>
+        ) : (
+          <>
+            {tabBets.map(bet => (
+              <MyBetCard
+                key={bet.id}
+                {...bet}
+                onCashOut={handleCashOut}
+              />
+            ))}
+            {activeTab === 'settled' && (
+              <button className={styles.historyBtnInline} type="button">
+                View Bet History
+              </button>
+            )}
+          </>
+        )}
+      </div>
+
+      {!noShell && <BottomNav />}
+    </>
+  )
+
+  if (noShell) {
+    return <div className={styles.mobileBook}>{betsContent}</div>
+  }
 
   return (
     <div className={styles.page}>
@@ -286,59 +348,7 @@ export function MyBetsPage() {
       <span className={styles.frameLabel}>Mobile preview · My Bets</span>
       <div className={styles.phoneFrame}>
         <div className={styles.mobileBook}>
-          <MyBetsHeader balance={BALANCE} currency={CURRENCY} />
-
-          {/* Tabs */}
-          <div className={styles.tabBar}>
-            {TABS.map(t => (
-              <button
-                key={t.id}
-                className={`${styles.tab} ${activeTab === t.id ? styles.tabActive : ''}`}
-                onClick={() => setActiveTab(t.id)}
-                type="button"
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Bet list */}
-          <div className={styles.betList}>
-            {tabBets.length === 0 ? (
-              <div className={styles.emptyState}>
-                <ClipboardList size={32} strokeWidth={1.2} className={styles.emptyIcon} />
-                <span className={styles.emptyTitle}>No bets here</span>
-                <span className={styles.emptySubtitle}>
-                  {activeTab === 'cashout' && 'No bets available for cash out.'}
-                  {activeTab === 'live' && 'No live bets at the moment.'}
-                  {activeTab === 'open' && 'You have no open bets.'}
-                  {activeTab === 'settled' && 'No settled bets in the last 7 days.'}
-                </span>
-                {activeTab === 'settled' && (
-                  <button className={styles.historyBtn} type="button">
-                    View Bet History
-                  </button>
-                )}
-              </div>
-            ) : (
-              <>
-                {tabBets.map(bet => (
-                  <MyBetCard
-                    key={bet.id}
-                    {...bet}
-                    onCashOut={handleCashOut}
-                  />
-                ))}
-                {activeTab === 'settled' && (
-                  <button className={styles.historyBtnInline} type="button">
-                    View Bet History
-                  </button>
-                )}
-              </>
-            )}
-          </div>
-
-          <BottomNav />
+          {betsContent}
         </div>
       </div>
     </div>

@@ -10,11 +10,44 @@
 }
 
 .frameLabel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   font-size: var(--text-xs-size);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--content-subtle);
+}
+
+.menuToggle {
+  display: flex;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.menuToggleBtn {
+  padding: 5px 12px;
+  background: transparent;
+  border: none;
+  color: var(--content-subtle);
+  font-family: var(--font-family);
+  font-size: var(--text-xs-size);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background 140ms, color 140ms;
+}
+
+.menuToggleBtn + .menuToggleBtn {
+  border-left: 1px solid var(--border-default);
+}
+
+.menuToggleBtnActive {
+  background: var(--action-primary);
+  color: var(--content-primary);
 }
 
 /* ─── Phone frame ─── */
@@ -194,65 +227,3 @@
   border-radius: 2px;
 }
 
-/* ─── Bottom nav ─── */
-.bottomNav {
-  display: flex;
-  align-items: stretch;
-  height: 61px;
-  padding-top: 4px;
-  background: var(--surface-layer-1);
-  border-top: 1px solid var(--border-subtle);
-  flex-shrink: 0;
-  z-index: 1;
-}
-
-.navItem {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  color: var(--content-subtle);
-  font-family: var(--font-family);
-  font-size: 10px;
-  cursor: pointer;
-  border: none;
-  background: none;
-  padding: 0;
-  transition: color 0.15s ease;
-}
-
-.navItem:hover {
-  color: var(--content-secondary);
-}
-
-.navItemActive {
-  color: var(--content-accent);
-}
-
-.navBetslipCell {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-bottom: 4px;
-}
-
-.navBetslipIndicator {
-  width: 94px;
-  height: 48px;
-  background: var(--action-primary);
-  border: 1px solid var(--border-accent);
-  border-radius: var(--radius-lg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  color: var(--content-on-action);
-  font-family: var(--font-family);
-  font-size: 10px;
-  font-weight: 600;
-  cursor: pointer;
-}

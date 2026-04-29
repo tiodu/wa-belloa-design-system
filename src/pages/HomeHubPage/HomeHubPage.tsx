@@ -34,11 +34,11 @@ export function HomeHubPage() {
           </p>
         </Link>
 
-        <Link className={styles.card} to="/casino">
-          <span className={styles.cardTag}>New</span>
-          <h2 className={styles.cardTitle}>Casino Lobby</h2>
+        <Link className={`${styles.card} ${styles.cardHighlight}`} to="/prototype">
+          <span className={styles.cardTag}>Prototype</span>
+          <h2 className={styles.cardTitle}>Full App Prototype</h2>
           <p className={styles.cardDescription}>
-            Mobile-first casino lobby with header, search, category filters, promotion cards, and scrollable game rows.
+            Connected app experience: Sportsbook home, Casino, and My Bets wired together with shared top bar, side menu (V1/V2), and bottom nav.
           </p>
         </Link>
       </section>
