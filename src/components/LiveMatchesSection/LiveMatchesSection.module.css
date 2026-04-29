@@ -1,0 +1,441 @@
+/* ─── Section wrapper ─── */
+.section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Section header ─── */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 16px 12px;
+}
+
+.sectionHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.liveBadge {
+  background: linear-gradient(90deg, #f60059 1.92%, #be0045 100%);
+  border-radius: 4px;
+  padding: 3px 4px 4px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.liveBadgeText {
+  font-size: 10px;
+  font-weight: 700;
+  font-style: italic;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: -0.1px;
+  line-height: 1;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #edeef0;
+  letter-spacing: 0;
+  line-height: 20px;
+}
+
+.infoBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.6;
+  color: #717d79;
+  font-size: 13px;
+}
+
+.viewAllBtn {
+  font-size: 12px;
+  font-weight: 500;
+  color: #edeef0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+/* ─── Filter tabs (icon-only) ─── */
+.filterTabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 16px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filterTabs::-webkit-scrollbar {
+  display: none;
+}
+
+.filterTab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(249, 250, 251, 0.07);
+  border: 1px solid transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 16px;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.filterTab:hover {
+  background: rgba(249, 250, 251, 0.12);
+}
+
+.filterTabActive {
+  background: rgba(0, 255, 230, 0.12);
+  border-color: #207e73;
+}
+
+/* ─── Cards list ─── */
+.cardsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 12px;
+}
+
+/* ─── Match card ─── */
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #171918;
+}
+
+/* ─── Sport category header ─── */
+.sportHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px 9px;
+  background: #171918;
+  border-bottom: 1px solid rgba(249, 250, 251, 0.07);
+  position: relative;
+}
+
+.sportHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sportIcon {
+  font-size: 16px;
+  line-height: 1;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sportName {
+  font-size: 12px;
+  font-weight: 400;
+  color: #edeef0;
+  line-height: 20px;
+}
+
+/* Left accent bar */
+.sportHeaderAccent {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) translateY(1px);
+  width: 5px;
+  height: 20px;
+  background: rgba(249, 250, 251, 0.07);
+  border-radius: 0 10px 10px 0;
+}
+
+/* ─── Match content ─── */
+.matchContent {
+  background: #171918;
+  padding: 6px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 58px;
+  justify-content: center;
+}
+
+.matchMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.matchCompetition {
+  font-size: 11px;
+  font-weight: 500;
+  color: #717d79;
+  width: 135px;
+  flex-shrink: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.matchMarket {
+  flex: 1;
+  font-size: 10px;
+  font-weight: 500;
+  color: #717d79;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.matchTeamsOdds {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ─── Teams ─── */
+.matchTeams {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 135px;
+  flex-shrink: 0;
+}
+
+.matchTeamRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.matchTeamName {
+  font-size: 12px;
+  font-weight: 600;
+  color: #edeef0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0;
+  line-height: 18px;
+}
+
+.matchTeamScore {
+  font-size: 12px;
+  font-weight: 400;
+  color: #b0b4ba;
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 18px;
+}
+
+.matchTeamScoreAccent {
+  color: #0bd8b6;
+}
+
+/* Tennis set scores shown inline */
+.matchTeamSets {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.matchTeamSetScore {
+  font-size: 12px;
+  font-weight: 400;
+  color: #b0b4ba;
+  line-height: 18px;
+  width: 22px;
+  text-align: center;
+}
+
+.matchTeamSetScoreCurrent {
+  color: #0bd8b6;
+}
+
+/* ─── Odds buttons ─── */
+.oddsGroup {
+  display: flex;
+  flex: 1;
+  gap: 2px;
+  align-self: stretch;
+}
+
+.oddsBtn {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  background: rgba(249, 250, 251, 0.07);
+  border: none;
+  cursor: pointer;
+  gap: 4px;
+  transition: background 0.12s;
+  min-width: 0;
+}
+
+.oddsBtn:hover {
+  background: rgba(249, 250, 251, 0.12);
+}
+
+.oddsBtnSelected {
+  background: #145750;
+}
+
+.oddsBtnSelected:hover {
+  background: #1a6d65;
+}
+
+/* Football 3-button radius */
+.oddsBtnLeft {
+  border-radius: 10px 4px 4px 10px;
+}
+
+.oddsBtnMiddle {
+  border-radius: 4px;
+}
+
+.oddsBtnRight {
+  border-radius: 4px 10px 10px 4px;
+}
+
+/* Over/Under 2-button radius */
+.oddsBtnOLeft {
+  border-radius: 10px 4px 4px 10px;
+}
+
+.oddsBtnORight {
+  border-radius: 4px 10px 10px 4px;
+}
+
+.oddsBtnLabel {
+  font-size: 10px;
+  font-weight: 500;
+  color: #b0b4ba;
+  text-align: center;
+  white-space: nowrap;
+  line-height: normal;
+}
+
+.oddsBtnLabelGreen {
+  color: #4cc38a;
+}
+
+.oddsBtnValue {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0bd8b6;
+  text-align: center;
+  line-height: 12px;
+}
+
+.oddsBtnValueGreen {
+  color: #4cc38a;
+}
+
+/* ─── Odds trend arrow ─── */
+.trendArrow {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 7px;
+  line-height: 1;
+}
+
+.trendUp {
+  color: #4cc38a;
+}
+
+.trendDown {
+  color: #ff9592;
+}
+
+.oddsBtnValueDown {
+  color: #ff9592;
+}
+
+.oddsBtnInner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ─── Card footer ─── */
+.cardFooter {
+  background: #202221;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 12px 10px;
+}
+
+.cardFooterLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cardFooterTime {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ff9592;
+  white-space: nowrap;
+  line-height: normal;
+}
+
+.cardFooterActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footerActionBtn {
+  width: 16px;
+  height: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #717d79;
+  opacity: 0.7;
+}
+
+.footerActionBtn svg {
+  width: 14px;
+  height: 14px;
+}

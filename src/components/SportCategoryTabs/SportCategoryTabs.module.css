@@ -1,0 +1,106 @@
+/* ─── Sport Category Tabs ─── */
+.container {
+  padding: 8px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+
+.container::-webkit-scrollbar {
+  display: none;
+}
+
+.track {
+  display: flex;
+  gap: 4px;
+  width: max-content;
+}
+
+/* ─── Individual tab ─── */
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 46px;
+  border-radius: 10px;
+  background: rgba(249, 250, 251, 0.07);
+  border: 1px solid transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.tab:hover {
+  background: rgba(249, 250, 251, 0.11);
+}
+
+.tabActive {
+  background: rgba(0, 255, 230, 0.12);
+  border-color: #207e73;
+}
+
+.tabInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ─── Icon area ─── */
+.tabIcon {
+  font-size: 16px;
+  line-height: 1;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.tabIconAll {
+  font-size: 13px;
+}
+
+.tabIconInactive {
+  opacity: 0.5;
+}
+
+/* ─── LIVE badge (for In-Play tab) ─── */
+.liveBadge {
+  background: linear-gradient(90deg, #f60059 1.92%, #be0045 100%);
+  border-radius: 4px;
+  padding: 3px 4px 4px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.liveBadgeText {
+  font-size: 10px;
+  font-weight: 700;
+  font-style: italic;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: -0.1px;
+  line-height: 1;
+}
+
+/* ─── Label ─── */
+.tabLabel {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 12px;
+  color: #717d79;
+}
+
+.tabLabelActive {
+  font-weight: 700;
+  color: #0bd8b6;
+}

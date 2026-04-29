@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   X,
   Search,
@@ -7,10 +8,6 @@ import {
   Trophy,
   Dices,
   Monitor,
-  ClipboardList,
-  Gift,
-  HelpCircle,
-  ShieldCheck,
   Radio,
   Zap,
   Flame,
@@ -74,18 +71,11 @@ const VIRTUALS_ROWS = [
   { id: 'vbasket',   label: 'Virtual Basketball',    icon: <Trophy size={17} /> },
 ]
 
-const UTILITY_ITEMS = [
-  { id: 'mybets',    label: 'My Bets',         icon: <ClipboardList size={20} /> },
-  { id: 'promos',    label: 'Promotions',      icon: <Gift size={20} /> },
-  { id: 'help',      label: 'Help',            icon: <HelpCircle size={20} /> },
-  { id: 'resp',      label: 'Responsible Play', icon: <ShieldCheck size={20} /> },
-]
-
 const LIVE_COUNT = 93
 
 // ─── Zone 4 panels ────────────────────────────────────────────
 
-function SportsPanel() {
+function SportsPanel({ onNavigate }: { onNavigate: (path: string) => void }) {
   return (
     <div className={styles.panel}>
       <p className={styles.panelHeader}>Top Sports</p>
@@ -96,7 +86,7 @@ function SportsPanel() {
           <ChevronRight size={14} className={styles.navRowChevron} />
         </button>
       ))}
-      <button className={styles.footerLink}>All Sports →</button>
+      <button className={styles.footerLink} onClick={() => onNavigate('/prototype')}>All Sports →</button>
     </div>
   )
 }
@@ -118,7 +108,14 @@ function LivePanel() {
   )
 }
 
-function CasinoPanel() {
+const CASINO_NAV_ROUTES: Record<string, string> = {
+  'live-casino':  '/casino/live-casino',
+  'slots':        '/casino/slots',
+  'game-shows':   '/casino/game-shows',
+  'new-releases': '/casino/new-releases',
+}
+
+function CasinoPanel({ onNavigate }: { onNavigate: (path: string) => void }) {
   const [activePill, setActivePill] = useState('popular')
   return (
     <div className={styles.panel}>
@@ -137,13 +134,17 @@ function CasinoPanel() {
       </div>
       <p className={styles.panelSubHeader}>Top Picks</p>
       {CASINO_ROWS.map(row => (
-        <button key={row.id} className={styles.navRow}>
+        <button
+          key={row.id}
+          className={styles.navRow}
+          onClick={() => onNavigate(CASINO_NAV_ROUTES[row.id] ?? '/casino')}
+        >
           <span className={styles.navRowIcon}>{row.icon}</span>
           <span className={styles.navRowLabel}>{row.label}</span>
           <ChevronRight size={14} className={styles.navRowChevron} />
         </button>
       ))}
-      <button className={styles.footerLink}>All Casino Games →</button>
+      <button className={styles.footerLink} onClick={() => onNavigate('/casino')}>All Casino Games →</button>
     </div>
   )
 }
@@ -168,6 +169,12 @@ function VirtualsPanel() {
 export function MobileSideMenuV2({ isOpen, onClose, isLoggedIn }: Props) {
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState<Tab>('sports')
+  const navigate = useNavigate()
+
+  function handleNavigate(path: string) {
+    onClose()
+    navigate(path)
+  }
 
   if (!isOpen) return null
 
@@ -244,20 +251,10 @@ export function MobileSideMenuV2({ isOpen, onClose, isLoggedIn }: Props) {
 
         {/* Zone 4 — Deep Nav (scrollable) */}
         <div className={styles.zone4}>
-          {activeTab === 'sports'   && <SportsPanel />}
+          {activeTab === 'sports'   && <SportsPanel onNavigate={handleNavigate} />}
           {activeTab === 'live'     && <LivePanel />}
-          {activeTab === 'casino'   && <CasinoPanel />}
+          {activeTab === 'casino'   && <CasinoPanel onNavigate={handleNavigate} />}
           {activeTab === 'virtuals' && <VirtualsPanel />}
-        </div>
-
-        {/* Zone 5 — Utility Strip */}
-        <div className={styles.zone5}>
-          {UTILITY_ITEMS.map(item => (
-            <button key={item.id} className={styles.utilityItem}>
-              {item.icon}
-              <span>{item.label}</span>
-            </button>
-          ))}
         </div>
 
       </div>

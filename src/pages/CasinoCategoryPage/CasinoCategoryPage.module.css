@@ -1,0 +1,253 @@
+/* ─── Page shell ─── */
+.page {
+  min-height: 100dvh;
+  background: var(--surface-page);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px 60px;
+  gap: 0;
+}
+
+.frameLabel {
+  font-size: var(--text-xs-size);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--content-subtle);
+  margin-bottom: 16px;
+}
+
+/* ─── Phone shell ─── */
+.phoneFrame {
+  width: 390px;
+  height: 844px;
+  background: var(--surface-page);
+  border-radius: 44px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ─── Inner content scroll ─── */
+.mobileBook {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: none;
+}
+
+.mobileBook::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Header ─── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--surface-layer-1);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  color: var(--content-primary);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.headerTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--content-primary);
+  flex: 1;
+}
+
+/* ─── Search section ─── */
+.searchSection {
+  padding: 12px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface-layer-1);
+  flex-shrink: 0;
+}
+
+.searchWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--action-neutral);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 0 12px;
+  height: 40px;
+}
+
+.searchIcon {
+  color: var(--content-subtle);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--content-primary);
+  font-family: var(--font-family);
+  font-size: 14px;
+}
+
+.searchInput::placeholder {
+  color: var(--content-subtle);
+}
+
+/* ─── Category pills ─── */
+.pillsTrack {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.pillsTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: var(--action-neutral);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--content-secondary);
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.pill:hover {
+  background: rgba(249, 250, 251, 0.12);
+}
+
+.pillActive {
+  background: var(--action-secondary);
+  border-color: var(--border-active);
+  color: var(--content-accent);
+}
+
+/* ─── Sub-header (sort/filter bar) ─── */
+.subHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.gameCount {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--content-subtle);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--action-neutral);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: var(--content-secondary);
+  font-family: var(--font-family);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+/* ─── Games grid ─── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 12px 16px 24px;
+}
+
+.gameCard {
+  cursor: pointer;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  position: relative;
+}
+
+.gameCardImage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 8px;
+}
+
+.gameCardBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: var(--status-info-foreground, #60a5fa);
+  border-radius: 4px;
+  padding: 2px 5px;
+}
+
+.gameCardBadgeHot {
+  background: #ef4444;
+}
+
+.gameCardInfo {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.7);
+}
